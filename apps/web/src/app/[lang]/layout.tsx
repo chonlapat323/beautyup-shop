@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
 import { BackToTop } from "@/components/back-to-top";
+import { CookieConsent } from "@/components/cookie-consent";
 import { RevealObserver } from "@/components/reveal-observer";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { LOCALES, resolveLang } from "@/i18n";
+import { LangProvider } from "@/i18n/client";
 import { getCompany, getMenu } from "@/lib/data";
 import "../globals.css";
 
@@ -44,6 +46,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   return (
     <html lang={lang} className={`${plexThai.variable} ${serifThai.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col overflow-x-clip font-sans">
+        <LangProvider lang={lang}>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-cream"
@@ -57,6 +60,8 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         <SiteFooter menu={menu} company={company} dict={dict.footer} />
         <RevealObserver />
         <BackToTop />
+        <CookieConsent />
+        </LangProvider>
       </body>
     </html>
   );

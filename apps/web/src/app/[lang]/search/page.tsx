@@ -23,7 +23,7 @@ export default async function SearchPage({ params }: PageProps<"/[lang]/search">
     brands.find((b) => b.slug === slug)?.type === "SALON" ? `/products/${slug}` : "/shop";
 
   const items: SearchItem[] = [
-    ...products.map((p) => ({ kind: k.product, title: p.name, sub: brandName[p.brandSlug], href: brandHref(p.brandSlug) })),
+    ...products.map((p) => ({ kind: k.product, title: p.name, sub: brandName[p.brandSlug], href: `/product/${p.slug}` })),
     ...brands.map((b) => ({ kind: k.brand, title: b.name, sub: b.nameTh, href: brandHref(b.slug) })),
     ...courses.map((c) => ({ kind: k.course, title: c.title, sub: c.priceText, href: `/courses/${c.slug}` })),
     ...posts.map((p) => ({ kind: k.post, title: p.title, sub: p.excerpt, href: `/members/${postTypePath[p.type]}/${p.slug}` })),

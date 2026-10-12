@@ -1,13 +1,12 @@
-"use client";
-
 // Route-level loading UIs (used by loading.tsx). Shapes mirror the real pages so
 // nothing jumps when content arrives.
 import type { ReactNode } from "react";
-import { useDict } from "@/i18n/client";
 import { LoadingRegion, Skeleton } from "./skeleton";
 
+// Route fallbacks render before params are known (e.g. the catch-all 404 route),
+// so they must not read the language; the label covers both.
 function Region({ children }: { children: ReactNode }) {
-  return <LoadingRegion label={useDict().common.loading}>{children}</LoadingRegion>;
+  return <LoadingRegion label="กำลังโหลด / Loading">{children}</LoadingRegion>;
 }
 
 function HeroSkeleton() {

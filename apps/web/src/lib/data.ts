@@ -152,7 +152,25 @@ export async function getBrand(lang: Locale, slug: string) {
 
 interface ProductRow extends Row {
   slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; imageUrl: string;
-  brand: { slug: string; type: "SALON" | "COUNTER" };
+  brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
+}
+
+const toProduct = (p: ProductRow, lang: Locale): Product => ({
+  slug: p.slug,
+  name: t(p.name, lang),
+  brandSlug: p.brand.slug,
+  brandName: p.brand.name,
+  brandType: p.brand.type,
+  price: p.price,
+  salePrice: p.salePrice ?? undefined,
+  badges: p.badges,
+  imageUrl: s(p.imageUrl),
+  description: s(t(p.description, lang)),
+});
+
+export async function getProduct(lang: Locale, slug: string) {
+  const row = await get<ProductRow | null>(`/resources/products/${encodeURIComponent(slug)}`);
+  return row ? toProduct(row, lang) : undefined;
 }
 
 export async function getProducts(lang: Locale, opts?: { brandSlug?: string; brandType?: "SALON" | "COUNTER" }): Promise<Product[]> {
@@ -161,16 +179,7 @@ export async function getProducts(lang: Locale, opts?: { brandSlug?: string; bra
     ...(opts?.brandType && { brandType: opts.brandType }),
   });
   const rows = await get<ProductRow[]>(`/resources/products${qs.size ? `?${qs}` : ""}`);
-  return rows.map((p) => ({
-    slug: p.slug,
-    name: t(p.name, lang),
-    brandSlug: p.brand.slug,
-    price: p.price,
-    salePrice: p.salePrice ?? undefined,
-    badges: p.badges,
-    imageUrl: s(p.imageUrl),
-    description: s(t(p.description, lang)),
-  }));
+  return rows.map((p) => toProduct(p, lang));
 }
 
 /* ----------------------------------------------------------------- home */

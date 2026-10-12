@@ -28,7 +28,7 @@ export default async function CustomersPage({ params }: PageProps<"/[lang]/custo
           <SectionHeading eyebrow="Brand Ambassador" title={c.ambassadors} />
           <ul className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 lg:grid-cols-5">
             {ambassadors.map((a, i) => (
-              <li key={a.name} data-reveal style={stagger(i)}>
+              <li key={a.name} data-reveal suppressHydrationWarning style={stagger(i)}>
                 <div className="overflow-hidden rounded-2xl">
                   <Media src={a.photoUrl} alt={a.name} label={a.name} tone={i} className="aspect-[3/4] w-full transition-transform duration-700 hover:scale-[1.03]" />
                 </div>

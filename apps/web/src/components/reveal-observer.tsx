@@ -6,7 +6,8 @@ import { useEffect } from "react";
 /**
  * Fades `[data-reveal]` elements up as they scroll into view.
  * Content stays visible without JS: hiding only starts once this runs.
- * Stagger with `style={{ "--i": n }}`.
+ * Stagger with `style={{ "--i": n }}`. Elements need `suppressHydrationWarning`:
+ * this script may mark them before React has hydrated them.
  */
 export function RevealObserver() {
   const pathname = usePathname();

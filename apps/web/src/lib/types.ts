@@ -35,6 +35,8 @@ export interface Product {
   slug: string;
   name: string;
   brandSlug: string;
+  brandName?: string;
+  brandType?: BrandType;
   price: number;
   salePrice?: number;
   badges?: string[];

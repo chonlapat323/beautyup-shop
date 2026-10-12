@@ -66,7 +66,7 @@ export function SectionHeading({
 }) {
   return (
     <div
-      data-reveal
+      data-reveal suppressHydrationWarning
       className={clsx(
         "mb-10 flex flex-col gap-6 md:mb-14",
         align === "center" ? "items-center text-center" : "md:flex-row md:items-end md:justify-between",

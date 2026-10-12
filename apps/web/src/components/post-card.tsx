@@ -8,7 +8,7 @@ export const postTypePath = { ARTICLE: "articles", ACTIVITY: "activities", MEDIA
 
 export function PostCard({ post, lang, index = 0 }: { post: Post; lang: Locale; index?: number }) {
   return (
-    <Link href={`/members/${postTypePath[post.type]}/${post.slug}`} className="group block" data-reveal style={stagger(index % 3)}>
+    <Link href={`/members/${postTypePath[post.type]}/${post.slug}`} className="group block" data-reveal suppressHydrationWarning style={stagger(index % 3)}>
       <div className="card-lift overflow-hidden rounded-2xl border border-transparent">
         <Media
           src={post.coverUrl}

@@ -1,11 +1,18 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { DEFAULT_LOCALE, getDictionary, isLocale, type Locale } from ".";
+import { createContext, createElement, useContext, type ReactNode } from "react";
+import { DEFAULT_LOCALE, getDictionary, type Locale } from ".";
+
+// The language comes from the [lang] layout through context (not useParams), so
+// client components never read URL params and pages stay prerenderable.
+const LangContext = createContext<Locale>(DEFAULT_LOCALE);
+
+export function LangProvider({ lang, children }: { lang: Locale; children: ReactNode }) {
+  return createElement(LangContext.Provider, { value: lang }, children);
+}
 
 export function useLang(): Locale {
-  const params = useParams<{ lang?: string }>();
-  return params?.lang && isLocale(params.lang) ? params.lang : DEFAULT_LOCALE;
+  return useContext(LangContext);
 }
 
 /** Dictionary for client components (dictionaries contain functions, so they are not passed as props). */

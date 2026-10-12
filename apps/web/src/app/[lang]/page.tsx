@@ -65,7 +65,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           />
           <ul className="grid gap-4 md:grid-cols-3">
             {salonBrands.map((b, i) => (
-              <li key={b.slug} data-reveal style={stagger(i)}>
+              <li key={b.slug} data-reveal suppressHydrationWarning style={stagger(i)}>
                 <Link
                   href={`/products/${b.slug}`}
                   className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white"
@@ -106,7 +106,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           </div>
           <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
             {videos.map((v, i) => (
-              <li key={v.title} data-reveal style={stagger(i)} className="w-[78%] shrink-0 snap-start sm:w-auto">
+              <li key={v.title} data-reveal suppressHydrationWarning style={stagger(i)} className="w-[78%] shrink-0 snap-start sm:w-auto">
                 <a
                   href={v.url}
                   target="_blank"

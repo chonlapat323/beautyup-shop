@@ -8,7 +8,7 @@ export function GrowYourVision({ dict }: { dict: Dictionary["grow"] }) {
   return (
     <section className="section">
       <div className="container-page">
-        <div data-reveal className="overflow-hidden rounded-3xl border border-line bg-mist md:grid md:grid-cols-2">
+        <div data-reveal suppressHydrationWarning className="overflow-hidden rounded-3xl border border-line bg-mist md:grid md:grid-cols-2">
           <div className="p-8 sm:p-12 lg:p-16">
             <p className="eyebrow">BeautyUp</p>
             <h2 className="mt-3 font-display text-4xl leading-tight sm:text-5xl">

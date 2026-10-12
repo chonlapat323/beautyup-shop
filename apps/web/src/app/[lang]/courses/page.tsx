@@ -27,7 +27,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
         <div className="container-page">
           <ul className="grid gap-6 lg:grid-cols-2">
             {courses.map((c, i) => (
-              <li key={c.slug} data-reveal style={stagger(i)}>
+              <li key={c.slug} data-reveal suppressHydrationWarning style={stagger(i)}>
                 <Link
                   href={`/courses/${c.slug}`}
                   className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white"

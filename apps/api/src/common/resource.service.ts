@@ -52,6 +52,8 @@ export class ResourceService {
     if (activeOnly && cfg.hasActive) where.isActive = true;
     // Drafts and scheduled posts are not public
     if (activeOnly && name === 'posts') where.publishedAt = { not: null, lte: new Date() };
+    // A hidden brand hides its products too (same rule as the public product list)
+    if (activeOnly && name === 'products') where.brand = { isActive: true };
     const row = await this.delegate(name).findFirst({ where, include: cfg.include });
     if (!row) throw new NotFoundException();
     return serialize(row, cfg);

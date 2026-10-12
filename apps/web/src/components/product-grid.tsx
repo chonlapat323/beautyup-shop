@@ -69,12 +69,9 @@ export function ProductGrid({
 
       <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-4">
         {filtered.slice(0, visible).map((p, i) => (
-          <li key={p.slug} data-reveal style={stagger(i % 4)}>
-            <button
-              type="button"
-              onClick={() => openQuickView(p)}
-              className="group block w-full text-left"
-            >
+          <li key={p.slug} data-reveal suppressHydrationWarning style={stagger(i % 4)} className="group relative">
+            {/* The card links to the product page; "Quick view" opens the dialog on top */}
+            <Link href={`/product/${p.slug}`} className="block">
               <div className="card-lift relative overflow-hidden rounded-2xl border border-transparent">
                 <Media
                   src={p.imageUrl}
@@ -90,16 +87,23 @@ export function ProductGrid({
                     ))}
                   </div>
                 ) : null}
-                <span className="absolute inset-x-3 bottom-3 hidden translate-y-2 rounded-full bg-white/90 py-2 text-center text-sm opacity-0 backdrop-blur transition-all group-hover:translate-y-0 group-hover:opacity-100 sm:block">
-                  {dict.common.quickView}
-                </span>
               </div>
               <p className="mt-3 text-xs tracking-wide text-muted uppercase">
                 {brandNames[p.brandSlug]}
               </p>
               <p className="mt-1 line-clamp-2 text-sm leading-snug transition-colors group-hover:text-accent sm:text-base">{p.name}</p>
               <Price product={p} className="mt-2" />
-            </button>
+            </Link>
+            {/* Same box as the image, so the button sits at the image's bottom edge */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 hidden aspect-[4/5] sm:block">
+              <button
+                type="button"
+                onClick={() => openQuickView(p)}
+                className="pointer-events-auto absolute inset-x-3 bottom-3 translate-y-2 rounded-full bg-white/90 py-2 text-center text-sm opacity-0 backdrop-blur transition-all group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 hover:bg-white focus-visible:opacity-100"
+              >
+                {dict.common.quickView}
+              </button>
+            </div>
           </li>
         ))}
       </ul>
@@ -146,11 +150,14 @@ export function ProductGrid({
                 {selected.description ?? dict.common.orderNote}
               </p>
               <Link
-                href={`/contact/salon-partner?product=${selected.slug}`}
+                href={`/contact/salon-partner?product=${encodeURIComponent(selected.name)}`}
                 className="btn btn-primary mt-8 w-full"
               >
                 <MessageCircle className="size-4" />
                 {dict.common.contactToOrder}
+              </Link>
+              <Link href={`/product/${selected.slug}`} className="btn btn-outline mt-2 w-full">
+                {dict.product.viewDetails}
               </Link>
             </div>
           </div>
