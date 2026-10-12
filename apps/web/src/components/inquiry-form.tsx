@@ -68,7 +68,7 @@ export function InquiryForm({
                   defaultChecked={o.value === presetType}
                   className="peer sr-only"
                 />
-                <span className="inline-flex min-h-10 items-center rounded-full border border-line px-4 text-sm transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-cream peer-focus-visible:outline-2 peer-focus-visible:outline-accent">
+                <span className="inline-flex min-h-10 items-center rounded-full border border-line px-4 text-sm transition-colors hover:border-ink peer-checked:border-ink peer-checked:bg-ink peer-checked:text-cream peer-focus-visible:outline-2 peer-focus-visible:outline-accent">
                   {o.label}
                 </span>
               </label>

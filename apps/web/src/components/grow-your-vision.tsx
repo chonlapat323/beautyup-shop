@@ -28,7 +28,7 @@ export function GrowYourVision() {
                       className="group flex min-h-16 items-center justify-between gap-4 py-4"
                     >
                       <span>
-                        <span className="block text-lg">{item.title}</span>
+                        <span className="block text-lg underline-offset-4 group-hover:underline">{item.title}</span>
                         <span className="block text-sm text-cream/60">{item.text}</span>
                       </span>
                       <span className="text-2xl transition-transform group-hover:translate-x-1">

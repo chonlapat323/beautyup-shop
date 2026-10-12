@@ -1,17 +1,24 @@
-// Text wordmark until the real logo file is provided.
-export function Logo({ light = false }: { light?: boolean }) {
-  return (
-    <span className="flex flex-col leading-none">
-      <span
-        className={`font-display text-xl font-semibold tracking-tight sm:text-2xl ${light ? "text-cream" : "text-ink"}`}
-      >
-        BeautyUp
-      </span>
-      <span
-        className={`mt-1 text-[0.625rem] tracking-[0.3em] uppercase ${light ? "text-cream/60" : "text-muted"}`}
-      >
-        Enterprise
-      </span>
-    </span>
+import clsx from "clsx";
+import Image from "next/image";
+import logo from "../../public/logo.png";
+
+/** BeautyUp Enterprise logo. On dark backgrounds it sits on a light badge to keep the black wordmark readable. */
+export function Logo({
+  className,
+  onDark = false,
+  priority = false,
+}: {
+  className?: string;
+  onDark?: boolean;
+  priority?: boolean;
+}) {
+  const img = (
+    <Image
+      src={logo}
+      alt="BeautyUp Enterprise"
+      priority={priority}
+      className={clsx("h-12 w-auto sm:h-14 lg:h-16", className)}
+    />
   );
+  return onDark ? <span className="inline-block rounded-2xl bg-cream px-3 py-2">{img}</span> : img;
 }

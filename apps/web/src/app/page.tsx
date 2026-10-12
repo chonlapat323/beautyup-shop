@@ -45,7 +45,9 @@ export default async function HomePage() {
                 เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ
               </h1>
               <p className="mt-4 max-w-md text-cream/80 sm:text-lg">{main.subtitle}</p>
-              <span className="btn btn-light mt-6">ชมสินค้า</span>
+              <span className="btn btn-light mt-6 group-hover:bg-white group-hover:gap-3">
+                ชมสินค้า <span aria-hidden>→</span>
+              </span>
             </div>
           </Link>
           {sideBanners.map((b, i) => (
@@ -113,12 +115,14 @@ export default async function HomePage() {
                   href={`/products/${b.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white transition-shadow hover:shadow-xl hover:shadow-ink/5"
                 >
-                  <Media
-                    src={b.logoUrl}
-                    label={b.name}
-                    tone={i}
-                    className="aspect-[16/10] w-full"
-                  />
+                  <div className="overflow-hidden">
+                    <Media
+                      src={b.logoUrl}
+                      label={b.name}
+                      tone={i}
+                      className="aspect-[16/10] w-full transition-transform duration-700 group-hover:scale-[1.04]"
+                    />
+                  </div>
                   <div className="flex flex-1 flex-col p-6">
                     <p className="text-xs tracking-wide text-muted uppercase">
                       นำเข้าจาก{b.country}
@@ -162,7 +166,7 @@ export default async function HomePage() {
                       </span>
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-cream/80 group-hover:text-cream">{v.title}</p>
+                  <p className="mt-3 text-sm text-cream/80 transition-colors group-hover:text-cream">{v.title}</p>
                 </a>
               </li>
             ))}

@@ -43,6 +43,17 @@
     background: var(--color-accent-soft);
   }
 
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label:has(> input[type="radio"]),
+  select {
+    cursor: pointer;
+  }
+
+  :disabled {
+    cursor: not-allowed;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
@@ -92,6 +103,11 @@
     &:active {
       transform: scale(0.98);
     }
+
+    &:disabled {
+      opacity: 0.6;
+      transform: none;
+    }
   }
 
   .btn-primary {
@@ -139,6 +155,10 @@
     padding: 0.625rem 0.875rem;
     font-size: 1rem;
     transition: border-color 0.2s;
+
+    &:hover {
+      border-color: var(--color-muted);
+    }
 
     &:focus {
       border-color: var(--color-accent);

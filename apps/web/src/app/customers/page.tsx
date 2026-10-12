@@ -24,7 +24,9 @@ export default async function CustomersPage() {
           <ul className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 lg:grid-cols-5">
             {ambassadors.map((a, i) => (
               <li key={a.name}>
-                <Media src={a.photoUrl} alt={a.name} label={a.name} tone={i} className="aspect-[3/4] w-full rounded-2xl" />
+                <div className="overflow-hidden rounded-2xl">
+                  <Media src={a.photoUrl} alt={a.name} label={a.name} tone={i} className="aspect-[3/4] w-full transition-transform duration-700 hover:scale-[1.03]" />
+                </div>
                 <p className="mt-4 font-display text-xl">{a.name}</p>
                 <p className="text-sm text-muted">{a.title}</p>
                 <SocialLinks socials={a.socials} className="mt-3 hidden sm:flex" />
@@ -33,7 +35,7 @@ export default async function CustomersPage() {
             <li>
               <Link
                 href="/contact/salon-partner"
-                className="group grid aspect-[3/4] w-full place-items-center rounded-2xl border-2 border-dashed border-line p-4 text-center transition-colors hover:border-accent"
+                className="group grid aspect-[3/4] w-full place-items-center rounded-2xl border-2 border-dashed border-line p-4 text-center transition-colors hover:border-accent hover:bg-accent-soft/50"
               >
                 <span>
                   <span className="block font-display text-3xl text-accent">YOU</span>
@@ -61,7 +63,7 @@ export default async function CustomersPage() {
               <li key={r.key}>
                 <Link
                   href={`/customers/salons?region=${r.key}`}
-                  className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-cream p-5 transition-colors hover:border-ink sm:p-6"
+                  className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-cream p-5 transition-all hover:-translate-y-0.5 hover:border-ink hover:bg-white hover:shadow-lg hover:shadow-ink/5 sm:p-6"
                 >
                   <span className="text-sm sm:text-base">{r.label}</span>
                   <span className="flex items-end justify-between">

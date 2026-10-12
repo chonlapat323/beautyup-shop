@@ -45,8 +45,8 @@ export default async function PpStudioPage() {
           <SectionHeading eyebrow="Services" title="บริการของเรา" />
           <ul className="grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s, i) => (
-              <li key={s.title} className="bg-cream p-6 sm:p-8">
-                <span className="font-display text-sm text-accent">{String(i + 1).padStart(2, "0")}</span>
+              <li key={s.title} className="group bg-cream p-6 transition-colors hover:bg-white sm:p-8">
+                <span className="inline-block font-display text-sm text-accent transition-transform group-hover:translate-x-1">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="mt-3 font-display text-2xl">{s.title}</h3>
                 <p className="mt-3 text-muted">{s.text}</p>
               </li>

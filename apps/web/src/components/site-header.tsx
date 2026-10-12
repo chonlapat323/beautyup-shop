@@ -42,8 +42,8 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
       )}
     >
       <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
-        <Link href="/" aria-label="BeautyUp หน้าหลัก" className="shrink-0">
-          <Logo />
+        <Link href="/" aria-label="BeautyUp หน้าหลัก" className="shrink-0 transition-opacity hover:opacity-70">
+          <Logo priority />
         </Link>
 
         {/* Desktop nav */}
@@ -54,7 +54,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                 <Link
                   href={item.href}
                   className={clsx(
-                    "flex items-center gap-1 rounded-full px-3 py-2 text-[0.9375rem] transition-colors hover:text-accent",
+                    "flex items-center gap-1 rounded-full px-3 py-2 text-[0.9375rem] transition-colors hover:bg-sand hover:text-accent group-focus-within:text-accent group-hover:text-accent",
                     isActive(pathname, item.href) ? "text-accent" : "text-ink",
                   )}
                 >
@@ -138,7 +138,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                       onClick={() =>
                         setExpanded((v) => (v === item.href ? null : item.href))
                       }
-                      className="flex min-h-14 w-full items-center justify-between text-left text-lg"
+                      className="flex min-h-14 w-full items-center justify-between text-left text-lg transition-colors hover:text-accent"
                     >
                       {item.label}
                       <ChevronDown
@@ -156,13 +156,13 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                     >
                       <ul className="overflow-hidden">
                         <li>
-                          <Link href={item.href} className="flex min-h-11 items-center pl-4 text-muted hover:text-accent">
+                          <Link href={item.href} className="flex min-h-11 items-center pl-4 text-muted transition-colors hover:text-accent">
                             ทั้งหมด
                           </Link>
                         </li>
                         {item.children.map((child) => (
                           <li key={child.href}>
-                            <Link href={child.href} className="flex min-h-11 items-center pl-4 text-muted hover:text-accent">
+                            <Link href={child.href} className="flex min-h-11 items-center pl-4 text-muted transition-colors hover:text-accent">
                               {child.label}
                             </Link>
                           </li>
@@ -175,7 +175,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                   <Link
                     href={item.href}
                     className={clsx(
-                      "flex min-h-14 items-center text-lg",
+                      "flex min-h-14 items-center text-lg transition-colors hover:text-accent",
                       isActive(pathname, item.href) && "text-accent",
                     )}
                   >

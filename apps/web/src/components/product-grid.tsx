@@ -95,7 +95,7 @@ export function ProductGrid({
               <p className="mt-3 text-xs tracking-wide text-muted uppercase">
                 {brandNames[p.brandSlug]}
               </p>
-              <p className="mt-1 line-clamp-2 text-sm leading-snug sm:text-base">{p.name}</p>
+              <p className="mt-1 line-clamp-2 text-sm leading-snug transition-colors group-hover:text-accent sm:text-base">{p.name}</p>
               <Price product={p} className="mt-2" />
             </button>
           </li>

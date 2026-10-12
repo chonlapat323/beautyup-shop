@@ -14,7 +14,7 @@ export function SiteFooter({
     <footer className="bg-ink text-cream">
       <div className="container-page grid gap-12 py-14 md:grid-cols-2 md:py-20 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <Logo light />
+          <Logo onDark className="h-16 sm:h-20 lg:h-20" />
           <p className="mt-5 max-w-sm text-sm text-cream/70">
             ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ และเคาน์เตอร์แบรนด์ชั้นนำ
             สำหรับลำปางและภาคเหนือ
@@ -23,7 +23,7 @@ export function SiteFooter({
             {["Fanola", "Nook", "Sweet"].map((b) => (
               <span
                 key={b}
-                className="rounded-full border border-cream/20 px-3 py-1 text-xs text-cream/80"
+                className="rounded-full border border-cream/20 px-3 py-1 text-xs text-cream/80 transition-colors hover:border-cream/60 hover:text-cream"
               >
                 {b}
               </span>
@@ -59,7 +59,7 @@ export function SiteFooter({
               <Phone className="mt-0.5 size-4 shrink-0 text-cream/50" />
               <span className="flex flex-wrap gap-x-3">
                 {company.phones.map((p) => (
-                  <a key={p} href={`tel:${p.replaceAll("-", "")}`} className="hover:text-cream">
+                  <a key={p} href={`tel:${p.replaceAll("-", "")}`} className="transition-colors hover:text-cream">
                     {p}
                   </a>
                 ))}
@@ -67,7 +67,7 @@ export function SiteFooter({
             </li>
             <li className="flex gap-3">
               <Mail className="mt-0.5 size-4 shrink-0 text-cream/50" />
-              <a href={`mailto:${company.email}`} className="break-all hover:text-cream">
+              <a href={`mailto:${company.email}`} className="break-all transition-colors hover:text-cream">
                 {company.email}
               </a>
             </li>
@@ -78,7 +78,7 @@ export function SiteFooter({
       <div className="border-t border-cream/10">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-cream/50 sm:flex-row sm:items-center sm:justify-between">
           <p>©2565 {company.name}</p>
-          <Link href="/policy" className="hover:text-cream">
+          <Link href="/policy" className="transition-colors hover:text-cream">
             นโยบายทางธุรกิจสำหรับการจัดจำหน่ายและการจัดเก็บข้อมูล
           </Link>
         </div>

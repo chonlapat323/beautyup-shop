@@ -71,7 +71,7 @@ export function SalonFinder({
         {results.length ? (
           <ul className="grid gap-3 sm:grid-cols-2">
             {results.map((s) => (
-              <li key={s.name} className="rounded-2xl border border-line bg-white p-5">
+              <li key={s.name} className="rounded-2xl border border-line bg-white p-5 transition-colors hover:border-muted">
                 <p className="font-medium">{s.name}</p>
                 <p className="mt-2 flex items-center gap-2 text-sm text-muted">
                   <MapPin className="size-4 shrink-0" />
@@ -80,7 +80,7 @@ export function SalonFinder({
                 {s.phone && (
                   <a
                     href={`tel:${s.phone.replaceAll("-", "")}`}
-                    className="mt-1 flex min-h-9 items-center gap-2 text-sm text-muted hover:text-accent"
+                    className="mt-1 flex min-h-9 items-center gap-2 text-sm text-muted transition-colors hover:text-accent"
                   >
                     <Phone className="size-4 shrink-0" />
                     {s.phone}

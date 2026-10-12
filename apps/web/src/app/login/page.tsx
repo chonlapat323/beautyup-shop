@@ -9,7 +9,7 @@ export default function LoginPage() {
   return (
     <section className="container-page grid min-h-[70dvh] place-items-center py-12">
       <div className="w-full max-w-md rounded-3xl border border-line bg-white p-6 sm:p-10">
-        <Logo />
+        <Logo className="h-20 sm:h-24 lg:h-24" />
         <h1 className="mt-8 font-display text-3xl">เข้าสู่ระบบสมาชิก</h1>
         <form className="mt-8 space-y-5">
           <div>
