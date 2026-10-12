@@ -41,9 +41,11 @@ pnpm db:seed                                 # content from the current site + f
 ## Daily development
 
 ```bash
-pnpm db:up
-pnpm dev          # api, web and admin together
+pnpm dev          # starts PostgreSQL if needed, then api, web and admin
 ```
+
+Open Docker Desktop first. `pnpm dev` checks the database (and tells you if Docker is
+not running), and the website waits for the API before it starts.
 
 `pnpm --filter @beautyup/web dev` runs a single app. `pnpm db:studio` opens Prisma Studio.
 

@@ -11,7 +11,8 @@
     "db:migrate": "pnpm --filter @beautyup/api prisma:migrate",
     "db:studio": "pnpm --filter @beautyup/api prisma:studio",
     "db:seed": "pnpm --filter @beautyup/api db:seed",
-    "ports:check": "node scripts/check-ports.cjs"
+    "ports:check": "node scripts/check-ports.cjs",
+    "predev": "node scripts/predev.cjs"
   },
   "devDependencies": {
     "turbo": "^2"

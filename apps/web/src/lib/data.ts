@@ -31,11 +31,19 @@ export const CONTENT_TAG = "content";
 type L = Partial<Localized>;
 type Row = Record<string, unknown>;
 
+async function fetchApi(url: string): Promise<Response> {
+  try {
+    return await fetch(url);
+  } catch (e) {
+    throw new Error(`API not reachable at ${API_URL}. Is it running? (pnpm dev / pm2 start beautyup-shop-api)`, { cause: e });
+  }
+}
+
 async function get<T>(path: string): Promise<T> {
   "use cache";
   cacheTag(CONTENT_TAG);
   cacheLife("hours");
-  const res = await fetch(`${API_URL}/public${path}`);
+  const res = await fetchApi(`${API_URL}/public${path}`);
   if (res.status === 404) return null as T;
   if (!res.ok) throw new Error(`API ${path} responded ${res.status}`);
   return res.json() as Promise<T>;
