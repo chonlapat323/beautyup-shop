@@ -17,6 +17,36 @@ function isActive(pathname: string, href: string) {
 /** Same page in the other language. */
 const LANG_PREFIX = /^\/(th|en)(?=\/|$)/;
 
+type HeaderMember = { name: string; avatarUrl: string };
+
+/**
+ * Signed-in member for the header. Fetched in the browser so pages stay static;
+ * re-checked on navigation (login / logout redirect to another page).
+ */
+function useMember(pathname: string) {
+  const [member, setMember] = useState<HeaderMember | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/member", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => !cancelled && setMember(m))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+  return member;
+}
+
+function MemberAvatar({ member }: { member: HeaderMember }) {
+  return member.avatarUrl ? (
+    // eslint-disable-next-line @next/next/no-img-element -- Google profile photo
+    <img src={member.avatarUrl} alt="" referrerPolicy="no-referrer" className="size-7 rounded-full object-cover" />
+  ) : (
+    <span className="grid size-7 place-items-center rounded-full bg-blush text-xs font-semibold text-brand-pink">{member.name.slice(0, 1)}</span>
+  );
+}
+
 function useAlternate() {
   const lang = useLang();
   const pathname = usePathname();
@@ -32,6 +62,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const member = useMember(pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -118,13 +149,24 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
             <span className="hidden sm:inline">{dict.common.switchLanguage}</span>
             <span className="sm:hidden">{alt.other.toUpperCase()}</span>
           </NextLink>
-          <Link
-            href="/login"
-            className="hidden items-center gap-2 rounded-full border border-ink px-4 py-2 text-sm transition-colors hover:bg-ink hover:text-cream sm:inline-flex"
-          >
-            <User className="size-4" />
-            {dict.common.login}
-          </Link>
+          {member ? (
+            <Link
+              href="/account"
+              title={member.name}
+              className="hidden items-center gap-2 rounded-full border border-line py-1 pr-4 pl-1 text-sm transition-colors hover:border-ink sm:inline-flex"
+            >
+              <MemberAvatar member={member} />
+              <span className="max-w-28 truncate">{dict.member.myAccount}</span>
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden items-center gap-2 rounded-full border border-ink px-4 py-2 text-sm transition-colors hover:bg-ink hover:text-cream sm:inline-flex"
+            >
+              <User className="size-4" />
+              {dict.common.login}
+            </Link>
+          )}
           <button
             type="button"
             aria-label={open ? dict.common.closeMenu : dict.common.openMenu}
@@ -213,10 +255,17 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
               </li>
             ))}
           </ul>
-          <Link href="/login" className="btn btn-primary mt-8 w-full">
-            <User className="size-4" />
-            {dict.common.loginOrRegister}
-          </Link>
+          {member ? (
+            <Link href="/account" className="btn btn-primary mt-8 w-full">
+              <MemberAvatar member={member} />
+              {dict.member.myAccount} · {member.name}
+            </Link>
+          ) : (
+            <Link href="/login" className="btn btn-primary mt-8 w-full">
+              <User className="size-4" />
+              {dict.common.loginOrRegister}
+            </Link>
+          )}
         </nav>
       </div>
     </>
