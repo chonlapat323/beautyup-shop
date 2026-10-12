@@ -91,6 +91,36 @@ Images and PDFs uploaded in the admin panel are stored on the API server's disk 
 | `pnpm db:seed` | Seed content and the first admin (safe to re-run) |
 | `pnpm db:studio` | Open Prisma Studio |
 
+## Deploy with PM2
+
+[`ecosystem.config.cjs`](ecosystem.config.cjs) runs the three apps: `beautyup-api` (4000),
+`beautyup-web` (3000) and `beautyup-admin` (3001). Logs go to `logs/`.
+
+First deploy on the server (Node 20+, pnpm, PM2: `npm i -g pm2`):
+
+```bash
+pnpm install --frozen-lockfile
+# env files: apps/api/.env, apps/web/.env.local, apps/admin/.env.local (production values)
+pnpm --filter @beautyup/types build
+pnpm --filter @beautyup/api build
+pnpm --filter @beautyup/api exec prisma migrate deploy
+pnpm db:seed                                   # first time only
+pm2 start ecosystem.config.cjs --only beautyup-api
+# The website prerenders pages from the API, so build it while the API is running
+pnpm --filter @beautyup/web build
+pnpm --filter @beautyup/admin build
+pm2 start ecosystem.config.cjs
+pm2 save && pm2 startup                        # restart on reboot
+```
+
+Later deploys: `git pull && pnpm install --frozen-lockfile`, rebuild as above (API first,
+then `pm2 reload beautyup-api`, then build web/admin), and finish with
+`pm2 reload ecosystem.config.cjs`.
+
+Put a reverse proxy (Nginx/Caddy) with HTTPS in front, for example
+`beautyup-enterprise.com → :3000`, `admin.… → :3001`, `api.… → :4000`, and set
+`API_PUBLIC_URL`, `WEB_URL`, `CORS_ORIGINS` to those domains.
+
 ## Docs
 
 - [docs/site-menu.md](docs/site-menu.md): pages and menus of the current Wix site, and decisions
