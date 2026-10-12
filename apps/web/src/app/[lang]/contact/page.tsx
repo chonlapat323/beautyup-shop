@@ -8,6 +8,7 @@ import { PageHero } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getCompany } from "@/lib/data";
 import { contactFields } from "@/lib/forms";
+import { FormSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/contact">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.contact.title };
@@ -97,7 +98,7 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
 
           <div className="lg:col-span-7">
             <h2 className="mb-6 font-display text-2xl sm:text-3xl">{d.sendMessage}</h2>
-            <Suspense>
+            <Suspense fallback={<FormSkeleton fields={4} label={dict.common.loading} />}>
               <InquiryForm type="CONTACT" fields={contactFields} />
             </Suspense>
           </div>

@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "@/components/link";
 import type { CSSProperties, ReactNode } from "react";
 import type { Socials } from "@/lib/types";
+import { LoadingImage } from "./loading-image";
 
 const tones = [
   "from-[#e9d8cc] via-[#f3e6dd] to-[#d9c2b2]",
@@ -29,10 +30,7 @@ export function Media({
   className?: string;
 }) {
   if (src) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element -- swap for next/image once the image host is known
-      <img src={src} alt={alt} className={clsx("object-cover", className)} loading="lazy" />
-    );
+    return <LoadingImage src={src} alt={alt} className={clsx("object-cover", className)} />;
   }
   return (
     <div

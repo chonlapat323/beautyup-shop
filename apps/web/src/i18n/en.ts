@@ -31,6 +31,7 @@ export const en: Dictionary = {
     noContent: "No content yet",
     shops: "salons",
     breadcrumb: "Breadcrumb",
+    loading: "Loading",
   },
   footer: {
     tagline: "Professional salon products and leading counter brands for Lampang and Northern Thailand",

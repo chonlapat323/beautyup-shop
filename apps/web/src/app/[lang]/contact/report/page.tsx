@@ -4,6 +4,7 @@ import { InquiryForm } from "@/components/inquiry-form";
 import { PageHero } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { issueFields } from "@/lib/forms";
+import { FormSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/contact/report">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.report.title };
@@ -20,7 +21,7 @@ export default async function ReportPage({ params }: PageProps<"/[lang]/contact/
         description={d.lead}
       />
       <section className="container-page max-w-3xl py-10 md:py-16">
-        <Suspense>
+        <Suspense fallback={<FormSkeleton fields={5} label={dict.common.loading} />}>
           <InquiryForm type="ISSUE" fields={issueFields} submitLabel={d.submit} />
         </Suspense>
       </section>

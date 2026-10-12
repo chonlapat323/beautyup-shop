@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2, LogOut } from "lucide-react";
 import { useActionState, useTransition } from "react";
 import { logoutMember, updateProfile } from "@/app/member-actions";
 import { useDict, useLang } from "@/i18n/client";
+import { LoadingImage } from "../loading-image";
 
 export function ProfileForm({ member, provinces, since }: { member: MemberProfile; provinces: string[]; since: string }) {
   const d = useDict().member;
@@ -19,8 +20,7 @@ export function ProfileForm({ member, provinces, since }: { member: MemberProfil
     <div className="mt-10 space-y-6">
       <div className="flex items-center gap-4 rounded-3xl border border-line bg-white p-5 sm:p-6">
         {member.avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- Google profile photo
-          <img src={member.avatarUrl} alt="" referrerPolicy="no-referrer" className="size-14 rounded-full object-cover" />
+          <LoadingImage src={member.avatarUrl} alt="" referrerPolicy="no-referrer" loading="eager" className="size-14 rounded-full object-cover" />
         ) : (
           <span className="grid size-14 place-items-center rounded-full bg-blush font-display text-2xl text-brand-pink">
             {member.name.slice(0, 1)}

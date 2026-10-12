@@ -5,6 +5,7 @@ import { ArrowRight, Award, Store } from "lucide-react";
 import Link from "@/components/link";
 import { useEffect, useRef, useState } from "react";
 import { useDict } from "@/i18n/client";
+import { LoadingImage } from "./loading-image";
 import type { HeroSlide } from "@/lib/types";
 
 const INTERVAL = 5000;
@@ -128,8 +129,7 @@ export function HomeHero({
                   >
                     <span className="block h-full transition-transform duration-500 ease-out group-hover:-rotate-2 group-hover:scale-[1.03]">
                       {s.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element -- product cut-outs come from the CMS
-                        <img src={s.imageUrl} alt="" className="h-full w-auto drop-shadow-2xl" />
+                        <LoadingImage src={s.imageUrl} alt="" loading="eager" className="h-full w-auto rounded-3xl drop-shadow-2xl" />
                       ) : (
                         <Bottle tint={s.tint} brand={s.brand} />
                       )}

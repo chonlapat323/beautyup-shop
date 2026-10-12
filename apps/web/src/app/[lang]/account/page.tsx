@@ -5,6 +5,7 @@ import { ProfileForm } from "@/components/member/profile-form";
 import { dateLocale, resolveLang, type Locale } from "@/i18n";
 import { getProvinces } from "@/lib/data";
 import { getMember } from "@/lib/member";
+import { AccountSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/account">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.member.accountTitle, robots: { index: false } };
@@ -17,7 +18,7 @@ export default async function AccountPage({ params }: PageProps<"/[lang]/account
       <h1 className="font-display text-4xl sm:text-5xl">{dict.member.accountTitle}</h1>
       <p className="mt-3 text-muted">{dict.member.accountLead}</p>
       {/* Reads the session cookie, so it renders per request behind a boundary */}
-      <Suspense fallback={<div className="mt-10 h-96 animate-pulse rounded-3xl bg-mist" />}>
+      <Suspense fallback={<AccountSkeleton label={dict.common.loading} />}>
         <Account lang={lang} />
       </Suspense>
     </section>

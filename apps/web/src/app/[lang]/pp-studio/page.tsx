@@ -6,6 +6,7 @@ import { Media, SectionHeading, SocialLinks } from "@/components/ui";
 import { getPpStudioServices } from "@/lib/data";
 import { ppStudioFields } from "@/lib/forms";
 import { resolveLang } from "@/i18n";
+import { FormSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/pp-studio">): Promise<Metadata> {
   return { title: "PP STUDIO & EVENT", description: (await resolveLang(params)).dict.pp.lead };
@@ -64,7 +65,7 @@ export default async function PpStudioPage({ params }: PageProps<"/[lang]/pp-stu
             <SocialLinks className="mt-6" socials={{ facebook: "#", instagram: "#", line: "#" }} />
           </div>
           <div className="lg:col-span-7">
-            <Suspense>
+            <Suspense fallback={<FormSkeleton fields={4} label={dict.common.loading} />}>
               <InquiryForm type="PP_STUDIO" fields={ppStudioFields} submitLabel="Send" />
             </Suspense>
           </div>

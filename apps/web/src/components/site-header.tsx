@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { logoutMember } from "@/app/member-actions";
 import { useDict, useLang } from "@/i18n/client";
+import { LoadingImage } from "./loading-image";
+import { Skeleton } from "./skeleton";
 import type { MenuItem } from "@/lib/types";
 import { Logo } from "./logo";
 
@@ -25,13 +27,14 @@ type HeaderMember = { name: string; avatarUrl: string };
  * re-checked on navigation (login / logout redirect to another page).
  */
 function useMember(pathname: string) {
-  const [member, setMember] = useState<HeaderMember | null>(null);
+  // undefined = still checking (renders a skeleton instead of flashing "Log in")
+  const [member, setMember] = useState<HeaderMember | null | undefined>(undefined);
   useEffect(() => {
     let cancelled = false;
     fetch("/api/member", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((m) => !cancelled && setMember(m))
-      .catch(() => {});
+      .catch(() => !cancelled && setMember(null));
     return () => {
       cancelled = true;
     };
@@ -41,8 +44,7 @@ function useMember(pathname: string) {
 
 function MemberAvatar({ member }: { member: HeaderMember }) {
   return member.avatarUrl ? (
-    // eslint-disable-next-line @next/next/no-img-element -- Google profile photo
-    <img src={member.avatarUrl} alt="" referrerPolicy="no-referrer" className="size-7 rounded-full object-cover" />
+    <LoadingImage src={member.avatarUrl} alt="" referrerPolicy="no-referrer" loading="eager" className="size-7 rounded-full object-cover" />
   ) : (
     <span className="grid size-7 place-items-center rounded-full bg-blush text-xs font-semibold text-brand-pink">{member.name.slice(0, 1)}</span>
   );
@@ -156,7 +158,9 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
             <span className="hidden xl:inline">{dict.common.switchLanguage}</span>
             <span className="xl:hidden">{alt.other.toUpperCase()}</span>
           </NextLink>
-          {member ? (
+          {member === undefined ? (
+            <Skeleton className="hidden h-9 w-11 rounded-full sm:block xl:w-36" />
+          ) : member ? (
             <div className="group relative hidden sm:block">
               <Link
                 href="/account"
@@ -283,7 +287,9 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
               </li>
             ))}
           </ul>
-          {member ? (
+          {member === undefined ? (
+            <Skeleton className="mt-8 h-11 rounded-full" />
+          ) : member ? (
             <div className="mt-8 grid gap-2">
               <Link href="/account" className="btn btn-primary w-full">
                 <MemberAvatar member={member} />

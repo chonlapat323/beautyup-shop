@@ -4,6 +4,7 @@ import { PageHero } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getRegions, getSalons } from "@/lib/data";
 import { SalonFinder } from "./salon-finder";
+import { SalonFinderSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/customers/salons">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.salons.title };
@@ -21,7 +22,7 @@ export default async function SalonsPage({ params }: PageProps<"/[lang]/customer
         description={dict.salons.lead}
       />
       <section className="container-page py-10 md:py-16">
-        <Suspense>
+        <Suspense fallback={<SalonFinderSkeleton label={dict.common.loading} />}>
           <SalonFinder salons={salons} regions={regions} />
         </Suspense>
       </section>
