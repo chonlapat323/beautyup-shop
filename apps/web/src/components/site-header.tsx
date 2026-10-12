@@ -97,20 +97,20 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           : "bg-cream",
       )}
     >
-      <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
+      <div className="container-page flex h-16 items-center justify-between gap-2 lg:h-20 xl:gap-4">
         <Link href="/" aria-label={`BeautyUp ${dict.common.home}`} className="shrink-0 transition-opacity hover:opacity-70">
           <Logo priority />
         </Link>
 
         {/* Desktop nav */}
         <nav aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-0.5 xl:gap-2">
+          <ul className="flex items-center gap-0 xl:gap-2">
             {menu.map((item) => (
               <li key={item.href} className="group relative">
                 <Link
                   href={item.href}
                   className={clsx(
-                    "flex items-center gap-1 rounded-full px-2 py-2 text-sm whitespace-nowrap transition-colors xl:px-3 xl:text-[0.9375rem] hover:bg-sand hover:text-accent group-focus-within:text-accent group-hover:text-accent",
+                    "flex items-center gap-1 rounded-full px-1.5 py-2 text-sm whitespace-nowrap transition-colors xl:px-3 xl:text-[0.9375rem] hover:bg-sand hover:text-accent group-focus-within:text-accent group-hover:text-accent",
                     isActive(pathname, item.href) ? "text-accent" : "text-ink",
                   )}
                 >
