@@ -8,120 +8,17 @@ datasource db {
   provider = "postgresql"
 }
 
+// Localized text is stored as JSON: { "th": "...", "en": "..." }
+// (see `localized` in packages/types). Thai is required, English falls back to Thai.
+
 enum Role {
-  CUSTOMER
-  STAFF
   ADMIN
-}
-
-model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String?
-  name         String?
-  phone        String?
-  role         Role     @default(CUSTOMER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-model Category {
-  id        String     @id @default(cuid())
-  name      String
-  slug      String     @unique
-  sortOrder Int        @default(0)
-  parentId  String?
-  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id])
-  children  Category[] @relation("CategoryTree")
-  products  Product[]
-}
-
-model Product {
-  id          String           @id @default(cuid())
-  name        String
-  slug        String           @unique
-  description String?
-  isActive    Boolean          @default(true)
-  badges      String[] // e.g. New, Hot
-  brandId     String?
-  brand       Brand?           @relation(fields: [brandId], references: [id])
-  categories  Category[]
-  images      ProductImage[]
-  variants    ProductVariant[]
-  wixId       String?          @unique // for migration from Wix
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model ProductImage {
-  id        String  @id @default(cuid())
-  url       String
-  alt       String?
-  sortOrder Int     @default(0)
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-model ProductVariant {
-  id        String   @id @default(cuid())
-  sku       String   @unique
-  name      String // e.g. "50ml / Rose"
-  price     Decimal  @db.Decimal(12, 2)
-  salePrice Decimal? @db.Decimal(12, 2)
-  stock     Int      @default(0)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-model MenuItem {
-  id        String     @id @default(cuid())
-  label     String
-  url       String
-  location  String     @default("header") // header | footer
-  sortOrder Int        @default(0)
-  parentId  String?
-  parent    MenuItem?  @relation("MenuTree", fields: [parentId], references: [id], onDelete: Cascade)
-  children  MenuItem[] @relation("MenuTree")
+  STAFF
 }
 
 enum BrandType {
-  SALON // Fanola, Nook, Sweet
-  COUNTER // La Prairie, La Mer, ...
-}
-
-model Brand {
-  id          String    @id @default(cuid())
-  type        BrandType
-  name        String
-  slug        String    @unique
-  logoUrl     String?
-  country     String?
-  description String?
-  socials     Json? // { facebook, instagram, tiktok, youtube }
-  catalogUrl  String?
-  sortOrder   Int       @default(0)
-  isActive    Boolean   @default(true)
-  products    Product[]
-}
-
-model Banner {
-  id        String  @id @default(cuid())
-  page      String // home | about | products | shop | courses ...
-  imageUrl  String
-  linkUrl   String?
-  alt       String?
-  sortOrder Int     @default(0)
-  isActive  Boolean @default(true)
-}
-
-model Ambassador {
-  id        String  @id @default(cuid())
-  name      String
-  title     String? // e.g. "Cherry Hair Style Founder"
-  photoUrl  String?
-  socials   Json?
-  sortOrder Int     @default(0)
-  isActive  Boolean @default(true)
+  SALON
+  COUNTER
 }
 
 enum Region {
@@ -133,98 +30,26 @@ enum Region {
   NORTHEAST
 }
 
-model Salon {
-  id        String   @id @default(cuid())
-  name      String
-  region    Region
-  province  String
-  address   String?
-  phone     String?
-  mapUrl    String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-}
-
-model Course {
-  id        String        @id @default(cuid())
-  title     String
-  slug      String        @unique
-  priceText String? // e.g. "49,900 ฿" or "1xx,xxx ฿"
-  duration  String? // e.g. "3 วัน"
-  summary   String?
-  content   String?
-  coverUrl  String?
-  images    GalleryItem[]
-  sortOrder Int           @default(0)
-  isActive  Boolean       @default(true)
-}
-
 enum PostType {
-  ARTICLE // บทความ
-  ACTIVITY // กิจกรรม
-  MEDIA // มีเดีย
+  ARTICLE
+  ACTIVITY
+  MEDIA
 }
 
-model Post {
-  id          String    @id @default(cuid())
-  type        PostType
-  title       String
-  slug        String    @unique
-  excerpt     String?
-  coverUrl    String?
-  body        String?
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-// Static content pages: about, policy, payment, pp-studio ...
-model Page {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  title     String
-  body      Json? // structured sections
-  updatedAt DateTime @updatedAt
-}
-
-model Gallery {
-  id    String        @id @default(cuid())
-  key   String        @unique // e.g. home-videos, about-gallery, course-atmosphere
-  title String?
-  items GalleryItem[]
-}
-
-model GalleryItem {
-  id        String   @id @default(cuid())
-  imageUrl  String?
-  videoUrl  String? // YouTube URL
-  caption   String?
-  sortOrder Int      @default(0)
-  galleryId String?
-  gallery   Gallery? @relation(fields: [galleryId], references: [id], onDelete: Cascade)
-  courseId  String?
-  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-}
-
-model TeamMember {
-  id         String  @id @default(cuid())
-  name       String
-  position   String?
-  department String? // sales, technician, finance, legal ...
-  phone      String?
-  lineId     String?
-  photoUrl   String?
-  sortOrder  Int     @default(0)
-  isActive   Boolean @default(true)
+enum Department {
+  SALES
+  TECHNICIAN
+  FINANCE
+  LEGAL
 }
 
 enum InquiryType {
-  CONTACT // ติดต่อเรา
-  ORDER // สั่งสินค้า
-  SALON // สมัครซาลอน
-  COURSE // ลงทะเบียนเรียน
-  ISSUE // แจ้งปัญหา
-  PP_STUDIO // PP STUDIO
+  CONTACT
+  ORDER
+  SALON
+  COURSE
+  ISSUE
+  PP_STUDIO
 }
 
 enum InquiryStatus {
@@ -233,23 +58,185 @@ enum InquiryStatus {
   DONE
 }
 
+/// Admin panel users
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(STAFF)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model MenuItem {
+  id        String     @id @default(cuid())
+  label     Json
+  href      String
+  location  String     @default("header")
+  parentId  String?
+  parent    MenuItem?  @relation("MenuTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  MenuItem[] @relation("MenuTree")
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
+}
+
+model Brand {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  type        BrandType
+  name        String
+  localName   Json
+  country     Json
+  tagline     Json
+  description Json
+  highlights  Json        @default("[]")
+  logoUrl     String      @default("")
+  website     String      @default("")
+  catalogUrl  String      @default("")
+  socials     Json        @default("{}")
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  products    Product[]
+  heroSlides  HeroSlide[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        Json
+  description Json
+  brandId     String
+  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  price       Decimal  @db.Decimal(12, 2)
+  salePrice   Decimal? @db.Decimal(12, 2)
+  badges      String[]
+  imageUrl    String   @default("")
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([brandId])
+}
+
+model HeroSlide {
+  id        String  @id @default(cuid())
+  brandId   String?
+  brand     Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  product   Json
+  caption   Json
+  href      String
+  imageUrl  String  @default("")
+  tint      String  @default("#d6297f")
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+}
+
+model Video {
+  id         String  @id @default(cuid())
+  title      Json
+  youtubeUrl String
+  sortOrder  Int     @default(0)
+  isActive   Boolean @default(true)
+}
+
+model Ambassador {
+  id        String  @id @default(cuid())
+  name      String
+  title     Json
+  photoUrl  String  @default("")
+  socials   Json    @default("{}")
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+}
+
+model Salon {
+  id        String   @id @default(cuid())
+  name      String
+  region    Region
+  province  String
+  address   String   @default("")
+  phone     String   @default("")
+  mapUrl    String   @default("")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([region])
+}
+
+model Course {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  title     Json
+  priceText Json
+  duration  Json
+  summary   Json
+  content   Json
+  coverUrl  String  @default("")
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  type        PostType
+  title       Json
+  excerpt     Json
+  body        Json
+  coverUrl    String    @default("")
+  videoUrl    String    @default("")
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type, publishedAt])
+}
+
+/// Static content pages: policy, payment, about ...
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     Json
+  body      Json
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id         String     @id @default(cuid())
+  name       Json
+  position   Json
+  department Department
+  phone      String     @default("")
+  lineId     String     @default("")
+  photoUrl   String     @default("")
+  sortOrder  Int        @default(0)
+  isActive   Boolean    @default(true)
+}
+
 model Inquiry {
   id        String        @id @default(cuid())
   type      InquiryType
   status    InquiryStatus @default(NEW)
   name      String
-  phone     String?
-  email     String?
-  shopName  String?
-  province  String?
-  message   String?
-  data      Json? // extra fields, e.g. productId / courseId
-  note      String? // internal note from staff
+  phone     String        @default("")
+  email     String        @default("")
+  shopName  String        @default("")
+  province  String        @default("")
+  message   String        @default("")
+  data      Json          @default("{}")
+  note      String        @default("")
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+
+  @@index([status, createdAt])
 }
 
+/// company, timeline, ppStudio, regionCounts (see packages/types settingSchemas)
 model Setting {
-  key   String @id // company, contacts, bank-accounts, socials ...
-  value Json
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
 }

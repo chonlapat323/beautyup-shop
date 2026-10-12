@@ -9,7 +9,8 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @beautyup/api prisma:migrate",
-    "db:studio": "pnpm --filter @beautyup/api prisma:studio"
+    "db:studio": "pnpm --filter @beautyup/api prisma:studio",
+    "db:seed": "pnpm --filter @beautyup/api db:seed"
   },
   "devDependencies": {
     "turbo": "^2"
