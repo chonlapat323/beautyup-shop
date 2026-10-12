@@ -33,6 +33,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
   }, [open]);
 
   return (
+    <>
     <header
       className={clsx(
         "sticky top-0 z-40 transition-[background-color,box-shadow] duration-300",
@@ -111,12 +112,14 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           </button>
         </div>
       </div>
+    </header>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer. Kept outside <header>: the header's backdrop-filter would
+          become the containing block for this fixed element and collapse it to 0px. */}
       <div
         id="mobile-menu"
         className={clsx(
-          "fixed inset-x-0 top-16 bottom-0 overflow-y-auto overscroll-contain bg-cream transition-[opacity,visibility] duration-300 lg:hidden",
+          "fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-line bg-cream transition-[opacity,visibility] duration-300 lg:hidden",
           open ? "visible opacity-100" : "invisible opacity-0",
         )}
       >
@@ -191,6 +194,6 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           </Link>
         </nav>
       </div>
-    </header>
+    </>
   );
 }
