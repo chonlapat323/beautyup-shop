@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
+import { BackToTop } from "@/components/back-to-top";
 import { RevealObserver } from "@/components/reveal-observer";
 import { SiteHeader } from "@/components/site-header";
 import { getCompany, getMenu } from "@/lib/data";
@@ -51,6 +52,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <SiteFooter menu={menu} company={company} />
         <RevealObserver />
+        <BackToTop />
       </body>
     </html>
   );
