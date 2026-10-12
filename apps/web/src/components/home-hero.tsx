@@ -35,8 +35,8 @@ export function HomeHero({
   return (
     <section ref={parallaxRef} className="relative overflow-hidden">
       <div className="container-page grid grid-cols-1 items-center gap-10 pt-8 pb-14 sm:pt-12 lg:grid-cols-12 lg:gap-8 lg:pt-10 lg:pb-20">
-        {/* Copy */}
-        <div className="lg:col-span-6">
+        {/* Copy: centered while stacked (below lg), left-aligned once beside the visual */}
+        <div className="text-center lg:col-span-6 lg:text-left">
           <p className="eyebrow animate-fade-up !text-brand-pink">{h.eyebrow}</p>
           <h1 className="mt-4 font-display text-[2.75rem] leading-[1.08] tracking-tight text-balance sm:text-6xl lg:text-7xl">
             <span className="block animate-fade-up [animation-delay:80ms]">{h.headline1}</span>
@@ -46,10 +46,10 @@ export function HomeHero({
               {h.headline2After}
             </span>
           </h1>
-          <p className="mt-6 max-w-md animate-fade-up text-lg text-pretty text-muted [animation-delay:240ms]">
+          <p className="mx-auto mt-6 max-w-md animate-fade-up text-lg text-pretty text-muted [animation-delay:240ms] lg:mx-0">
             {h.lead}
           </p>
-          <div className="mt-8 flex animate-fade-up flex-col gap-3 [animation-delay:320ms] sm:flex-row">
+          <div className="mt-8 flex animate-fade-up flex-col items-center gap-3 [animation-delay:320ms] sm:flex-row sm:justify-center lg:items-stretch lg:justify-start">
             <Link href="/products" className="btn btn-primary group/btn !px-7">
               {h.ctaProducts}
               <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-1" />
@@ -59,7 +59,7 @@ export function HomeHero({
             </Link>
           </div>
 
-          <dl className="mt-10 grid max-w-md animate-fade-up grid-cols-3 gap-4 border-t border-line pt-6 [animation-delay:400ms]">
+          <dl className="mx-auto mt-10 grid max-w-md animate-fade-up grid-cols-3 gap-4 border-t border-line pt-6 [animation-delay:400ms] lg:mx-0">
             {[
               { value: `${salonCount}+`, label: h.statSalons },
               { value: "3", label: h.statBrands },
