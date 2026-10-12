@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
+// The admin panel is fully per-request (every page depends on the signed-in
+// user), so it does not use Cache Components / static prerendering.
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  transpilePackages: ["@beautyup/types"],
   turbopack: {
     rules: {
       "*.css": {

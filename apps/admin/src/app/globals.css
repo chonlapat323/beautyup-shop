@@ -1,26 +1,115 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-ink: #1c1917;
+  --color-muted: #6b6762;
+  --color-line: #e8e6e1;
+  --color-mist: #f7f7f5;
+  --color-sand: #f0efec;
+  --color-brand: #d6297f;
+  --color-brand-soft: #fcebf3;
+  --font-sans: var(--font-plex-thai), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    background: var(--color-mist);
+    color: var(--color-ink);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  button:not(:disabled),
+  [role="button"],
+  select,
+  label:has(> input[type="checkbox"]) {
+    cursor: pointer;
+  }
+
+  :disabled {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .btn {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    padding-inline: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  .btn-primary {
+    background: var(--color-ink);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #3a3431;
+    }
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--color-line);
+    background: white;
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-muted);
+    }
+  }
+
+  .btn-danger {
+    border: 1px solid #fecaca;
+    background: white;
+    color: #b91c1c;
+
+    &:hover:not(:disabled) {
+      background: #fef2f2;
+    }
+  }
+
+  .input {
+    width: 100%;
+    min-height: 2.5rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--color-line);
+    background: white;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9375rem;
+    transition: border-color 0.15s;
+
+    &:hover {
+      border-color: #cfcac2;
+    }
+
+    &:focus {
+      border-color: var(--color-brand);
+      outline: none;
+    }
+
+    &[aria-invalid="true"] {
+      border-color: #ef4444;
+    }
+  }
+
+  .card {
+    border-radius: 1rem;
+    border: 1px solid var(--color-line);
+    background: white;
+  }
 }
