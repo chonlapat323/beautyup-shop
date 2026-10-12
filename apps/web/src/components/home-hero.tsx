@@ -97,13 +97,22 @@ export function HomeHero({
                   <span className="sr-only">
                     {s.brand} {s.product}
                   </span>
-                  <span className="h-[72%] animate-float transition-transform duration-500 group-hover:-rotate-3 group-hover:scale-105">
-                    {s.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- product cut-outs come from the CMS
-                      <img src={s.imageUrl} alt="" className="h-full w-auto drop-shadow-2xl" />
-                    ) : (
-                      <Bottle tint={s.tint} brand={s.brand} />
+                  {/* Float and hover live on separate elements: both use `transform`,
+                      and sharing one element makes them fight every frame (jitter). */}
+                  <span
+                    className={clsx(
+                      "block h-[72%] will-change-transform motion-reduce:animate-none",
+                      i === active && "animate-float",
                     )}
+                  >
+                    <span className="block h-full transition-transform duration-500 ease-out group-hover:-rotate-2 group-hover:scale-[1.03]">
+                      {s.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- product cut-outs come from the CMS
+                        <img src={s.imageUrl} alt="" className="h-full w-auto drop-shadow-2xl" />
+                      ) : (
+                        <Bottle tint={s.tint} brand={s.brand} />
+                      )}
+                    </span>
                   </span>
                 </Link>
               ))}
