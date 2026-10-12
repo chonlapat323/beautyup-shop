@@ -6,6 +6,11 @@ export const metadata: Metadata = { title: "เข้าสู่ระบบ" }
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const { expired } = await searchParams;
+  // Dev convenience: pre-fill from .env.local. Never applied in production builds.
+  const devLogin =
+    process.env.NODE_ENV === "development" && process.env.DEV_LOGIN_EMAIL
+      ? { email: process.env.DEV_LOGIN_EMAIL, password: process.env.DEV_LOGIN_PASSWORD ?? "" }
+      : undefined;
   return (
     <main className="grid min-h-dvh place-items-center bg-white px-4 py-12">
       <div className="w-full max-w-sm">
@@ -17,7 +22,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง
           </p>
         )}
-        <LoginForm />
+        <LoginForm devLogin={devLogin} />
       </div>
     </main>
   );
