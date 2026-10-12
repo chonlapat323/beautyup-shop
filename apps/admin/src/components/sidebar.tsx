@@ -79,7 +79,7 @@ export function Sidebar({ user, newInquiries }: { user: { name: string; email: s
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   const nav = (
-    <nav aria-label="เมนูหลังบ้าน" className="flex-1 overflow-y-auto px-3 py-4" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
+    <nav aria-label="เมนูหลังบ้าน" className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin]" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
       {groups(newInquiries).map((g, i) => (
         <div key={i} className="mb-5">
           {g.title && <p className="mb-1 px-3 text-xs font-medium tracking-wide text-muted">{g.title}</p>}
