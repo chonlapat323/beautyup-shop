@@ -1,0 +1,68 @@
+import { Check, Clock, Phone } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Media } from "@/components/ui";
+import { getCompany, getCourse, getCourses } from "@/lib/data";
+
+export async function generateStaticParams() {
+  const courses = await getCourses();
+  return courses.map((c) => ({ slug: c.slug }));
+}
+
+export async function generateMetadata({ params }: PageProps<"/courses/[slug]">): Promise<Metadata> {
+  const course = await getCourse((await params).slug);
+  return { title: course?.title ?? "ไม่พบคอร์ส" };
+}
+
+export default async function CoursePage({ params }: PageProps<"/courses/[slug]">) {
+  const { slug } = await params;
+  const [course, company] = await Promise.all([getCourse(slug), getCompany()]);
+  if (!course) notFound();
+
+  return (
+    <article className="container-page py-8 md:py-14">
+      <nav aria-label="breadcrumb" className="mb-6 text-sm text-muted">
+        <Link href="/courses" className="hover:text-ink">คอร์สเรียน</Link>
+        <span className="mx-2">/</span>
+        <span className="text-ink">{course.title}</span>
+      </nav>
+
+      <div className="grid gap-10 lg:grid-cols-[1fr_22rem] lg:gap-14">
+        <div>
+          <Media src={course.coverUrl} tone={1} className="aspect-[16/9] w-full rounded-3xl" />
+          <h1 className="mt-8 font-display text-3xl leading-tight text-balance sm:text-5xl">
+            {course.title}
+          </h1>
+          <p className="mt-4 text-lg text-muted">{course.summary}</p>
+          <h2 className="mt-10 font-display text-2xl">สิ่งที่จะได้เรียนรู้</h2>
+          <ul className="mt-5 space-y-4">
+            {course.content.map((line) => (
+              <li key={line} className="flex gap-3">
+                <Check className="mt-1 size-5 shrink-0 text-accent" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Sticky summary on desktop, inline card on mobile */}
+        <aside className="lg:sticky lg:top-28 lg:self-start">
+          <div className="rounded-3xl border border-line bg-white p-6 sm:p-8">
+            <p className="text-sm text-muted">ค่าเรียน</p>
+            <p className="mt-1 font-display text-4xl">{course.priceText}</p>
+            <p className="mt-4 flex items-center gap-2 text-muted">
+              <Clock className="size-4" /> {course.duration}
+            </p>
+            <Link href={`/contact/salon-partner?course=${course.slug}`} className="btn btn-primary mt-6 w-full">
+              สนใจลงทะเบียน
+            </Link>
+            <a href={`tel:${company.phones[0].replaceAll("-", "")}`} className="btn btn-outline mt-2 w-full">
+              <Phone className="size-4" /> {company.phones[0]}
+            </a>
+          </div>
+        </aside>
+      </div>
+    </article>
+  );
+}

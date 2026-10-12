@@ -1,0 +1,88 @@
+import { Mail, MapPin, Phone } from "lucide-react";
+import Link from "next/link";
+import type { CompanyInfo, MenuItem } from "@/lib/types";
+import { Logo } from "./logo";
+
+export function SiteFooter({
+  menu,
+  company,
+}: {
+  menu: MenuItem[];
+  company: CompanyInfo;
+}) {
+  return (
+    <footer className="bg-ink text-cream">
+      <div className="container-page grid gap-12 py-14 md:grid-cols-2 md:py-20 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <Logo light />
+          <p className="mt-5 max-w-sm text-sm text-cream/70">
+            ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ และเคาน์เตอร์แบรนด์ชั้นนำ
+            สำหรับลำปางและภาคเหนือ
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {["Fanola", "Nook", "Sweet"].map((b) => (
+              <span
+                key={b}
+                className="rounded-full border border-cream/20 px-3 py-1 text-xs text-cream/80"
+              >
+                {b}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <nav aria-label="เมนูท้ายเว็บ" className="lg:col-span-3">
+          <p className="eyebrow !text-cream/50">เมนู</p>
+          <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-sm lg:grid-cols-1">
+            {menu.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="inline-flex min-h-9 items-center text-cream/80 transition-colors hover:text-cream"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="md:col-span-2 lg:col-span-5">
+          <p className="eyebrow !text-cream/50">ติดต่อเรา</p>
+          <p className="mt-4 font-medium">{company.name}</p>
+          <ul className="mt-4 space-y-3 text-sm text-cream/80">
+            <li className="flex gap-3">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-cream/50" />
+              <span>{company.address}</span>
+            </li>
+            <li className="flex gap-3">
+              <Phone className="mt-0.5 size-4 shrink-0 text-cream/50" />
+              <span className="flex flex-wrap gap-x-3">
+                {company.phones.map((p) => (
+                  <a key={p} href={`tel:${p.replaceAll("-", "")}`} className="hover:text-cream">
+                    {p}
+                  </a>
+                ))}
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <Mail className="mt-0.5 size-4 shrink-0 text-cream/50" />
+              <a href={`mailto:${company.email}`} className="break-all hover:text-cream">
+                {company.email}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="border-t border-cream/10">
+        <div className="container-page flex flex-col gap-2 py-6 text-xs text-cream/50 sm:flex-row sm:items-center sm:justify-between">
+          <p>©2565 {company.name}</p>
+          <Link href="/policy" className="hover:text-cream">
+            นโยบายทางธุรกิจสำหรับการจัดจำหน่ายและการจัดเก็บข้อมูล
+          </Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
