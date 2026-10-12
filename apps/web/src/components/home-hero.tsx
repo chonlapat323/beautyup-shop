@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { ArrowRight, Award, Store } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { HeroSlide } from "@/lib/types";
 
 const INTERVAL = 5000;
@@ -26,9 +26,10 @@ export function HomeHero({
   }, [paused, slides.length]);
 
   const slide = slides[active];
+  const parallaxRef = usePointerParallax<HTMLElement>();
 
   return (
-    <section className="relative overflow-hidden">
+    <section ref={parallaxRef} className="relative overflow-hidden">
       <div className="container-page grid items-center gap-10 pt-8 pb-14 sm:pt-12 lg:grid-cols-12 lg:gap-8 lg:pt-10 lg:pb-20">
         {/* Copy */}
         <div className="lg:col-span-6">
@@ -77,12 +78,28 @@ export function HomeHero({
           onBlur={() => setPaused(false)}
         >
           <div className="relative mx-auto aspect-square w-full max-w-[22rem] animate-fade-up sm:max-w-[30rem] lg:max-w-[34rem] [animation-delay:200ms]">
-            {/* Backdrop circle */}
-            <div className="absolute inset-[6%] rounded-full bg-blush" />
-            <div className="absolute inset-[18%] rounded-full border border-brand-pink/15" />
+            {/* Soft mist backdrop: blurred colour layers instead of a solid disc.
+                The tinted layer cross-fades to match the active product. */}
+            <div aria-hidden className="pointer-events-none absolute -inset-[8%] [translate:calc(var(--px,0)*-14px)_calc(var(--py,0)*-10px)]">
+              <div className="absolute top-[8%] left-[10%] size-[62%] animate-drift rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.16),transparent_68%)] blur-2xl motion-reduce:animate-none" />
+              <div className="absolute right-[6%] bottom-[10%] size-[55%] animate-drift rounded-full bg-[radial-gradient(circle,rgb(196_181_253/0.22),transparent_68%)] blur-2xl [animation-delay:-6s] motion-reduce:animate-none" />
+              {slides.map((s, i) => (
+                <div
+                  key={s.brandSlug}
+                  style={{ background: `radial-gradient(circle, ${s.tint}2e, transparent 62%)` }}
+                  className={clsx(
+                    "absolute inset-[14%] rounded-full blur-3xl transition-opacity duration-1000",
+                    i === active ? "opacity-100" : "opacity-0",
+                  )}
+                />
+              ))}
+              <div className="absolute inset-[30%] rounded-full bg-[radial-gradient(circle,rgb(255_255_255/0.9),transparent_70%)] blur-xl" />
+            </div>
+            {/* Contact shadow under the product */}
+            <div aria-hidden className="pointer-events-none absolute bottom-[11%] left-1/2 h-[5%] w-[34%] -translate-x-1/2 rounded-[50%] bg-ink/20 blur-xl" />
 
             {/* Slides */}
-            <div aria-roledescription="carousel" aria-label="สินค้าแนะนำ" className="absolute inset-0">
+            <div aria-roledescription="carousel" aria-label="สินค้าแนะนำ" className="absolute inset-0 [translate:calc(var(--px,0)*22px)_calc(var(--py,0)*16px)]">
               {slides.map((s, i) => (
                 <Link
                   key={s.brandSlug}
@@ -118,7 +135,8 @@ export function HomeHero({
               ))}
             </div>
 
-            {/* Floating badges */}
+            {/* Floating badges (move against the product for depth) */}
+            <div className="pointer-events-none absolute inset-0 [translate:calc(var(--px,0)*-26px)_calc(var(--py,0)*-18px)] *:pointer-events-auto">
             <div className="absolute top-[8%] left-0 flex animate-fade-up items-center gap-3 rounded-2xl border border-line bg-white/90 px-4 py-3 shadow-xl shadow-ink/5 backdrop-blur [animation-delay:500ms] sm:left-[2%]">
               <span className="grid size-9 place-items-center rounded-full bg-blush text-brand-pink">
                 <Store className="size-4" />
@@ -136,6 +154,7 @@ export function HomeHero({
                 <span className="block font-medium">{slide.product}</span>
                 <span className="text-xs text-muted">{slide.brand}</span>
               </span>
+            </div>
             </div>
           </div>
 
@@ -190,4 +209,51 @@ function Bottle({ tint, brand }: { tint: string; brand: string }) {
       </text>
     </svg>
   );
+}
+
+/**
+ * Writes an eased pointer position (-0.5..0.5) to --px/--py on the element.
+ * Mouse/trackpad only; disabled for touch and reduced motion.
+ */
+function usePointerParallax<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    const tick = () => {
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      el.style.setProperty("--px", x.toFixed(4));
+      el.style.setProperty("--py", y.toFixed(4));
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(tick) : 0;
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onMove = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width - 0.5;
+      ty = (e.clientY - r.top) / r.height - 0.5;
+      kick();
+    };
+    const onLeave = () => {
+      tx = 0;
+      ty = 0;
+      kick();
+    };
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", onLeave);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
+    };
+  }, []);
+
+  return ref;
 }

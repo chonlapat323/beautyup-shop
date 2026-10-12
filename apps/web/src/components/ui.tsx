@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { Socials } from "@/lib/types";
 
 const tones = [
@@ -68,6 +68,7 @@ export function SectionHeading({
 }) {
   return (
     <div
+      data-reveal
       className={clsx(
         "mb-10 flex flex-col gap-6 md:mb-14",
         align === "center" ? "items-center text-center" : "md:flex-row md:items-end md:justify-between",
@@ -176,4 +177,9 @@ export function formatDate(iso: string) {
     month: "long",
     day: "numeric",
   });
+}
+
+/** Stagger index for [data-reveal] items (see RevealObserver). */
+export function stagger(i: number) {
+  return { "--i": i } as CSSProperties;
 }

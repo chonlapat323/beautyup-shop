@@ -5,7 +5,7 @@ import { MessageCircle, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
-import { Badge, Media, formatPrice } from "./ui";
+import { Badge, Media, formatPrice, stagger } from "./ui";
 
 const PAGE_SIZE = 8;
 
@@ -67,19 +67,19 @@ export function ProductGrid({
 
       <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-4">
         {filtered.slice(0, visible).map((p, i) => (
-          <li key={p.slug}>
+          <li key={p.slug} data-reveal style={stagger(i % 4)}>
             <button
               type="button"
               onClick={() => openQuickView(p)}
               className="group block w-full text-left"
             >
-              <div className="relative overflow-hidden rounded-2xl">
+              <div className="card-lift relative overflow-hidden rounded-2xl border border-transparent">
                 <Media
                   src={p.imageUrl}
                   alt={p.name}
                   label={brandNames[p.brandSlug]}
                   tone={i}
-                  className="aspect-[4/5] w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                  className="card-img aspect-[4/5] w-full"
                 />
                 {p.badges?.length ? (
                   <div className="absolute top-2 left-2 flex flex-wrap gap-1 sm:top-3 sm:left-3">

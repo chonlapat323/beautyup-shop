@@ -19,6 +19,16 @@
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-marquee: marquee 40s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
+  --animate-drift: drift 18s ease-in-out infinite;
+
+  @keyframes drift {
+    33% {
+      transform: translate(6%, -4%) scale(1.06);
+    }
+    66% {
+      transform: translate(-5%, 5%) scale(0.96);
+    }
+  }
 
   @keyframes marquee {
     to {
@@ -180,6 +190,47 @@
     &:focus {
       border-color: var(--color-accent);
       outline: none;
+    }
+  }
+}
+
+/* Scroll reveal (see RevealObserver) */
+[data-reveal-on] [data-reveal] {
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    translate 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+[data-reveal-on] [data-reveal]:not([data-shown]) {
+  opacity: 0;
+  translate: 0 28px;
+}
+
+@layer components {
+  /* Lift + brand glow on hover, used by cards across the site */
+  .card-lift {
+    transition:
+      translate 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.35s,
+      box-shadow 0.35s;
+
+    &:hover {
+      translate: 0 -6px;
+      border-color: rgb(214 41 127 / 0.35);
+      box-shadow: 0 22px 50px -22px rgb(214 41 127 / 0.35);
+    }
+
+    & .card-img {
+      transition:
+        scale 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+        filter 0.5s;
+      filter: saturate(0.92);
+    }
+
+    &:hover .card-img {
+      scale: 1.06;
+      filter: saturate(1.1);
     }
   }
 }

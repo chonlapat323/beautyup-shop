@@ -1,18 +1,18 @@
 import Link from "next/link";
 import type { Post } from "@/lib/types";
-import { Media, formatDate } from "./ui";
+import { Media, formatDate, stagger } from "./ui";
 
 export const postTypePath = { ARTICLE: "articles", ACTIVITY: "activities", MEDIA: "media" } as const;
 export const postTypeLabel = { ARTICLE: "บทความ", ACTIVITY: "กิจกรรม", MEDIA: "มีเดีย" } as const;
 
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   return (
-    <Link href={`/members/${postTypePath[post.type]}/${post.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl">
+    <Link href={`/members/${postTypePath[post.type]}/${post.slug}`} className="group block" data-reveal style={stagger(index % 3)}>
+      <div className="card-lift overflow-hidden rounded-2xl border border-transparent">
         <Media
           src={post.coverUrl}
           tone={index}
-          className="aspect-[4/3] w-full transition-transform duration-700 group-hover:scale-[1.03]"
+          className="card-img aspect-[4/3] w-full"
         />
       </div>
       <p className="mt-4 text-xs text-muted">

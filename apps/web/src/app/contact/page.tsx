@@ -40,7 +40,7 @@ export default async function ContactPage() {
             <li key={href}>
               <Link
                 href={href}
-                className="group flex h-full flex-col gap-6 rounded-2xl border border-line bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-ink hover:shadow-lg hover:shadow-ink/5 sm:p-6"
+                className="group flex h-full flex-col gap-6 card-lift rounded-2xl border border-line bg-white p-5 sm:p-6"
               >
                 <Icon className="size-6 text-accent" />
                 <span className="flex items-center justify-between gap-2 font-medium">

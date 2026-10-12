@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
-import { Media, PageHero, SectionHeading, SocialLinks } from "@/components/ui";
+import { Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { getAmbassadors, getRegions } from "@/lib/data";
 
 export const metadata: Metadata = { title: "ลูกค้า" };
@@ -23,7 +23,7 @@ export default async function CustomersPage() {
           <SectionHeading eyebrow="Brand Ambassador" title="แบรนด์แอมบาสเดอร์" />
           <ul className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 lg:grid-cols-5">
             {ambassadors.map((a, i) => (
-              <li key={a.name}>
+              <li key={a.name} data-reveal style={stagger(i)}>
                 <div className="overflow-hidden rounded-2xl">
                   <Media src={a.photoUrl} alt={a.name} label={a.name} tone={i} className="aspect-[3/4] w-full transition-transform duration-700 hover:scale-[1.03]" />
                 </div>
@@ -63,7 +63,7 @@ export default async function CustomersPage() {
               <li key={r.key}>
                 <Link
                   href={`/customers/salons?region=${r.key}`}
-                  className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-ink hover:shadow-lg hover:shadow-ink/5 sm:p-6"
+                  className="group flex h-full flex-col justify-between gap-6 card-lift rounded-2xl border border-line bg-white p-5 sm:p-6"
                 >
                   <span className="text-sm sm:text-base">{r.label}</span>
                   <span className="flex items-end justify-between">

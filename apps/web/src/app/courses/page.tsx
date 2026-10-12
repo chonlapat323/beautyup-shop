@@ -2,7 +2,7 @@ import { Clock } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
-import { Media, PageHero, SectionHeading } from "@/components/ui";
+import { Media, PageHero, SectionHeading, stagger } from "@/components/ui";
 import { getCourses } from "@/lib/data";
 
 export const metadata: Metadata = { title: "คอร์สเรียน" };
@@ -22,16 +22,16 @@ export default async function CoursesPage() {
         <div className="container-page">
           <ul className="grid gap-6 lg:grid-cols-2">
             {courses.map((c, i) => (
-              <li key={c.slug}>
+              <li key={c.slug} data-reveal style={stagger(i)}>
                 <Link
                   href={`/courses/${c.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white transition-shadow hover:shadow-xl hover:shadow-ink/5"
+                  className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white"
                 >
                   <div className="overflow-hidden">
                     <Media
                       src={c.coverUrl}
                       tone={i + 1}
-                      className="aspect-[16/9] w-full transition-transform duration-700 group-hover:scale-[1.03]"
+                      className="card-img aspect-[16/9] w-full"
                     />
                   </div>
                   <div className="flex flex-1 flex-col p-6 sm:p-8">

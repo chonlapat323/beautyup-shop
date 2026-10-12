@@ -4,7 +4,7 @@ import { BrandMarquee } from "@/components/brand-marquee";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { HomeHero } from "@/components/home-hero";
 import { ProductGrid } from "@/components/product-grid";
-import { ArrowLink, Media, SectionHeading } from "@/components/ui";
+import { ArrowLink, Media, SectionHeading, stagger } from "@/components/ui";
 import { getBrands, getHeroSlides, getProducts, getRegions, getVideos } from "@/lib/data";
 
 const quickLinks = [
@@ -71,17 +71,17 @@ export default async function HomePage() {
           />
           <ul className="grid gap-4 md:grid-cols-3">
             {salonBrands.map((b, i) => (
-              <li key={b.slug}>
+              <li key={b.slug} data-reveal style={stagger(i)}>
                 <Link
                   href={`/products/${b.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white transition-shadow hover:shadow-xl hover:shadow-ink/5"
+                  className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white"
                 >
                   <div className="overflow-hidden">
                     <Media
                       src={b.logoUrl}
                       label={b.name}
                       tone={i}
-                      className="aspect-[16/10] w-full transition-transform duration-700 group-hover:scale-[1.04]"
+                      className="card-img aspect-[16/10] w-full"
                     />
                   </div>
                   <div className="flex flex-1 flex-col p-6">
@@ -112,7 +112,7 @@ export default async function HomePage() {
           </div>
           <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
             {videos.map((v, i) => (
-              <li key={v.title} className="w-[78%] shrink-0 snap-start sm:w-auto">
+              <li key={v.title} data-reveal style={stagger(i)} className="w-[78%] shrink-0 snap-start sm:w-auto">
                 <a
                   href={v.youtubeId ? `https://www.youtube.com/watch?v=${v.youtubeId}` : "https://www.youtube.com/@FanolaOfficial"}
                   target="_blank"
