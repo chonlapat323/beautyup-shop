@@ -181,3 +181,5 @@ export function formatDate(iso: string, lang: "th" | "en" = "th") {
 export function stagger(i: number) {
   return { "--i": i } as CSSProperties;
 }
+
+export { VideoPlayer } from "./video-player";

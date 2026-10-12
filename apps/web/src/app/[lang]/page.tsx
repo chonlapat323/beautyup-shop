@@ -1,10 +1,9 @@
-import { Play } from "lucide-react";
 import Link from "@/components/link";
 import { BrandMarquee } from "@/components/brand-marquee";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { HomeHero } from "@/components/home-hero";
 import { ProductGrid } from "@/components/product-grid";
-import { ArrowLink, Media, SectionHeading, stagger } from "@/components/ui";
+import { ArrowLink, Media, SectionHeading, VideoPlayer, stagger } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getBrands, getHeroSlides, getProducts, getRegions, getVideos } from "@/lib/data";
 
@@ -26,6 +25,28 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     <>
       <HomeHero slides={slides} salonCount={salonCount} />
       <BrandMarquee brands={brands} label={h.ourBrands} />
+
+      {/* Featured Video */}
+      <section className="section border-b border-line bg-mist/50">
+        <div className="container-page">
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-6 text-center">
+              <p className="eyebrow">Video</p>
+              <h2 className="mt-2 font-display text-2xl sm:text-3xl lg:text-4xl">
+                {videos[0]?.title || h.videosTitle}
+              </h2>
+            </div>
+            <div data-reveal suppressHydrationWarning className="overflow-hidden rounded-3xl shadow-xl border border-line bg-black">
+              <VideoPlayer
+                src={videos[0]?.url || "https://www.youtube.com/watch?v=5qap5aO4i9A"}
+                title={videos[0]?.title || "BeautyUp Official"}
+                aspectRatio="16/9"
+                rounded="rounded-none"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Welcome */}
       <section className="section border-b border-line">
@@ -97,37 +118,6 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* Videos */}
-      <section className="section border-y border-line bg-mist">
-        <div className="container-page">
-          <div className="mb-10 md:mb-14">
-            <p className="eyebrow">Videos</p>
-            <h2 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl">{h.videosTitle}</h2>
-          </div>
-          <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-            {videos.map((v, i) => (
-              <li key={v.title} data-reveal suppressHydrationWarning style={stagger(i)} className="w-[78%] shrink-0 snap-start sm:w-auto">
-                <a
-                  href={v.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group block"
-                >
-                  <div className="relative overflow-hidden rounded-2xl">
-                    <Media tone={i} className="aspect-video w-full transition-transform duration-700 group-hover:scale-[1.04]" />
-                    <span className="absolute inset-0 grid place-items-center">
-                      <span className="grid size-14 place-items-center rounded-full bg-white/90 text-ink shadow-lg transition-all group-hover:scale-110 group-hover:bg-accent group-hover:text-white">
-                        <Play className="ml-0.5 size-5 fill-current" />
-                      </span>
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm text-muted transition-colors group-hover:text-accent">{v.title}</p>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
 
       {/* Products */}
       <section className="section">
