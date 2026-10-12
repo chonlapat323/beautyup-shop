@@ -26,7 +26,8 @@ export default async function AccountPage({ params }: PageProps<"/[lang]/account
 
 async function Account({ lang }: { lang: Locale }) {
   const [member, provinces] = await Promise.all([getMember(), getProvinces()]);
-  if (!member) redirect(`/${lang}/login`);
+  // Not signed in, or the session expired: clear the cookie and go to login
+  if (!member) redirect(`/api/member/signout?lang=${lang}`);
   const since = new Date(member.createdAt).toLocaleDateString(dateLocale(lang), { year: "numeric", month: "long" });
 
   return <ProfileForm member={member} provinces={provinces} since={since} />;

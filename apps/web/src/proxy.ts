@@ -5,6 +5,13 @@ const LOCALES = ["th", "en"];
 /** Sends paths without a language prefix to /th or /en (from Accept-Language, Thai by default). */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Signed-in members never see the login / sign-up pages
+  const auth = pathname.match(/^\/(th|en)\/(login|register)\/?$/);
+  if (auth && request.cookies.has("bu_member")) {
+    return NextResponse.redirect(new URL(`/${auth[1]}/account`, request.url));
+  }
+
   if (LOCALES.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))) return;
 
   const accept = request.headers.get("accept-language")?.toLowerCase() ?? "";
