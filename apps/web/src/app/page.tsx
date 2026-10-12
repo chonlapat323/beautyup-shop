@@ -1,9 +1,11 @@
 import { Play } from "lucide-react";
 import Link from "next/link";
+import { BrandMarquee } from "@/components/brand-marquee";
 import { GrowYourVision } from "@/components/grow-your-vision";
+import { HomeHero } from "@/components/home-hero";
 import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, SectionHeading } from "@/components/ui";
-import { getBrands, getHeroBanners, getProducts, getVideos } from "@/lib/data";
+import { getBrands, getHeroSlides, getProducts, getRegions, getVideos } from "@/lib/data";
 
 const quickLinks = [
   { label: "ทีมงาน", href: "/contact/team" },
@@ -14,65 +16,24 @@ const quickLinks = [
 ];
 
 export default async function HomePage() {
-  const [banners, videos, brands, products] = await Promise.all([
-    getHeroBanners(),
+  const [slides, regions, videos, brands, products] = await Promise.all([
+    getHeroSlides(),
+    getRegions(),
     getVideos(),
     getBrands(),
     getProducts(),
   ]);
   const salonBrands = brands.filter((b) => b.type === "SALON");
   const brandNames = Object.fromEntries(brands.map((b) => [b.slug, b.name]));
-  const [main, ...sideBanners] = banners;
+  const salonCount = regions.reduce((sum, r) => sum + r.count, 0);
 
   return (
     <>
-      {/* Hero */}
-      <section className="container-page pt-4 pb-16 sm:pt-6 md:pb-24">
-        <div className="grid gap-3 sm:gap-4 lg:grid-cols-3 lg:grid-rows-2">
-          <Link
-            href={main.href ?? "#"}
-            className="group relative overflow-hidden rounded-3xl lg:col-span-2 lg:row-span-2"
-          >
-            <Media
-              src={main.imageUrl}
-              tone={0}
-              className="aspect-[4/5] w-full transition-transform duration-700 group-hover:scale-[1.02] sm:aspect-[16/10] lg:aspect-auto lg:h-full lg:min-h-[36rem]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 animate-fade-up p-6 text-cream sm:p-10">
-              <p className="eyebrow !text-cream/80">Professional Salon Products</p>
-              <h1 className="mt-3 max-w-xl font-display text-4xl leading-[1.1] text-balance sm:text-6xl">
-                เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ
-              </h1>
-              <p className="mt-4 max-w-md text-cream/80 sm:text-lg">{main.subtitle}</p>
-              <span className="btn btn-light mt-6 group-hover:bg-white group-hover:gap-3">
-                ชมสินค้า <span aria-hidden>→</span>
-              </span>
-            </div>
-          </Link>
-          {sideBanners.map((b, i) => (
-            <Link
-              key={b.title}
-              href={b.href ?? "#"}
-              className="group relative overflow-hidden rounded-3xl"
-            >
-              <Media
-                src={b.imageUrl}
-                tone={i + 1}
-                className="aspect-[16/9] w-full transition-transform duration-700 group-hover:scale-[1.03] lg:aspect-auto lg:h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5 text-cream sm:p-6">
-                <p className="font-display text-2xl">{b.title}</p>
-                <p className="text-sm text-cream/80">{b.subtitle}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <HomeHero slides={slides} salonCount={salonCount} />
+      <BrandMarquee brands={brands} />
 
       {/* Welcome */}
-      <section className="section border-y border-line bg-mist">
+      <section className="section border-b border-line">
         <div className="container-page grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <p className="eyebrow">บิวตี้อัพ ยินดีต้อนรับ</p>

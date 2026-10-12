@@ -2,10 +2,10 @@
 // Items marked MOCK are placeholders and must be replaced with real data.
 import type {
   Ambassador,
-  Banner,
   Brand,
   CompanyInfo,
   Course,
+  HeroSlide,
   MenuItem,
   Post,
   Product,
@@ -80,10 +80,11 @@ export const company: CompanyInfo = {
   ],
 };
 
-export const heroBanners: Banner[] = [
-  { title: "20 Years of Fanola", subtitle: "ผลิตภัณฑ์ซาลอนมืออาชีพจากอิตาลี", href: "/products/fanola" },
-  { title: "No Yellow Shampoo", subtitle: "แชมพูม่วงอันดับหนึ่งของช่างผม", href: "/products/fanola" },
-  { title: "COSMOPROF", subtitle: "ดูงานและเรียนรู้เทรนด์ใหม่ระดับโลก", href: "/courses" },
+// MOCK: add transparent product cut-outs via imageUrl
+export const heroSlides: HeroSlide[] = [
+  { brandSlug: "fanola", brand: "Fanola", product: "No Yellow Shampoo", caption: "แชมพูม่วงอันดับหนึ่งของช่างผม", href: "/products/fanola", tint: "#6d4c9f" },
+  { brandSlug: "nook", brand: "Nook", product: "Magic Arganoil", caption: "Eco-conscious beauty จากอิตาลี", href: "/products/nook", tint: "#5f7d5a" },
+  { brandSlug: "sweet-professional", brand: "Sweet Professional", product: "The First Shampoo", caption: "ทรีตเมนต์ยืดผมจากบราซิล", href: "/products/sweet-professional", tint: "#b08a4e" },
 ];
 
 export const videos: Video[] = [

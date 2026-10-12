@@ -10,11 +10,27 @@
   --color-accent: #9a5b3f;
   --color-accent-dark: #7c4630;
   --color-accent-soft: #f3e6dd;
+  --color-blush: #fcebf3;
+  --color-brand-pink: #d6297f;
 
   --font-sans: var(--font-plex-thai), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-serif-thai), ui-serif, Georgia, serif;
 
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes float {
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 
   @keyframes fade-up {
     from {

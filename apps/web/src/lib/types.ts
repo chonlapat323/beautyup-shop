@@ -42,11 +42,16 @@ export interface Product {
   description?: string;
 }
 
-export interface Banner {
-  title: string;
-  subtitle?: string;
+export interface HeroSlide {
+  brandSlug: string;
+  brand: string;
+  product: string;
+  caption: string;
+  href: string;
+  /** Transparent product cut-out (PNG/WebP). Falls back to an illustrated bottle. */
   imageUrl?: string;
-  href?: string;
+  /** Bottle colour for the illustrated fallback */
+  tint: string;
 }
 
 export interface Ambassador {

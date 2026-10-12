@@ -5,7 +5,7 @@ import type { PostType } from "./types";
 
 export const getMenu = async () => mock.menu;
 export const getCompany = async () => mock.company;
-export const getHeroBanners = async () => mock.heroBanners;
+export const getHeroSlides = async () => mock.heroSlides;
 export const getVideos = async () => mock.videos;
 export const getTimeline = async () => mock.timeline;
 export const getPpStudioServices = async () => mock.ppStudioServices;
