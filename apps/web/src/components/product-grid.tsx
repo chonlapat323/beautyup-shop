@@ -127,7 +127,7 @@ export function ProductGrid({
         className="m-auto w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-3xl bg-cream p-0 text-ink backdrop:bg-ink/50 backdrop:backdrop-blur-sm"
       >
         {selected && (
-          <div className="grid max-h-[85dvh] overflow-y-auto sm:grid-cols-2">
+          <div className="grid max-h-[85dvh] grid-cols-1 overflow-y-auto sm:grid-cols-2">
             <Media
               src={selected.imageUrl}
               alt={selected.name}

@@ -19,7 +19,7 @@ export default async function PpStudioPage({ params }: PageProps<"/[lang]/pp-stu
   return (
     <>
       <section className="border-b border-line bg-mist">
-        <div className="container-page grid items-center gap-10 py-14 md:grid-cols-2 md:py-24">
+        <div className="container-page grid grid-cols-1 items-center gap-10 py-14 md:grid-cols-2 md:py-24">
           <div className="animate-fade-up">
             <p className="eyebrow">PP STUDIO & EVENT</p>
             <h1 className="mt-4 font-display text-4xl leading-[1.1] text-balance sm:text-6xl">
@@ -57,7 +57,7 @@ export default async function PpStudioPage({ params }: PageProps<"/[lang]/pp-stu
       </section>
 
       <section id="contact" className="section scroll-mt-20 border-t border-line bg-mist">
-        <div className="container-page grid gap-10 lg:grid-cols-12">
+        <div className="container-page grid grid-cols-1 gap-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <p className="eyebrow">Contact</p>
             <h2 className="mt-3 font-display text-3xl sm:text-4xl">Like what you see?</h2>

@@ -34,7 +34,7 @@ export function ProfileForm({ member, provinces, since }: { member: MemberProfil
         </div>
       </div>
 
-      <form action={action} className="grid gap-5 rounded-3xl border border-line bg-white p-5 sm:grid-cols-2 sm:p-8">
+      <form action={action} className="grid grid-cols-1 gap-5 rounded-3xl border border-line bg-white p-5 sm:grid-cols-2 sm:p-8">
         <input type="hidden" name="lang" value={lang} />
         {(
           [

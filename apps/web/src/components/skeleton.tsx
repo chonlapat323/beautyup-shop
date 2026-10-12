@@ -30,7 +30,7 @@ export function FormSkeleton({ fields = 4, chips = false, label = "Loading" }: {
           </div>
         </div>
       )}
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {Array.from({ length: fields }, (_, i) => {
           const last = i === fields - 1;
           return (
@@ -60,7 +60,7 @@ export function SalonFinderSkeleton({ label = "Loading" }: { label?: string }) {
       </div>
       <div>
         <Skeleton className="mb-4 h-4 w-20" />
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {Array.from({ length: 6 }, (_, i) => (
             <div key={i} className="rounded-2xl border border-line bg-white p-5">
               <Skeleton className="h-5 w-2/3" />
@@ -85,7 +85,7 @@ export function AccountSkeleton({ label = "Loading" }: { label?: string }) {
           <Skeleton className="h-4 w-2/3" />
         </div>
       </div>
-      <div className="grid gap-5 rounded-3xl border border-line bg-white p-5 sm:grid-cols-2 sm:p-8">
+      <div className="grid grid-cols-1 gap-5 rounded-3xl border border-line bg-white p-5 sm:grid-cols-2 sm:p-8">
         {[true, false, false, false].map((full, i) => (
           <div key={i} className={clsx(full && "sm:col-span-2")}>
             <Skeleton className="mb-2 h-4 w-24" />

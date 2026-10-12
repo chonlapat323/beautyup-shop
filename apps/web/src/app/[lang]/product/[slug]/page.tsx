@@ -71,7 +71,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
           <span className="text-ink">{product.name}</span>
         </nav>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:gap-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-16">
           <div className="relative overflow-hidden rounded-3xl md:sticky md:top-28 md:self-start">
             <Media src={product.imageUrl} alt={product.name} label={product.brandName} className="aspect-square w-full" />
             {product.badges?.length ? (

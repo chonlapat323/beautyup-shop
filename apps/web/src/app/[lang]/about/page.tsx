@@ -50,7 +50,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
 
       {/* Founder */}
       <section className="section">
-        <div className="container-page grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="container-page grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
           <Media label="Amy Phorlaphat" tone={2} className="aspect-[4/5] w-full rounded-3xl lg:sticky lg:top-28" />
           <div>
             <p className="eyebrow">{a.founderRole}</p>

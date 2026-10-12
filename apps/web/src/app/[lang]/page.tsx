@@ -29,7 +29,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       {/* Welcome */}
       <section className="section border-b border-line">
-        <div className="container-page grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <div className="container-page grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <p className="eyebrow">{h.welcome}</p>
             <blockquote className="mt-4 font-display text-2xl leading-snug text-balance sm:text-4xl">
@@ -63,7 +63,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             title={h.brandsTitle}
             action={<ArrowLink href="/products">{h.allProducts}</ArrowLink>}
           />
-          <ul className="grid gap-4 md:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {salonBrands.map((b, i) => (
               <li key={b.slug} data-reveal suppressHydrationWarning style={stagger(i)}>
                 <Link

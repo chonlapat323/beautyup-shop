@@ -92,7 +92,7 @@ export function InquiryForm({
         <input type="hidden" name="type" value={type} />
       )}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {fields.map((f) => {
           const error = state.errors?.[f.name];
           const id = `f-${f.name}`;

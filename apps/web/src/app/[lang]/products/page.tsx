@@ -27,7 +27,7 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
           <section
             key={b.slug}
             aria-labelledby={`brand-${b.slug}`}
-            className="grid items-center gap-8 border-b border-line py-14 last:border-b-0 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20"
+            className="grid grid-cols-1 items-center gap-8 border-b border-line py-14 last:border-b-0 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20"
           >
             <Media
               src={b.logoUrl}

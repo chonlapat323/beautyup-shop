@@ -25,7 +25,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
 
       <section className="section">
         <div className="container-page">
-          <ul className="grid gap-6 lg:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {courses.map((c, i) => (
               <li key={c.slug} data-reveal suppressHydrationWarning style={stagger(i)}>
                 <Link

@@ -37,7 +37,7 @@ export default async function ShopPage({ params }: PageProps<"/[lang]/shop">) {
       </section>
 
       <section className="section">
-        <div className="container-page grid items-center gap-10 md:grid-cols-2 lg:gap-16">
+        <div className="container-page grid grid-cols-1 items-center gap-10 md:grid-cols-2 lg:gap-16">
           <Media label="I'm Amy" tone={1} className="aspect-[4/5] w-full rounded-3xl" />
           <div>
             <p className="eyebrow">{d.ceoEyebrow}</p>

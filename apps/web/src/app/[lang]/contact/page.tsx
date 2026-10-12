@@ -47,7 +47,7 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
       </section>
 
       <section className="section pt-4 md:pt-8">
-        <div className="container-page grid gap-12 lg:grid-cols-12">
+        <div className="container-page grid grid-cols-1 gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <h2 className="font-display text-2xl sm:text-3xl">{company.name} {d.headOffice}</h2>
             <ul className="mt-6 space-y-4">

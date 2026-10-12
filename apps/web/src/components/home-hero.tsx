@@ -34,7 +34,7 @@ export function HomeHero({
 
   return (
     <section ref={parallaxRef} className="relative overflow-hidden">
-      <div className="container-page grid items-center gap-10 pt-8 pb-14 sm:pt-12 lg:grid-cols-12 lg:gap-8 lg:pt-10 lg:pb-20">
+      <div className="container-page grid grid-cols-1 items-center gap-10 pt-8 pb-14 sm:pt-12 lg:grid-cols-12 lg:gap-8 lg:pt-10 lg:pb-20">
         {/* Copy */}
         <div className="lg:col-span-6">
           <p className="eyebrow animate-fade-up !text-brand-pink">{h.eyebrow}</p>
