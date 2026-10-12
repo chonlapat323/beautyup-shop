@@ -4,8 +4,6 @@ import {
   Get,
   Headers,
   HttpCode,
-  HttpException,
-  HttpStatus,
   Ip,
   NotFoundException,
   Param,
@@ -22,6 +20,7 @@ import {
   type ResourceName,
 } from '@beautyup/types';
 import { ResourceService } from '../common/resource.service.js';
+import { clientIp, throttle } from '../common/throttle.js';
 import { isResource } from '../common/resources.js';
 import { parseOrThrow } from '../common/zod-validation.pipe.js';
 import type { Prisma } from '../generated/prisma/client.js';
@@ -95,7 +94,7 @@ export class PublicController {
     // Honeypot: bots fill every field; real visitors never see this one
     if (typeof body?.website === 'string' && body.website) return { ok: true };
     // The website's server action forwards the visitor's IP
-    throttle(forwarded?.split(',')[0]?.trim() || ip);
+    throttle(`inquiry:${clientIp(forwarded, ip)}`, 5, 10 * 60 * 1000);
     const data = parseOrThrow(inquiryInput, body);
     await this.prisma.inquiry.create({ data: { ...data, data: data.data as Prisma.InputJsonValue } });
     return { ok: true };
@@ -105,17 +104,4 @@ export class PublicController {
 function check(name: string): ResourceName {
   if (!isResource(name) || !PUBLIC.includes(name)) throw new NotFoundException();
   return name;
-}
-
-/** Simple in-memory limit for form submissions: 5 per IP per 10 minutes. */
-const hits = new Map<string, number[]>();
-function throttle(ip: string) {
-  const now = Date.now();
-  const windowMs = 10 * 60 * 1000;
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < windowMs);
-  if (recent.length >= 5) {
-    throw new HttpException('ส่งข้อมูลบ่อยเกินไป กรุณาลองใหม่ภายหลัง', HttpStatus.TOO_MANY_REQUESTS);
-  }
-  recent.push(now);
-  hits.set(ip, recent);
 }

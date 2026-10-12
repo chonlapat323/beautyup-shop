@@ -18,6 +18,7 @@ import {
   Store,
   Tags,
   UserCog,
+  UserRound,
   Users,
   X,
   FileText,
@@ -62,6 +63,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
       { href: "/r/salons", label: "ซาลอนพันธมิตร", icon: Store },
       { href: "/r/ambassadors", label: "แบรนด์แอมบาสเดอร์", icon: Sparkles },
       { href: "/r/team", label: "ทีมงาน", icon: Users },
+      { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound },
     ],
   },
   {

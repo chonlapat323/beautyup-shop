@@ -240,3 +240,19 @@ model Setting {
   value     Json
   updatedAt DateTime @updatedAt
 }
+
+/// Website members (separate from admin `User`s). Sign up with email/password or Google.
+model Member {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String?
+  googleId     String?   @unique
+  name         String
+  phone        String    @default("")
+  shopName     String    @default("")
+  province     String    @default("")
+  avatarUrl    String    @default("")
+  locale       String    @default("th")
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+}

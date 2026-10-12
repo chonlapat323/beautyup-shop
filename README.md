@@ -75,6 +75,23 @@ Images and PDFs uploaded in the admin panel are stored on the API server's disk 
 - back it up together with the database,
 - set `API_PUBLIC_URL` to the public API domain so saved image links are correct.
 
+## Website members (email + Google)
+
+Visitors can sign up / log in at `/th/register` and `/th/login` with email + password or
+Google, and edit their profile at `/th/account`. Members are stored separately from admin
+users (their tokens cannot call admin APIs). Staff see them in Admin > สมาชิกเว็บไซต์.
+
+To enable the Google button:
+
+1. Google Cloud Console → APIs & Services → Credentials → **Create OAuth client ID** →
+   type **Web application**.
+2. **Authorized JavaScript origins**: `http://localhost:3000` (dev) and the website's
+   public URL, e.g. `https://<domain>`. No redirect URI is needed.
+3. Put the client ID in `apps/api/.env` (`GOOGLE_CLIENT_ID`) and
+   `apps/web/.env.local` (`NEXT_PUBLIC_GOOGLE_CLIENT_ID`), then restart / rebuild the web app.
+
+Until then the page shows "Google sign-in is not available yet" and email sign-up works.
+
 ## Admin roles
 
 | Role | Can do |

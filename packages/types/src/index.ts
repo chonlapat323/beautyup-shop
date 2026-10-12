@@ -237,6 +237,48 @@ export const inquiryInput = z.object({
 });
 
 /* ----------------------------------------------------------------------------
+ * Website members
+ * ------------------------------------------------------------------------- */
+
+export const memberRegisterInput = z.object({
+  name: z.string().trim().min(1),
+  email: z.email(),
+  password: z.string().min(8),
+  locale: z.enum(LOCALES).default("th"),
+});
+
+export const memberLoginInput = z.object({
+  email: z.email(),
+  password: z.string().min(1),
+});
+
+export const memberGoogleInput = z.object({
+  /** ID token (JWT) from Google Identity Services */
+  credential: z.string().min(10),
+  locale: z.enum(LOCALES).default("th"),
+});
+
+export const memberProfileInput = z.object({
+  name: z.string().trim().min(1),
+  phone: z.string().trim().max(30).default(""),
+  shopName: z.string().trim().max(120).default(""),
+  province: z.string().trim().max(60).default(""),
+});
+
+export interface MemberProfile {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  shopName: string;
+  province: string;
+  avatarUrl: string;
+  hasPassword: boolean;
+  hasGoogle: boolean;
+  createdAt: string;
+}
+
+/* ----------------------------------------------------------------------------
  * Settings (key/value)
  * ------------------------------------------------------------------------- */
 

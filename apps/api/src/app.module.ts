@@ -8,6 +8,8 @@ import { AdminUsersController } from './admin/admin-users.controller.js';
 import { AppController } from './app.controller.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ResourceService } from './common/resource.service.js';
+import { AdminMembersController, MemberGuard, MembersController } from './members/members.controller.js';
+import { MembersService } from './members/members.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { PublicController } from './public/public.controller.js';
 
@@ -21,7 +23,9 @@ import { PublicController } from './public/public.controller.js';
     AdminSettingsController,
     AdminUsersController,
     AdminUploadsController,
+    MembersController,
+    AdminMembersController,
   ],
-  providers: [ResourceService],
+  providers: [ResourceService, MembersService, MemberGuard],
 })
 export class AppModule {}
