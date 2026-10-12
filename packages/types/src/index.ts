@@ -1,9 +1,12 @@
-export type OrderStatus =
-  | 'PENDING'
-  | 'PAID'
-  | 'SHIPPED'
-  | 'COMPLETED'
-  | 'CANCELLED';
+export type InquiryType =
+  | 'CONTACT'
+  | 'ORDER'
+  | 'SALON'
+  | 'COURSE'
+  | 'ISSUE'
+  | 'PP_STUDIO';
+
+export type InquiryStatus = 'NEW' | 'IN_PROGRESS' | 'DONE';
 
 export interface ApiError {
   statusCode: number;
