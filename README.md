@@ -93,33 +93,58 @@ Images and PDFs uploaded in the admin panel are stored on the API server's disk 
 
 ## Deploy with PM2
 
-[`ecosystem.config.cjs`](ecosystem.config.cjs) runs the three apps: `beautyup-api` (4000),
-`beautyup-web` (3000) and `beautyup-admin` (3001). Logs go to `logs/`.
+[`ecosystem.config.cjs`](ecosystem.config.cjs) runs three apps. The names are prefixed
+`beautyup-shop-` so they never clash with the older `beautyup-api` / `beautyup-admin`
+processes already running on the server.
 
-First deploy on the server (Node 20+, pnpm, PM2: `npm i -g pm2`):
+| PM2 name | Default port | Override |
+|---|---|---|
+| `beautyup-shop-api` | 4000 | `API_PORT` |
+| `beautyup-shop-web` | 3000 | `WEB_PORT` |
+| `beautyup-shop-admin` | 3001 | `ADMIN_PORT` |
+| PostgreSQL (docker) | 5433 | `DB_PORT` |
+
+**Always check first.** `pnpm ports:check` verifies that the PM2 names are not used by
+another project and that the ports are free (it tells you which process holds a port):
+
+```bash
+pnpm ports:check
+# if a port is taken, pick others and use the same values for every command below
+export API_PORT=4100 WEB_PORT=3100 ADMIN_PORT=3101
+pnpm ports:check
+```
+
+When you change ports, update the env files to match: `apps/api/.env` (`CORS_ORIGINS`,
+`API_PUBLIC_URL`), `apps/web/.env.local` (`API_URL`), `apps/admin/.env.local`
+(`API_URL`, `WEB_URL`).
+
+First deploy on the server (Node 20+, pnpm, PM2):
 
 ```bash
 pnpm install --frozen-lockfile
-# env files: apps/api/.env, apps/web/.env.local, apps/admin/.env.local (production values)
+pnpm db:up                                     # PostgreSQL in Docker
+pnpm ports:check
 pnpm --filter @beautyup/types build
 pnpm --filter @beautyup/api build
 pnpm --filter @beautyup/api exec prisma migrate deploy
 pnpm db:seed                                   # first time only
-pm2 start ecosystem.config.cjs --only beautyup-api
+pm2 start ecosystem.config.cjs --only beautyup-shop-api
 # The website prerenders pages from the API, so build it while the API is running
 pnpm --filter @beautyup/web build
 pnpm --filter @beautyup/admin build
-pm2 start ecosystem.config.cjs
-pm2 save && pm2 startup                        # restart on reboot
+pm2 start ecosystem.config.cjs --only beautyup-shop-web,beautyup-shop-admin
+pm2 save                                       # keep the list for reboots
 ```
 
-Later deploys: `git pull && pnpm install --frozen-lockfile`, rebuild as above (API first,
-then `pm2 reload beautyup-api`, then build web/admin), and finish with
-`pm2 reload ecosystem.config.cjs`.
+Later deploys: `git pull && pnpm install --frozen-lockfile`, rebuild the API and
+`pm2 reload beautyup-shop-api`, then build web/admin and
+`pm2 reload beautyup-shop-web beautyup-shop-admin`.
 
-Put a reverse proxy (Nginx/Caddy) with HTTPS in front, for example
-`beautyup-enterprise.com → :3000`, `admin.… → :3001`, `api.… → :4000`, and set
-`API_PUBLIC_URL`, `WEB_URL`, `CORS_ORIGINS` to those domains.
+> Never run `pm2 reload all` / `pm2 restart all` on this server: other projects share it.
+
+Put a reverse proxy (Nginx/Caddy) with HTTPS in front, e.g. `beautyup-enterprise.com` →
+web port, `admin.…` → admin port, `api.…` → API port, and set `API_PUBLIC_URL`,
+`WEB_URL` and `CORS_ORIGINS` to those domains.
 
 ## Docs
 

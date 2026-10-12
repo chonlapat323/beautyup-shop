@@ -1,16 +1,20 @@
 // PM2 process file for production.
 //
-//   pm2 start ecosystem.config.cjs          # start all
-//   pm2 start ecosystem.config.cjs --only beautyup-api
-//   pm2 reload ecosystem.config.cjs         # zero-downtime reload after a deploy
-//   pm2 logs beautyup-web
-//   pm2 save && pm2 startup                 # restart on server reboot
+// Run `node scripts/check-ports.cjs` first: it checks the ports AND that these
+// PM2 names are not already used by another project on the server
+// (the server already runs "beautyup-api" / "beautyup-admin" from the old project).
 //
-// Each app reads its own env file from its folder:
-//   apps/api/.env, apps/web/.env.local, apps/admin/.env.local
-// See README "Deploy with PM2" for the full build order.
+//   pm2 start ecosystem.config.cjs           # start all
+//   pm2 start ecosystem.config.cjs --only beautyup-shop-api
+//   pm2 reload beautyup-shop-web beautyup-shop-admin   # after a deploy (never "reload all": the server is shared)
+//   pm2 logs beautyup-shop-web
+//   pm2 save                                 # remember the process list for reboots
+//
+// Ports default to 4000 / 3000 / 3001; override with API_PORT, WEB_PORT, ADMIN_PORT.
+// Each app reads its own env file: apps/api/.env, apps/web/.env.local, apps/admin/.env.local
 
 const path = require("node:path");
+const { API_PORT, WEB_PORT, ADMIN_PORT } = require("./scripts/ports.cjs");
 
 const app = (dir) => path.join(__dirname, "apps", dir);
 const logs = (name) => ({
@@ -23,21 +27,21 @@ const logs = (name) => ({
 module.exports = {
   apps: [
     {
-      name: "beautyup-api",
+      name: "beautyup-shop-api",
       cwd: app("api"),
       // cwd matters: .env and the uploads/ folder are resolved from here
       script: "dist/main.js",
       exec_mode: "fork",
       instances: 1, // uploads live on local disk and inquiry rate limits are in memory
       max_memory_restart: "512M",
-      env: { NODE_ENV: "production", PORT: 4000 },
+      env: { NODE_ENV: "production", PORT: API_PORT },
       ...logs("api"),
     },
     {
-      name: "beautyup-web",
+      name: "beautyup-shop-web",
       cwd: app("web"),
       script: "node_modules/next/dist/bin/next",
-      args: "start -p 3000",
+      args: `start -p ${WEB_PORT}`,
       exec_mode: "fork",
       instances: 1,
       max_memory_restart: "768M",
@@ -45,10 +49,10 @@ module.exports = {
       ...logs("web"),
     },
     {
-      name: "beautyup-admin",
+      name: "beautyup-shop-admin",
       cwd: app("admin"),
       script: "node_modules/next/dist/bin/next",
-      args: "start -p 3001",
+      args: `start -p ${ADMIN_PORT}`,
       exec_mode: "fork",
       instances: 1,
       max_memory_restart: "512M",
