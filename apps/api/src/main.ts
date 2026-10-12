@@ -33,6 +33,7 @@ async function bootstrap() {
     .build();
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
 
-  await app.listen(process.env.PORT ?? 4000);
+  // HOST=127.0.0.1 in production: only reachable through the reverse proxy
+  await app.listen(process.env.PORT ?? 4000, process.env.HOST ?? '0.0.0.0');
 }
 await bootstrap();

@@ -5,10 +5,11 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: beautyup
-      POSTGRES_PASSWORD: beautyup
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-beautyup}
       POSTGRES_DB: beautyup_shop
     ports:
-      - "${DB_PORT:-5433}:5432"
+      # Bound to localhost only: the database is never exposed to the internet
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 

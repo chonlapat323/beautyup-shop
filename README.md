@@ -97,32 +97,40 @@ Images and PDFs uploaded in the admin panel are stored on the API server's disk 
 `beautyup-shop-` so they never clash with the older `beautyup-api` / `beautyup-admin`
 processes already running on the server.
 
-| PM2 name | Default port | Override |
+### Ports on beautyup-server
+
+The server already uses 3000-3003, 3100, 5432-5434, 5050 and 80/443 (Caddy). This project
+uses:
+
+| | Port | Reachable from |
 |---|---|---|
-| `beautyup-shop-api` | 4000 | `API_PORT` |
-| `beautyup-shop-web` | 3000 | `WEB_PORT` |
-| `beautyup-shop-admin` | 3001 | `ADMIN_PORT` |
-| PostgreSQL (docker) | 5433 | `DB_PORT` |
+| `beautyup-shop-api` | 4200 | localhost only (via Caddy) |
+| `beautyup-shop-web` | 3200 | localhost only (via Caddy) |
+| `beautyup-shop-admin` | 3201 | localhost only (via Caddy) |
+| PostgreSQL (docker) | 5435 | localhost only |
 
-**Always check first.** `pnpm ports:check` verifies that the PM2 names are not used by
-another project and that the ports are free (it tells you which process holds a port):
+These live in the root `.env` on the server (`cp .env.server.example .env`), which
+`ecosystem.config.cjs`, `pnpm ports:check` and docker compose all read. Local development
+keeps the defaults (4000 / 3000 / 3001 / 5433).
+
+**Always run `pnpm ports:check` before starting.** It fails if a PM2 name is used by
+another project or a port is taken, and names the process holding it.
+
+### Env files on the server
+
+| File | Values for the server |
+|---|---|
+| `.env` (root) | from `.env.server.example`: ports, `HOST=127.0.0.1`, `DB_PASSWORD` |
+| `apps/api/.env` | `DATABASE_URL=postgresql://beautyup:<DB_PASSWORD>@127.0.0.1:5435/beautyup_shop`, `JWT_SECRET`, `API_PUBLIC_URL=https://api.<domain>`, `CORS_ORIGINS=https://<domain>,https://admin.<domain>` |
+| `apps/web/.env.local` | `API_URL=http://127.0.0.1:4200/api`, `REVALIDATE_SECRET` |
+| `apps/admin/.env.local` | `API_URL=http://127.0.0.1:4200/api`, `WEB_URL=http://127.0.0.1:3200`, same `REVALIDATE_SECRET` |
+
+### First deploy
 
 ```bash
-pnpm ports:check
-# if a port is taken, pick others and use the same values for every command below
-export API_PORT=4100 WEB_PORT=3100 ADMIN_PORT=3101
-pnpm ports:check
-```
-
-When you change ports, update the env files to match: `apps/api/.env` (`CORS_ORIGINS`,
-`API_PUBLIC_URL`), `apps/web/.env.local` (`API_URL`), `apps/admin/.env.local`
-(`API_URL`, `WEB_URL`).
-
-First deploy on the server (Node 20+, pnpm, PM2):
-
-```bash
+cp .env.server.example .env                    # then set DB_PASSWORD
 pnpm install --frozen-lockfile
-pnpm db:up                                     # PostgreSQL in Docker
+pnpm db:up                                     # PostgreSQL on 127.0.0.1:5435
 pnpm ports:check
 pnpm --filter @beautyup/types build
 pnpm --filter @beautyup/api build
@@ -142,9 +150,24 @@ Later deploys: `git pull && pnpm install --frozen-lockfile`, rebuild the API and
 
 > Never run `pm2 reload all` / `pm2 restart all` on this server: other projects share it.
 
-Put a reverse proxy (Nginx/Caddy) with HTTPS in front, e.g. `beautyup-enterprise.com` →
-web port, `admin.…` → admin port, `api.…` → API port, and set `API_PUBLIC_URL`,
-`WEB_URL` and `CORS_ORIGINS` to those domains.
+### Caddy
+
+The server already runs Caddy on 80/443 (automatic HTTPS). Add to the Caddyfile and
+`systemctl reload caddy`:
+
+```caddy
+<domain>, www.<domain> {
+	reverse_proxy 127.0.0.1:3200
+}
+
+admin.<domain> {
+	reverse_proxy 127.0.0.1:3201
+}
+
+api.<domain> {
+	reverse_proxy 127.0.0.1:4200
+}
+```
 
 ## Docs
 

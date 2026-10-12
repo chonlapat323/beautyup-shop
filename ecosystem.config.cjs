@@ -10,11 +10,11 @@
 //   pm2 logs beautyup-shop-web
 //   pm2 save                                 # remember the process list for reboots
 //
-// Ports default to 4000 / 3000 / 3001; override with API_PORT, WEB_PORT, ADMIN_PORT.
+// Ports and HOST come from the root .env (see .env.server.example; dev defaults 4000 / 3000 / 3001).
 // Each app reads its own env file: apps/api/.env, apps/web/.env.local, apps/admin/.env.local
 
 const path = require("node:path");
-const { API_PORT, WEB_PORT, ADMIN_PORT } = require("./scripts/ports.cjs");
+const { API_PORT, WEB_PORT, ADMIN_PORT, HOST } = require("./scripts/ports.cjs");
 
 const app = (dir) => path.join(__dirname, "apps", dir);
 const logs = (name) => ({
@@ -34,14 +34,14 @@ module.exports = {
       exec_mode: "fork",
       instances: 1, // uploads live on local disk and inquiry rate limits are in memory
       max_memory_restart: "512M",
-      env: { NODE_ENV: "production", PORT: API_PORT },
+      env: { NODE_ENV: "production", PORT: API_PORT, HOST },
       ...logs("api"),
     },
     {
       name: "beautyup-shop-web",
       cwd: app("web"),
       script: "node_modules/next/dist/bin/next",
-      args: `start -p ${WEB_PORT}`,
+      args: `start -p ${WEB_PORT} -H ${HOST}`,
       exec_mode: "fork",
       instances: 1,
       max_memory_restart: "768M",
@@ -52,7 +52,7 @@ module.exports = {
       name: "beautyup-shop-admin",
       cwd: app("admin"),
       script: "node_modules/next/dist/bin/next",
-      args: `start -p ${ADMIN_PORT}`,
+      args: `start -p ${ADMIN_PORT} -H ${HOST}`,
       exec_mode: "fork",
       instances: 1,
       max_memory_restart: "512M",
