@@ -16,22 +16,22 @@ export default async function PpStudioPage() {
 
   return (
     <>
-      <section className="bg-ink text-cream">
+      <section className="border-b border-line bg-mist">
         <div className="container-page grid items-center gap-10 py-14 md:grid-cols-2 md:py-24">
           <div className="animate-fade-up">
-            <p className="eyebrow !text-cream/60">PP STUDIO & EVENT</p>
+            <p className="eyebrow">PP STUDIO & EVENT</p>
             <h1 className="mt-4 font-display text-4xl leading-[1.1] text-balance sm:text-6xl">
               Professional photographer & outsource retoucher
             </h1>
-            <p className="mt-6 max-w-lg text-cream/70 sm:text-lg">
+            <p className="mt-6 max-w-lg text-muted sm:text-lg">
               รับถ่ายวีดิโอ ตัดต่อวีดิโอ ถ่ายภาพสินค้า และจัดอีเวนท์
               เพิ่มมูลค่าให้ธุรกิจและสินค้าของคุณ โดยทีมงานคุณภาพ ในลำปาง
             </p>
             <div className="mt-8 flex flex-col gap-2 sm:flex-row">
-              <a href="tel:0637792433" className="btn btn-light">
+              <a href="tel:0637792433" className="btn btn-primary">
                 <Phone className="size-4" /> 063-779-2433
               </a>
-              <a href="#contact" className="btn border border-cream/30 text-cream hover:bg-cream hover:text-ink">
+              <a href="#contact" className="btn btn-outline">
                 ส่งข้อความ
               </a>
             </div>
@@ -45,7 +45,7 @@ export default async function PpStudioPage() {
           <SectionHeading eyebrow="Services" title="บริการของเรา" />
           <ul className="grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s, i) => (
-              <li key={s.title} className="group bg-cream p-6 transition-colors hover:bg-white sm:p-8">
+              <li key={s.title} className="group bg-white p-6 transition-colors hover:bg-mist sm:p-8">
                 <span className="inline-block font-display text-sm text-accent transition-transform group-hover:translate-x-1">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="mt-3 font-display text-2xl">{s.title}</h3>
                 <p className="mt-3 text-muted">{s.text}</p>
@@ -55,7 +55,7 @@ export default async function PpStudioPage() {
         </div>
       </section>
 
-      <section id="contact" className="section scroll-mt-20 border-t border-line bg-white">
+      <section id="contact" className="section scroll-mt-20 border-t border-line bg-mist">
         <div className="container-page grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <p className="eyebrow">Contact</p>

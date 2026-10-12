@@ -54,7 +54,7 @@ export default async function CoursesPage() {
         </div>
       </section>
 
-      <section className="section border-t border-line bg-white">
+      <section className="section border-t border-line bg-mist">
         <div className="container-page">
           <SectionHeading eyebrow="Atmosphere" title="บรรยากาศ การเรียน การสอน การดูงาน" />
           <div className="columns-2 gap-3 sm:gap-4 md:columns-3 lg:columns-4">

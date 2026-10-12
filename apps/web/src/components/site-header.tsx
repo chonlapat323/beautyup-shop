@@ -70,7 +70,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                         <li key={child.href}>
                           <Link
                             href={child.href}
-                            className="block rounded-xl px-4 py-2.5 text-sm text-ink transition-colors hover:bg-cream hover:text-accent"
+                            className="block rounded-xl px-4 py-2.5 text-sm text-ink transition-colors hover:bg-mist hover:text-accent"
                           >
                             {child.label}
                           </Link>

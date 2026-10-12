@@ -11,13 +11,13 @@ export function GrowYourVision() {
   return (
     <section className="section">
       <div className="container-page">
-        <div className="overflow-hidden rounded-3xl bg-ink text-cream md:grid md:grid-cols-2">
+        <div className="overflow-hidden rounded-3xl border border-line bg-mist md:grid md:grid-cols-2">
           <div className="p-8 sm:p-12 lg:p-16">
-            <p className="eyebrow !text-cream/60">BeautyUp</p>
+            <p className="eyebrow">BeautyUp</p>
             <h2 className="mt-3 font-display text-4xl leading-tight sm:text-5xl">
               Grow Your Vision
             </h2>
-            <ul className="mt-8 divide-y divide-cream/15 border-y border-cream/15">
+            <ul className="mt-8 divide-y divide-line border-y border-line">
               {items.map((item) => {
                 const external = item.href.startsWith("http");
                 return (
@@ -28,10 +28,10 @@ export function GrowYourVision() {
                       className="group flex min-h-16 items-center justify-between gap-4 py-4"
                     >
                       <span>
-                        <span className="block text-lg underline-offset-4 group-hover:underline">{item.title}</span>
-                        <span className="block text-sm text-cream/60">{item.text}</span>
+                        <span className="block text-lg transition-colors group-hover:text-accent">{item.title}</span>
+                        <span className="block text-sm text-muted">{item.text}</span>
                       </span>
-                      <span className="text-2xl transition-transform group-hover:translate-x-1">
+                      <span className="text-2xl transition-all group-hover:translate-x-1 group-hover:text-accent">
                         →
                       </span>
                     </Link>

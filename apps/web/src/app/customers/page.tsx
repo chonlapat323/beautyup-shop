@@ -51,7 +51,7 @@ export default async function CustomersPage() {
         </div>
       </section>
 
-      <section className="section border-t border-line bg-white">
+      <section className="section border-t border-line bg-mist">
         <div className="container-page">
           <SectionHeading
             eyebrow="Salon Directory"
@@ -63,7 +63,7 @@ export default async function CustomersPage() {
               <li key={r.key}>
                 <Link
                   href={`/customers/salons?region=${r.key}`}
-                  className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-cream p-5 transition-all hover:-translate-y-0.5 hover:border-ink hover:bg-white hover:shadow-lg hover:shadow-ink/5 sm:p-6"
+                  className="group flex h-full flex-col justify-between gap-6 rounded-2xl border border-line bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-ink hover:shadow-lg hover:shadow-ink/5 sm:p-6"
                 >
                   <span className="text-sm sm:text-base">{r.label}</span>
                   <span className="flex items-end justify-between">

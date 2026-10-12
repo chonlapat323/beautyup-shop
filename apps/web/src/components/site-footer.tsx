@@ -11,11 +11,11 @@ export function SiteFooter({
   company: CompanyInfo;
 }) {
   return (
-    <footer className="bg-ink text-cream">
+    <footer className="border-t border-line bg-mist text-ink">
       <div className="container-page grid gap-12 py-14 md:grid-cols-2 md:py-20 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <Logo onDark className="h-16 sm:h-20 lg:h-20" />
-          <p className="mt-5 max-w-sm text-sm text-cream/70">
+          <Logo className="h-16 sm:h-20 lg:h-20" />
+          <p className="mt-5 max-w-sm text-sm text-muted">
             ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ และเคาน์เตอร์แบรนด์ชั้นนำ
             สำหรับลำปางและภาคเหนือ
           </p>
@@ -23,7 +23,7 @@ export function SiteFooter({
             {["Fanola", "Nook", "Sweet"].map((b) => (
               <span
                 key={b}
-                className="rounded-full border border-cream/20 px-3 py-1 text-xs text-cream/80 transition-colors hover:border-cream/60 hover:text-cream"
+                className="rounded-full border border-line bg-white px-3 py-1 text-xs text-muted transition-colors hover:border-ink hover:text-ink"
               >
                 {b}
               </span>
@@ -32,13 +32,13 @@ export function SiteFooter({
         </div>
 
         <nav aria-label="เมนูท้ายเว็บ" className="lg:col-span-3">
-          <p className="eyebrow !text-cream/50">เมนู</p>
+          <p className="eyebrow">เมนู</p>
           <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-sm lg:grid-cols-1">
             {menu.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="inline-flex min-h-9 items-center text-cream/80 transition-colors hover:text-cream"
+                  className="inline-flex min-h-9 items-center text-muted transition-colors hover:text-accent"
                 >
                   {item.label}
                 </Link>
@@ -48,26 +48,26 @@ export function SiteFooter({
         </nav>
 
         <div className="md:col-span-2 lg:col-span-5">
-          <p className="eyebrow !text-cream/50">ติดต่อเรา</p>
+          <p className="eyebrow">ติดต่อเรา</p>
           <p className="mt-4 font-medium">{company.name}</p>
-          <ul className="mt-4 space-y-3 text-sm text-cream/80">
+          <ul className="mt-4 space-y-3 text-sm text-muted">
             <li className="flex gap-3">
-              <MapPin className="mt-0.5 size-4 shrink-0 text-cream/50" />
+              <MapPin className="mt-0.5 size-4 shrink-0 text-ink/40" />
               <span>{company.address}</span>
             </li>
             <li className="flex gap-3">
-              <Phone className="mt-0.5 size-4 shrink-0 text-cream/50" />
+              <Phone className="mt-0.5 size-4 shrink-0 text-ink/40" />
               <span className="flex flex-wrap gap-x-3">
                 {company.phones.map((p) => (
-                  <a key={p} href={`tel:${p.replaceAll("-", "")}`} className="transition-colors hover:text-cream">
+                  <a key={p} href={`tel:${p.replaceAll("-", "")}`} className="transition-colors hover:text-accent">
                     {p}
                   </a>
                 ))}
               </span>
             </li>
             <li className="flex gap-3">
-              <Mail className="mt-0.5 size-4 shrink-0 text-cream/50" />
-              <a href={`mailto:${company.email}`} className="break-all transition-colors hover:text-cream">
+              <Mail className="mt-0.5 size-4 shrink-0 text-ink/40" />
+              <a href={`mailto:${company.email}`} className="break-all transition-colors hover:text-accent">
                 {company.email}
               </a>
             </li>
@@ -75,10 +75,10 @@ export function SiteFooter({
         </div>
       </div>
 
-      <div className="border-t border-cream/10">
-        <div className="container-page flex flex-col gap-2 py-6 text-xs text-cream/50 sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-line">
+        <div className="container-page flex flex-col gap-2 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>©2565 {company.name}</p>
-          <Link href="/policy" className="transition-colors hover:text-cream">
+          <Link href="/policy" className="transition-colors hover:text-accent">
             นโยบายทางธุรกิจสำหรับการจัดจำหน่ายและการจัดเก็บข้อมูล
           </Link>
         </div>

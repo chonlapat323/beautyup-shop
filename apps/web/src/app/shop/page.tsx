@@ -24,7 +24,7 @@ export default async function ShopPage() {
       <section className="container-page py-12 md:py-16">
         <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-3 lg:grid-cols-7">
           {brands.map((b) => (
-            <li key={b.slug} className="grid min-h-24 place-items-center bg-cream p-4 text-center font-display text-base text-ink/80 transition-colors hover:bg-white hover:text-ink sm:min-h-28 sm:text-lg">
+            <li key={b.slug} className="grid min-h-24 place-items-center bg-white p-4 text-center font-display text-base text-ink/80 transition-colors hover:bg-mist hover:text-accent sm:min-h-28 sm:text-lg">
               {b.name}
             </li>
           ))}
