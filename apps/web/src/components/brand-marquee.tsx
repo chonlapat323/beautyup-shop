@@ -1,8 +1,8 @@
-import Link from "next/link";
+import Link from "@/components/link";
 import type { Brand } from "@/lib/types";
 
 /** Infinite brand strip. Pauses on hover; static for reduced motion. */
-export function BrandMarquee({ brands }: { brands: Brand[] }) {
+export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string }) {
   const href = (b: Brand) => (b.type === "SALON" ? `/products/${b.slug}` : "/shop");
   const row = (hidden: boolean) => (
     <ul aria-hidden={hidden || undefined} className="flex shrink-0 items-center gap-10 pr-10 sm:gap-16 sm:pr-16">
@@ -21,7 +21,7 @@ export function BrandMarquee({ brands }: { brands: Brand[] }) {
   );
 
   return (
-    <section aria-label="แบรนด์ของเรา" className="border-y border-line bg-mist py-6 sm:py-8">
+    <section aria-label={label} className="border-y border-line bg-mist py-6 sm:py-8">
       <div className="group flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div className="flex animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
           {row(false)}

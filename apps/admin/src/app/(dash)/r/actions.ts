@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SaveResult } from "@/components/resource-form";
 import { ApiError, api } from "@/lib/api";
+import { revalidateWeb } from "@/lib/revalidate-web";
 
 function assertResource(name: string): asserts name is ResourceName {
   if (!Object.hasOwn(resources, name)) throw new Error("Unknown resource");
@@ -22,6 +23,7 @@ export async function saveResource(resource: string, id: string | null, payload:
     throw e;
   }
   revalidatePath(`/r/${resource}`);
+  await revalidateWeb();
   return { ok: true, message: "บันทึกแล้ว" };
 }
 
@@ -34,5 +36,6 @@ export async function deleteResource(resource: string, id: string): Promise<{ ok
     throw e;
   }
   revalidatePath(`/r/${resource}`);
+  await revalidateWeb();
   redirect(`/r/${resource}`);
 }

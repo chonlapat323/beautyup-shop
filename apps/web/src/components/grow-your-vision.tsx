@@ -1,13 +1,10 @@
-import Link from "next/link";
+import Link from "@/components/link";
 import { Media } from "./ui";
 
-const items = [
-  { title: "ผลิตภัณฑ์ซาลอน", text: "Fanola, Nook, Sweet Professional", href: "/products" },
-  { title: "เคาน์เตอร์แบรนด์", text: "La Prairie, La Mer, Clarins และอีกมากมาย", href: "/shop" },
-  { title: "โปรโมทร้านทำผมฟรี", text: "เข้ากลุ่ม Facebook ชี้เป้าร้านทำผม", href: "https://www.facebook.com/groups/582427686617116" },
-];
+import type { Dictionary } from "@/i18n";
 
-export function GrowYourVision() {
+export function GrowYourVision({ dict }: { dict: Dictionary["grow"] }) {
+  const items = dict.items;
   return (
     <section className="section">
       <div className="container-page">

@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useDict } from "@/i18n/client";
 
 const SHOW_AFTER = 600;
 const R = 22;
@@ -10,6 +11,7 @@ const CIRCUMFERENCE = 2 * Math.PI * R;
 
 /** Floating "back to top" button with a scroll-progress ring. */
 export function BackToTop() {
+  const dict = useDict();
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -43,7 +45,7 @@ export function BackToTop() {
     <button
       type="button"
       onClick={toTop}
-      aria-label="กลับขึ้นด้านบน"
+      aria-label={dict.common.backToTop}
       tabIndex={visible ? 0 : -1}
       aria-hidden={!visible}
       className={clsx(

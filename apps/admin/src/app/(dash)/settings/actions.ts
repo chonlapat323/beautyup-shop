@@ -4,6 +4,7 @@ import { SETTING_KEYS, type SettingKey } from "@beautyup/types";
 import { revalidatePath } from "next/cache";
 import type { SaveResult } from "@/components/resource-form";
 import { ApiError, api } from "@/lib/api";
+import { revalidateWeb } from "@/lib/revalidate-web";
 
 export async function saveSetting(key: string, payload: Record<string, unknown>): Promise<SaveResult> {
   if (!SETTING_KEYS.includes(key as SettingKey)) return { ok: false, message: "Unknown setting" };
@@ -20,5 +21,6 @@ export async function saveSetting(key: string, payload: Record<string, unknown>)
     throw e;
   }
   revalidatePath("/settings");
+  await revalidateWeb();
   return { ok: true, message: "บันทึกการตั้งค่าแล้ว" };
 }

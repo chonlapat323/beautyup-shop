@@ -1,14 +1,18 @@
 import { Mail, MapPin, Phone } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/link";
+import type { Dictionary } from "@/i18n";
+import { getCurrentYear } from "@/lib/data";
 import type { CompanyInfo, MenuItem } from "@/lib/types";
 import { Logo } from "./logo";
 
-export function SiteFooter({
+export async function SiteFooter({
   menu,
   company,
+  dict,
 }: {
   menu: MenuItem[];
   company: CompanyInfo;
+  dict: Dictionary["footer"];
 }) {
   return (
     <footer className="border-t border-line bg-mist text-ink">
@@ -16,8 +20,7 @@ export function SiteFooter({
         <div className="lg:col-span-4">
           <Logo className="h-16 sm:h-20 lg:h-20" />
           <p className="mt-5 max-w-sm text-sm text-muted">
-            ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ และเคาน์เตอร์แบรนด์ชั้นนำ
-            สำหรับลำปางและภาคเหนือ
+            {dict.tagline}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             {["Fanola", "Nook", "Sweet"].map((b) => (
@@ -31,8 +34,8 @@ export function SiteFooter({
           </div>
         </div>
 
-        <nav aria-label="เมนูท้ายเว็บ" className="lg:col-span-3">
-          <p className="eyebrow">เมนู</p>
+        <nav aria-label={dict.menu} className="lg:col-span-3">
+          <p className="eyebrow">{dict.menu}</p>
           <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-sm lg:grid-cols-1">
             {menu.map((item) => (
               <li key={item.href}>
@@ -48,7 +51,7 @@ export function SiteFooter({
         </nav>
 
         <div className="md:col-span-2 lg:col-span-5">
-          <p className="eyebrow">ติดต่อเรา</p>
+          <p className="eyebrow">{dict.contact}</p>
           <p className="mt-4 font-medium">{company.name}</p>
           <ul className="mt-4 space-y-3 text-sm text-muted">
             <li className="flex gap-3">
@@ -77,9 +80,9 @@ export function SiteFooter({
 
       <div className="border-t border-line">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>©2565 {company.name}</p>
+          <p>©{await getCurrentYear()} {company.name}</p>
           <Link href="/policy" className="transition-colors hover:text-accent">
-            นโยบายทางธุรกิจสำหรับการจัดจำหน่ายและการจัดเก็บข้อมูล
+            {dict.policy}
           </Link>
         </div>
       </div>

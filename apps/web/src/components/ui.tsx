@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/link";
 import type { CSSProperties, ReactNode } from "react";
 import type { Socials } from "@/lib/types";
 
@@ -171,8 +171,8 @@ export function formatPrice(n: number) {
   return `฿${n.toLocaleString("th-TH")}`;
 }
 
-export function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("th-TH", {
+export function formatDate(iso: string, lang: "th" | "en" = "th") {
+  return new Date(iso).toLocaleDateString(lang === "th" ? "th-TH" : "en-GB", {
     year: "numeric",
     month: "long",
     day: "numeric",

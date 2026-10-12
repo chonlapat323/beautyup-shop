@@ -2,8 +2,9 @@
 
 import clsx from "clsx";
 import { ArrowRight, Award, Store } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useEffect, useRef, useState } from "react";
+import { useDict } from "@/i18n/client";
 import type { HeroSlide } from "@/lib/types";
 
 const INTERVAL = 5000;
@@ -15,6 +16,8 @@ export function HomeHero({
   slides: HeroSlide[];
   salonCount: number;
 }) {
+  const dict = useDict();
+  const h = dict.home;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -33,32 +36,33 @@ export function HomeHero({
       <div className="container-page grid items-center gap-10 pt-8 pb-14 sm:pt-12 lg:grid-cols-12 lg:gap-8 lg:pt-10 lg:pb-20">
         {/* Copy */}
         <div className="lg:col-span-6">
-          <p className="eyebrow animate-fade-up !text-brand-pink">Professional Salon Products</p>
+          <p className="eyebrow animate-fade-up !text-brand-pink">{h.eyebrow}</p>
           <h1 className="mt-4 font-display text-[2.75rem] leading-[1.08] tracking-tight text-balance sm:text-6xl lg:text-7xl">
-            <span className="block animate-fade-up [animation-delay:80ms]">เรามอบสิ่งที่ดีที่สุด</span>
+            <span className="block animate-fade-up [animation-delay:80ms]">{h.headline1}</span>
             <span className="block animate-fade-up [animation-delay:160ms]">
-              เพื่อ<span className="text-brand-pink">ลูกค้า</span>ของคุณ
+              {h.headline2Before}
+              <span className="text-brand-pink">{h.headline2Accent}</span>
+              {h.headline2After}
             </span>
           </h1>
           <p className="mt-6 max-w-md animate-fade-up text-lg text-pretty text-muted [animation-delay:240ms]">
-            ผลิตภัณฑ์ซาลอนมืออาชีพนำเข้าจากอิตาลีและบราซิล
-            คัดสรรเพื่อร้านเสริมสวยและช่างผมมืออาชีพ
+            {h.lead}
           </p>
           <div className="mt-8 flex animate-fade-up flex-col gap-3 [animation-delay:320ms] sm:flex-row">
             <Link href="/products" className="btn btn-primary group/btn !px-7">
-              ชมสินค้า
+              {h.ctaProducts}
               <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-1" />
             </Link>
             <Link href="/contact/salon-partner" className="btn btn-outline !px-7">
-              สมัครซาลอน
+              {h.ctaSalon}
             </Link>
           </div>
 
           <dl className="mt-10 grid max-w-md animate-fade-up grid-cols-3 gap-4 border-t border-line pt-6 [animation-delay:400ms]">
             {[
-              { value: `${salonCount}+`, label: "ซาลอนพันธมิตร" },
-              { value: "3", label: "แบรนด์นำเข้า" },
-              { value: "2556", label: "ก่อตั้ง" },
+              { value: `${salonCount}+`, label: h.statSalons },
+              { value: "3", label: h.statBrands },
+              { value: h.founded, label: h.statFounded },
             ].map((s) => (
               <div key={s.label}>
                 <dt className="sr-only">{s.label}</dt>
@@ -99,7 +103,7 @@ export function HomeHero({
             <div aria-hidden className="pointer-events-none absolute bottom-[11%] left-1/2 h-[5%] w-[34%] -translate-x-1/2 rounded-[50%] bg-ink/20 blur-xl" />
 
             {/* Slides */}
-            <div aria-roledescription="carousel" aria-label="สินค้าแนะนำ" className="absolute inset-0 [translate:calc(var(--px,0)*22px)_calc(var(--py,0)*16px)]">
+            <div aria-roledescription="carousel" aria-label={h.featured} className="absolute inset-0 [translate:calc(var(--px,0)*22px)_calc(var(--py,0)*16px)]">
               {slides.map((s, i) => (
                 <Link
                   key={s.brandSlug}
@@ -142,8 +146,8 @@ export function HomeHero({
                 <Store className="size-4" />
               </span>
               <span className="text-sm leading-tight">
-                <span className="block font-medium">{salonCount}+ ซาลอน</span>
-                <span className="text-xs text-muted">ไว้วางใจทั่วประเทศ</span>
+                <span className="block font-medium">{h.badgeSalons(salonCount)}</span>
+                <span className="text-xs text-muted">{h.badgeSalonsSub}</span>
               </span>
             </div>
             <div className="absolute right-0 bottom-[10%] flex animate-fade-up items-center gap-3 rounded-2xl border border-line bg-white/90 px-4 py-3 shadow-xl shadow-ink/5 backdrop-blur [animation-delay:600ms] sm:right-[2%]">
@@ -159,7 +163,7 @@ export function HomeHero({
           </div>
 
           {/* Slide controls */}
-          <div className="mt-6 flex items-center justify-center gap-2" role="tablist" aria-label="เลือกแบรนด์">
+          <div className="mt-6 flex items-center justify-center gap-2" role="tablist" aria-label={h.chooseBrand}>
             {slides.map((s, i) => (
               <button
                 key={s.brandSlug}
@@ -172,7 +176,7 @@ export function HomeHero({
                   i === active ? "bg-ink text-cream" : "text-muted hover:bg-sand hover:text-ink",
                 )}
               >
-                {s.brand}
+                {s.brand || s.product}
               </button>
             ))}
           </div>

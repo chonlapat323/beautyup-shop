@@ -1,10 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, Menu, Search, User, X } from "lucide-react";
-import Link from "next/link";
+import { ChevronDown, Globe, Menu, Search, User, X } from "lucide-react";
+import NextLink from "next/link";
+import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useDict, useLang } from "@/i18n/client";
 import type { MenuItem } from "@/lib/types";
 import { Logo } from "./logo";
 
@@ -12,8 +14,21 @@ function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-export function SiteHeader({ menu }: { menu: MenuItem[] }) {
+/** Same page in the other language. */
+const LANG_PREFIX = /^\/(th|en)(?=\/|$)/;
+
+function useAlternate() {
+  const lang = useLang();
   const pathname = usePathname();
+  const other = lang === "th" ? "en" : "th";
+  return { other, href: pathname.replace(LANG_PREFIX, `/${other}`) };
+}
+
+export function SiteHeader({ menu }: { menu: MenuItem[] }) {
+  const dict = useDict();
+  const alt = useAlternate();
+  // Menu hrefs have no language prefix, so compare against the unprefixed path
+  const pathname = usePathname().replace(LANG_PREFIX, "") || "/";
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -43,12 +58,12 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
       )}
     >
       <div className="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
-        <Link href="/" aria-label="BeautyUp หน้าหลัก" className="shrink-0 transition-opacity hover:opacity-70">
+        <Link href="/" aria-label={`BeautyUp ${dict.common.home}`} className="shrink-0 transition-opacity hover:opacity-70">
           <Logo priority />
         </Link>
 
         {/* Desktop nav */}
-        <nav aria-label="เมนูหลัก" className="hidden lg:block">
+        <nav aria-label="Main" className="hidden lg:block">
           <ul className="flex items-center gap-1 xl:gap-2">
             {menu.map((item) => (
               <li key={item.href} className="group relative">
@@ -88,21 +103,31 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
         <div className="flex items-center gap-1">
           <Link
             href="/search"
-            aria-label="ค้นหา"
+            aria-label={dict.common.search}
             className="grid size-11 place-items-center rounded-full transition-colors hover:bg-sand"
           >
             <Search className="size-5" />
           </Link>
+          <NextLink
+            href={alt.href}
+            hrefLang={alt.other}
+            aria-label={dict.common.switchLanguageLabel}
+            className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 text-sm transition-colors hover:bg-sand hover:text-accent"
+          >
+            <Globe className="size-4" />
+            <span className="hidden sm:inline">{dict.common.switchLanguage}</span>
+            <span className="sm:hidden">{alt.other.toUpperCase()}</span>
+          </NextLink>
           <Link
             href="/login"
             className="hidden items-center gap-2 rounded-full border border-ink px-4 py-2 text-sm transition-colors hover:bg-ink hover:text-cream sm:inline-flex"
           >
             <User className="size-4" />
-            เข้าสู่ระบบ
+            {dict.common.login}
           </Link>
           <button
             type="button"
-            aria-label={open ? "ปิดเมนู" : "เปิดเมนู"}
+            aria-label={open ? dict.common.closeMenu : dict.common.openMenu}
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
@@ -124,7 +149,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
         )}
       >
         <nav
-          aria-label="เมนูมือถือ"
+          aria-label="Mobile"
           className="container-page pt-2 pb-10"
           onClick={(e) => {
             if ((e.target as HTMLElement).closest("a")) setOpen(false);
@@ -160,7 +185,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                       <ul className="overflow-hidden">
                         <li>
                           <Link href={item.href} className="flex min-h-11 items-center pl-4 text-muted transition-colors hover:text-accent">
-                            ทั้งหมด
+                            {dict.common.all}
                           </Link>
                         </li>
                         {item.children.map((child) => (
@@ -190,7 +215,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           </ul>
           <Link href="/login" className="btn btn-primary mt-8 w-full">
             <User className="size-4" />
-            เข้าสู่ระบบ / สมัครสมาชิก
+            {dict.common.loginOrRegister}
           </Link>
         </nav>
       </div>

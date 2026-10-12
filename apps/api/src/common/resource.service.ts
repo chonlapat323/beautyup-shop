@@ -50,6 +50,8 @@ export class ResourceService {
     if (!cfg.slugField) throw new NotFoundException();
     const where: Row = { [cfg.slugField]: slug };
     if (activeOnly && cfg.hasActive) where.isActive = true;
+    // Drafts and scheduled posts are not public
+    if (activeOnly && name === 'posts') where.publishedAt = { not: null, lte: new Date() };
     const row = await this.delegate(name).findFirst({ where, include: cfg.include });
     if (!row) throw new NotFoundException();
     return serialize(row, cfg);

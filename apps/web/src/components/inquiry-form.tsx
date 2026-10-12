@@ -5,11 +5,14 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import { submitInquiry, type InquiryState } from "@/app/actions";
+import type { Dictionary } from "@/i18n";
+import { useDict, useLang } from "@/i18n/client";
 import type { InquiryType } from "@/lib/types";
 
 export interface FormField {
   name: string;
-  label: string;
+  /** Key of dict.form.fields */
+  label: keyof Dictionary["form"]["fields"];
   type?: "text" | "email" | "tel" | "textarea" | "select";
   options?: string[];
   required?: boolean;
@@ -20,15 +23,17 @@ export interface FormField {
 export function InquiryForm({
   type,
   fields,
-  submitLabel = "ส่ง",
+  submitLabel,
   typeOptions,
 }: {
   type: InquiryType;
   fields: FormField[];
   submitLabel?: string;
   /** Lets the visitor choose the inquiry type (e.g. order / salon / course). */
-  typeOptions?: { value: InquiryType; label: string }[];
+  typeOptions?: InquiryType[];
 }) {
+  const dict = useDict().form;
+  const lang = useLang();
   const [state, action, pending] = useActionState<InquiryState, FormData>(submitInquiry, {
     ok: false,
   });
@@ -37,9 +42,9 @@ export function InquiryForm({
   const course = params.get("course");
   const presetType: InquiryType = product ? "ORDER" : course ? "COURSE" : type;
   const presetMessage = product
-    ? `สนใจสั่งซื้อสินค้า: ${product}`
+    ? dict.interestedProduct(product)
     : course
-      ? `สนใจลงทะเบียนคอร์ส: ${course}`
+      ? dict.interestedCourse(course)
       : "";
 
   if (state.ok) {
@@ -47,19 +52,27 @@ export function InquiryForm({
       <div role="status" className="rounded-3xl border border-line bg-white p-8 text-center sm:p-12">
         <CheckCircle2 className="mx-auto size-12 text-accent" />
         <p className="mt-4 font-display text-2xl">{state.message}</p>
-        <p className="mt-2 text-muted">ทีมงานจะติดต่อกลับโดยเร็วที่สุด</p>
+        <p className="mt-2 text-muted">{dict.successSub}</p>
       </div>
     );
   }
 
   return (
-    <form action={action} noValidate className="rounded-3xl border border-line bg-white p-5 sm:p-8">
+    <form action={action} noValidate className="relative rounded-3xl border border-line bg-white p-5 sm:p-8">
+      <input type="hidden" name="lang" value={lang} />
+      {/* Honeypot: hidden from people, filled by bots */}
+      <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label>
+          Website
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
       <input type="hidden" name="required" value={fields.filter((f) => f.required).map((f) => f.name).join(",")} />
       {typeOptions ? (
         <fieldset className="mb-6">
-          <legend className="mb-3 text-sm font-medium">ต้องการติดต่อเรื่อง</legend>
+          <legend className="mb-3 text-sm font-medium">{dict.topic}</legend>
           <div className="flex flex-wrap gap-2">
-            {typeOptions.map((o) => (
+            {typeOptions.map((value) => ({ value, label: dict.types[value as keyof typeof dict.types] ?? value })).map((o) => (
               <label key={o.value} className="cursor-pointer">
                 <input
                   type="radio"
@@ -95,7 +108,7 @@ export function InquiryForm({
           return (
             <div key={f.name} className={clsx(!f.half && "sm:col-span-2")}>
               <label htmlFor={id} className="mb-1.5 block text-sm font-medium">
-                {f.label}
+                {dict.fields[f.label]}
                 {f.required && <span className="text-accent"> *</span>}
               </label>
               {f.type === "textarea" ? (
@@ -107,7 +120,7 @@ export function InquiryForm({
               ) : f.type === "select" ? (
                 <select {...common} defaultValue="">
                   <option value="" disabled>
-                    เลือก{f.label}
+                    {dict.choose(dict.fields[f.label])}
                   </option>
                   {f.options?.map((o) => (
                     <option key={o}>{o}</option>
@@ -134,7 +147,7 @@ export function InquiryForm({
 
       <button type="submit" disabled={pending} className="btn btn-primary mt-6 w-full sm:w-auto sm:min-w-40">
         {pending && <Loader2 className="size-4 animate-spin" />}
-        {submitLabel}
+        {submitLabel ?? dict.send}
       </button>
     </form>
   );

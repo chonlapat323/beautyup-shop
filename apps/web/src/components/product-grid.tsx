@@ -2,8 +2,9 @@
 
 import clsx from "clsx";
 import { MessageCircle, X } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { useMemo, useRef, useState } from "react";
+import { useDict } from "@/i18n/client";
 import type { Product } from "@/lib/types";
 import { Badge, Media, formatPrice, stagger } from "./ui";
 
@@ -18,6 +19,7 @@ export function ProductGrid({
   brandNames: Record<string, string>;
   showFilter?: boolean;
 }) {
+  const dict = useDict();
   const [brand, setBrand] = useState<string>("all");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [selected, setSelected] = useState<Product | null>(null);
@@ -39,7 +41,7 @@ export function ProductGrid({
       {showFilter && brandsInList.length > 1 && (
         <div
           role="tablist"
-          aria-label="กรองตามแบรนด์"
+          aria-label={dict.common.filterByBrand}
           className="-mx-4 mb-8 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
         >
           {["all", ...brandsInList].map((slug) => (
@@ -59,7 +61,7 @@ export function ProductGrid({
                   : "border-line bg-white text-ink hover:border-ink",
               )}
             >
-              {slug === "all" ? "ทั้งหมด" : brandNames[slug] ?? slug}
+              {slug === "all" ? dict.common.all : brandNames[slug] ?? slug}
             </button>
           ))}
         </div>
@@ -89,7 +91,7 @@ export function ProductGrid({
                   </div>
                 ) : null}
                 <span className="absolute inset-x-3 bottom-3 hidden translate-y-2 rounded-full bg-white/90 py-2 text-center text-sm opacity-0 backdrop-blur transition-all group-hover:translate-y-0 group-hover:opacity-100 sm:block">
-                  ดูข้อมูลด่วน
+                  {dict.common.quickView}
                 </span>
               </div>
               <p className="mt-3 text-xs tracking-wide text-muted uppercase">
@@ -109,7 +111,7 @@ export function ProductGrid({
             className="btn btn-outline"
             onClick={() => setVisible((v) => v + PAGE_SIZE)}
           >
-            ดูสินค้าเพิ่มเติม ({filtered.length - visible})
+            {dict.common.loadMore(filtered.length - visible)}
           </button>
         </div>
       )}
@@ -131,7 +133,7 @@ export function ProductGrid({
             <div className="relative p-6 sm:p-8">
               <button
                 type="button"
-                aria-label="ปิด"
+                aria-label={dict.common.close}
                 onClick={() => dialogRef.current?.close()}
                 className="absolute top-3 right-3 grid size-11 place-items-center rounded-full hover:bg-sand"
               >
@@ -141,15 +143,14 @@ export function ProductGrid({
               <h3 className="mt-2 pr-10 font-display text-2xl leading-snug">{selected.name}</h3>
               <Price product={selected} className="mt-4 text-lg" />
               <p className="mt-4 text-sm text-muted">
-                {selected.description ??
-                  "สนใจสั่งซื้อหรือสอบถามราคาส่งสำหรับร้านซาลอน ติดต่อทีมงานบิวตี้อัพได้เลย"}
+                {selected.description ?? dict.common.orderNote}
               </p>
               <Link
                 href={`/contact/salon-partner?product=${selected.slug}`}
                 className="btn btn-primary mt-8 w-full"
               >
                 <MessageCircle className="size-4" />
-                ติดต่อสั่งซื้อ
+                {dict.common.contactToOrder}
               </Link>
             </div>
           </div>

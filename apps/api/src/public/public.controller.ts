@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -86,10 +87,15 @@ export class PublicController {
 
   @Post('inquiries')
   @HttpCode(201)
-  async inquiry(@Body() body: Record<string, unknown>, @Ip() ip: string) {
+  async inquiry(
+    @Body() body: Record<string, unknown>,
+    @Ip() ip: string,
+    @Headers('x-forwarded-for') forwarded?: string,
+  ) {
     // Honeypot: bots fill every field; real visitors never see this one
     if (typeof body?.website === 'string' && body.website) return { ok: true };
-    throttle(ip);
+    // The website's server action forwards the visitor's IP
+    throttle(forwarded?.split(',')[0]?.trim() || ip);
     const data = parseOrThrow(inquiryInput, body);
     await this.prisma.inquiry.create({ data: { ...data, data: data.data as Prisma.InputJsonValue } });
     return { ok: true };

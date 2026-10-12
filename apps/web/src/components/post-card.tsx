@@ -1,11 +1,12 @@
-import Link from "next/link";
+import Link from "@/components/link";
+import type { Locale } from "@/i18n";
+import { getDictionary } from "@/i18n";
 import type { Post } from "@/lib/types";
 import { Media, formatDate, stagger } from "./ui";
 
 export const postTypePath = { ARTICLE: "articles", ACTIVITY: "activities", MEDIA: "media" } as const;
-export const postTypeLabel = { ARTICLE: "บทความ", ACTIVITY: "กิจกรรม", MEDIA: "มีเดีย" } as const;
 
-export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
+export function PostCard({ post, lang, index = 0 }: { post: Post; lang: Locale; index?: number }) {
   return (
     <Link href={`/members/${postTypePath[post.type]}/${post.slug}`} className="group block" data-reveal style={stagger(index % 3)}>
       <div className="card-lift overflow-hidden rounded-2xl border border-transparent">
@@ -16,7 +17,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         />
       </div>
       <p className="mt-4 text-xs text-muted">
-        <span className="text-accent">{postTypeLabel[post.type]}</span> · {formatDate(post.publishedAt)}
+        <span className="text-accent">{getDictionary(lang).members.types[post.type]}</span> · {formatDate(post.publishedAt, lang)}
       </p>
       <h3 className="mt-2 font-display text-xl leading-snug transition-colors group-hover:text-accent">{post.title}</h3>
       <p className="mt-2 line-clamp-2 text-sm text-muted">{post.excerpt}</p>

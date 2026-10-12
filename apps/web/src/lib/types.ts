@@ -1,4 +1,4 @@
-// Shapes mirror apps/api/prisma/schema.prisma so mock data can be swapped for API calls.
+// Website view models: API rows with localized fields already resolved to one language (see lib/data.ts).
 
 export interface MenuItem {
   label: string;
@@ -78,6 +78,13 @@ export interface Salon {
   mapUrl?: string;
 }
 
+export interface PageContent {
+  slug: string;
+  title: string;
+  /** Paragraphs; lines starting with "## " are headings */
+  body: string[];
+}
+
 export interface Course {
   slug: string;
   title: string;
@@ -112,7 +119,7 @@ export interface TeamMember {
 
 export interface Video {
   title: string;
-  youtubeId?: string;
+  url: string;
 }
 
 export interface CompanyInfo {
