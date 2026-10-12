@@ -64,6 +64,15 @@ The website caches API data (`'use cache'`, tag `content`). After every save in 
 panel, the admin calls `POST {WEB_URL}/api/revalidate` with `REVALIDATE_SECRET`, so changes
 show on the next page view without a redeploy.
 
+## Uploaded files
+
+Images and PDFs uploaded in the admin panel are stored on the API server's disk in
+`apps/api/uploads/` and served at `{API_PUBLIC_URL}/uploads/...`. In production:
+
+- keep `uploads/` on a persistent volume (it must survive redeploys),
+- back it up together with the database,
+- set `API_PUBLIC_URL` to the public API domain so saved image links are correct.
+
 ## Admin roles
 
 | Role | Can do |
