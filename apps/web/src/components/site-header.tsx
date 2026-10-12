@@ -1,11 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, Globe, Menu, Search, User, X } from "lucide-react";
+import { ChevronDown, Globe, LogOut, Menu, Search, User, X } from "lucide-react";
 import NextLink from "next/link";
 import Link from "@/components/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { logoutMember } from "@/app/member-actions";
 import { useDict, useLang } from "@/i18n/client";
 import type { MenuItem } from "@/lib/types";
 import { Logo } from "./logo";
@@ -35,7 +36,7 @@ function useMember(pathname: string) {
       cancelled = true;
     };
   }, [pathname]);
-  return member;
+  return [member, setMember] as const;
 }
 
 function MemberAvatar({ member }: { member: HeaderMember }) {
@@ -62,7 +63,13 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const member = useMember(pathname);
+  const lang = useLang();
+  const [member, setMember] = useMember(pathname);
+  const logout = () => {
+    setMember(null);
+    setOpen(false);
+    void logoutMember(lang);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -95,13 +102,13 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
 
         {/* Desktop nav */}
         <nav aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-1 xl:gap-2">
+          <ul className="flex items-center gap-0.5 xl:gap-2">
             {menu.map((item) => (
               <li key={item.href} className="group relative">
                 <Link
                   href={item.href}
                   className={clsx(
-                    "flex items-center gap-1 rounded-full px-3 py-2 text-[0.9375rem] transition-colors hover:bg-sand hover:text-accent group-focus-within:text-accent group-hover:text-accent",
+                    "flex items-center gap-1 rounded-full px-2 py-2 text-sm whitespace-nowrap transition-colors xl:px-3 xl:text-[0.9375rem] hover:bg-sand hover:text-accent group-focus-within:text-accent group-hover:text-accent",
                     isActive(pathname, item.href) ? "text-accent" : "text-ink",
                   )}
                 >
@@ -146,18 +153,39 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
             className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 text-sm transition-colors hover:bg-sand hover:text-accent"
           >
             <Globe className="size-4" />
-            <span className="hidden sm:inline">{dict.common.switchLanguage}</span>
-            <span className="sm:hidden">{alt.other.toUpperCase()}</span>
+            <span className="hidden xl:inline">{dict.common.switchLanguage}</span>
+            <span className="xl:hidden">{alt.other.toUpperCase()}</span>
           </NextLink>
           {member ? (
-            <Link
-              href="/account"
-              title={member.name}
-              className="hidden items-center gap-2 rounded-full border border-line py-1 pr-4 pl-1 text-sm transition-colors hover:border-ink sm:inline-flex"
-            >
-              <MemberAvatar member={member} />
-              <span className="max-w-28 truncate">{dict.member.myAccount}</span>
-            </Link>
+            <div className="group relative hidden sm:block">
+              <Link
+                href="/account"
+                title={member.name}
+                aria-label={dict.member.myAccount}
+                className="inline-flex items-center gap-1.5 rounded-full border border-line py-1 pr-2.5 pl-1 text-sm transition-colors hover:border-ink xl:gap-2 xl:pr-3"
+              >
+                <MemberAvatar member={member} />
+                <span className="hidden max-w-28 truncate xl:inline">{dict.member.myAccount}</span>
+                <ChevronDown className="size-3.5 transition-transform group-focus-within:rotate-180 group-hover:rotate-180" />
+              </Link>
+              <div className="invisible absolute top-full right-0 pt-2 opacity-0 transition-all duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                <div className="w-56 rounded-2xl border border-line bg-white p-2 shadow-xl shadow-ink/5">
+                  <p className="truncate px-3 pt-1 pb-2 text-xs text-muted">{member.name}</p>
+                  <Link href="/account" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-mist hover:text-accent">
+                    <User className="size-4" />
+                    {dict.member.myAccount}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-red-50 hover:text-red-600"
+                  >
+                    <LogOut className="size-4" />
+                    {dict.member.logout}
+                  </button>
+                </div>
+              </div>
+            </div>
           ) : (
             <Link
               href="/login"
@@ -256,10 +284,16 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
             ))}
           </ul>
           {member ? (
-            <Link href="/account" className="btn btn-primary mt-8 w-full">
-              <MemberAvatar member={member} />
-              {dict.member.myAccount} · {member.name}
-            </Link>
+            <div className="mt-8 grid gap-2">
+              <Link href="/account" className="btn btn-primary w-full">
+                <MemberAvatar member={member} />
+                {dict.member.myAccount} · {member.name}
+              </Link>
+              <button type="button" onClick={logout} className="btn btn-outline w-full">
+                <LogOut className="size-4" />
+                {dict.member.logout}
+              </button>
+            </div>
           ) : (
             <Link href="/login" className="btn btn-primary mt-8 w-full">
               <User className="size-4" />
