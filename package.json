@@ -1,0 +1,18 @@
+{
+  "name": "beautyup-shop",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @beautyup/api prisma:migrate",
+    "db:studio": "pnpm --filter @beautyup/api prisma:studio"
+  },
+  "devDependencies": {
+    "turbo": "^2"
+  },
+  "packageManager": "pnpm@10.32.0"
+}
