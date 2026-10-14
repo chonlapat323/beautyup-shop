@@ -186,17 +186,34 @@ export async function getProducts(lang: Locale, opts?: { brandSlug?: string; bra
 
 interface SlideRow extends Row { product: L; caption: L; href: string; imageUrl: string; tint: string; brand: { slug: string; name: string } | null }
 
+const defaultSlides: HeroSlide[] = [
+  { brandSlug: "slide-1", brand: "BeautyUp", product: "BeautyUp Professional", caption: "", href: "/products", imageUrl: "/slides/1.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-2", brand: "BeautyUp", product: "Special Promotions", caption: "", href: "/products", imageUrl: "/slides/2.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-3", brand: "BeautyUp", product: "Hair & Salon Care", caption: "", href: "/products", imageUrl: "/slides/3.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-4", brand: "BeautyUp", product: "Exclusive Products", caption: "", href: "/products", imageUrl: "/slides/4.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-10", brand: "La Prairie", product: "La Prairie Luxury Skincare", caption: "", href: "/shop", imageUrl: "/slides/10 La Prairie.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-14", brand: "BeautyUp", product: "Salon Partner", caption: "", href: "/contact/salon-partner", imageUrl: "/slides/14.jpg", tint: "#1c1917" },
+];
+
 export async function getHeroSlides(lang: Locale): Promise<HeroSlide[]> {
-  const rows = await get<SlideRow[]>("/resources/hero-slides");
-  return rows.map((r, i) => ({
-    brandSlug: r.brand?.slug ?? `slide-${i}`,
-    brand: r.brand?.name ?? "",
-    product: t(r.product, lang),
-    caption: t(r.caption, lang),
-    href: r.href,
-    imageUrl: s(r.imageUrl),
-    tint: r.tint,
-  }));
+  try {
+    const rows = await get<SlideRow[]>("/resources/hero-slides");
+    if (!rows || rows.length === 0) return defaultSlides;
+    const slides = rows.map((r, i) => ({
+      brandSlug: r.brand?.slug ?? `slide-${i}`,
+      brand: r.brand?.name ?? "",
+      product: t(r.product, lang),
+      caption: t(r.caption, lang),
+      href: r.href,
+      imageUrl: s(r.imageUrl),
+      tint: r.tint,
+    }));
+    // If none of the slides have an imageUrl uploaded yet, use the default slide pictures
+    const hasAnyImage = slides.some((s) => Boolean(s.imageUrl));
+    return hasAnyImage ? slides : defaultSlides;
+  } catch {
+    return defaultSlides;
+  }
 }
 
 export async function getVideos(lang: Locale): Promise<Video[]> {

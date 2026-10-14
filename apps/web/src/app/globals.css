@@ -20,6 +20,18 @@
   --animate-marquee: marquee 40s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-drift: drift 18s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes sparkle {
+    0%, 100% {
+      transform: translateY(0) scale(0.7);
+      opacity: 0.2;
+    }
+    50% {
+      transform: translateY(-16px) scale(1.15);
+      opacity: 0.85;
+    }
+  }
 
   @keyframes drift {
     33% {

@@ -175,11 +175,14 @@ async function seedProducts(brand: Record<string, string>) {
 
 /* ---------------------------------------------------------- other lists */
 
-// MOCK product names for Nook/Sweet: replace with the real hero products
+// Hero slides using the uploaded banner images
 const heroSlides = (brand: Record<string, string>) => [
-  { brandId: brand['fanola'], product: L('No Yellow Shampoo', 'No Yellow Shampoo'), caption: L('แชมพูม่วงอันดับหนึ่งของช่างผม', "Hairdressers' favourite purple shampoo"), href: '/products/fanola', tint: '#6d4c9f', sortOrder: 0 },
-  { brandId: brand['nook'], product: L('Magic Arganoil', 'Magic Arganoil'), caption: L('Eco-conscious beauty จากอิตาลี', 'Eco-conscious beauty from Italy'), href: '/products/nook', tint: '#5f7d5a', sortOrder: 1 },
-  { brandId: brand['sweet-professional'], product: L('The First Shampoo', 'The First Shampoo'), caption: L('ทรีตเมนต์ยืดผมจากบราซิล', 'Straightening treatment from Brazil'), href: '/products/sweet-professional', tint: '#b08a4e', sortOrder: 2 },
+  { brandId: brand['fanola'], product: L('BeautyUp Official Salon Partner', 'BeautyUp Official Salon Partner'), caption: L('ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ', 'Professional Salon & Beauty Products'), href: '/products', imageUrl: '/uploads/1.jpg', tint: '#d6297f', sortOrder: 0 },
+  { brandId: null, product: L('Special Beauty Promotions', 'Special Beauty Promotions'), caption: L('โปรโมชันสุดคุ้มเพื่อช่างผมมืออาชีพ', 'Exclusive Salon Deals'), href: '/products', imageUrl: '/uploads/2.jpg', tint: '#1c1917', sortOrder: 1 },
+  { brandId: brand['nook'], product: L('Nook Eco-Conscious Beauty', 'Nook Eco-Conscious Beauty'), caption: L('ผลิตภัณฑ์ดูแลเส้นผมจากธรรมชาติ', 'Nature-inspired salon care from Italy'), href: '/products/nook', imageUrl: '/uploads/3.jpg', tint: '#5f7d5a', sortOrder: 2 },
+  { brandId: brand['sweet-professional'], product: L('Sweet Professional Hair Treatment', 'Sweet Professional Hair Treatment'), caption: L('นวัตกรรมยืดผมระดับโลก', 'Global Hair Transformation'), href: '/products/sweet-professional', imageUrl: '/uploads/4.jpg', tint: '#b08a4e', sortOrder: 3 },
+  { brandId: null, product: L('La Prairie Caviar Collection', 'La Prairie Caviar Collection'), caption: L('ศาสตร์แห่งการชะลอวัยชั้นเลิศ', 'The Swiss Luxury Skincare'), href: '/shop', imageUrl: '/uploads/10 La Prairie.jpg', tint: '#1e3a8a', sortOrder: 4 },
+  { brandId: null, product: L('Salon Partner Community', 'Salon Partner Community'), caption: L('เติบโตไปพร้อมกับเครือข่ายร้านซาลอนทั่วประเทศ', 'Grow your vision with BeautyUp'), href: '/contact/salon-partner', imageUrl: '/uploads/14.jpg', tint: '#7c4630', sortOrder: 5 },
 ];
 
 const videos = [
