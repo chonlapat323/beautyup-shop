@@ -60,44 +60,48 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+                style={{ gap: "1.75rem" }}
+              >
                 {sec.cards.map((card, cIdx) => (
                   <div
                     key={cIdx}
                     data-reveal
                     suppressHydrationWarning
-                    className="group relative flex flex-col justify-end overflow-hidden rounded-3xl border border-line bg-mist shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl aspect-[9/16] min-h-[580px] sm:min-h-[620px]"
+                    className="group flex flex-col justify-between overflow-hidden rounded-3xl border border-line bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-brand-pink/30"
                   >
-                    {/* Background Photo */}
-                    {card.imageUrl ? (
-                      <LoadingImage
-                        src={card.imageUrl}
-                        alt=""
-                        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/20 to-mist" />
-                    )}
+                    {/* Top: Dedicated Photo Box (100% visible, no overlay text) */}
+                    <div className="relative aspect-[4/5] w-full overflow-hidden bg-mist">
+                      {card.imageUrl ? (
+                        <LoadingImage
+                          src={card.imageUrl}
+                          alt=""
+                          className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gradient-to-br from-brand-pink/20 to-mist flex items-center justify-center text-muted text-sm">
+                          {card.title}
+                        </div>
+                      )}
+                    </div>
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-
-                    {/* Floating Glassmorphic White Card at Bottom - exactly 35% height */}
-                    <div className="relative z-10 m-3 sm:m-4 h-[35%] max-h-[35%] flex flex-col justify-between overflow-hidden rounded-2xl bg-white/95 p-3.5 sm:p-4 backdrop-blur-md border border-white/60 shadow-xl transition-all duration-300 group-hover:bg-white">
-                      <div className="min-h-0 overflow-y-auto pr-1">
-                        <h3 className="font-sans text-base sm:text-lg font-bold text-ink group-hover:text-accent transition-colors leading-tight">
+                    {/* Bottom: Dedicated Text & Button Section */}
+                    <div className="flex flex-1 flex-col justify-between p-5 sm:p-6 bg-white">
+                      <div>
+                        <h3 className="font-sans text-xl sm:text-2xl font-bold text-ink group-hover:text-accent transition-colors leading-snug">
                           {card.title}
                         </h3>
                         {card.description && (
-                          <p className="mt-1.5 text-xs sm:text-[13px] leading-relaxed text-muted line-clamp-3 sm:line-clamp-4">
+                          <p className="mt-3 text-xs sm:text-sm leading-relaxed text-muted line-clamp-5">
                             {card.description}
                           </p>
                         )}
                       </div>
-                      <div className="mt-2 pt-2 border-t border-line/60 shrink-0">
+                      <div className="mt-5 pt-3.5 border-t border-line/60">
                         <Link
                           href={card.href || "#products"}
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent group-hover:text-accent-dark transition-transform group-hover:translate-x-1"
+                          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-accent group-hover:text-accent-dark transition-transform group-hover:translate-x-1"
                         >
                           ดูสินค้า <span>→</span>
                         </Link>
