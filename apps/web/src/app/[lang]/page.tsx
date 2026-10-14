@@ -5,17 +5,18 @@ import { HomeHero } from "@/components/home-hero";
 import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, SectionHeading, VideoPlayer, stagger } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getHeroSlides, getProducts, getRegions, getVideos } from "@/lib/data";
+import { getBrands, getGrowVision, getHeroSlides, getProducts, getRegions, getVideos } from "@/lib/data";
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang, dict } = await resolveLang(params);
   const h = dict.home;
-  const [slides, regions, videos, brands, products] = await Promise.all([
+  const [slides, regions, videos, brands, products, growVision] = await Promise.all([
     getHeroSlides(lang),
     getRegions(lang),
     getVideos(lang),
     getBrands(lang),
     getProducts(lang),
+    getGrowVision(lang),
   ]);
   const salonBrands = brands.filter((b) => b.type === "SALON");
   const brandNames = Object.fromEntries(brands.map((b) => [b.slug, b.name]));
@@ -130,7 +131,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }
