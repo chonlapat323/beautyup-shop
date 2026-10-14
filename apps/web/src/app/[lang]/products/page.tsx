@@ -3,7 +3,7 @@ import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands } from "@/lib/data";
+import { getBrands, getGrowVision } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/products">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.products.title };
@@ -12,7 +12,10 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products">
 export default async function ProductsPage({ params }: PageProps<"/[lang]/products">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.products;
-  const brands = await getBrands(lang, "SALON");
+  const [brands, growVision] = await Promise.all([
+    getBrands(lang, "SALON"),
+    getGrowVision(lang),
+  ]);
 
   return (
     <>
@@ -68,7 +71,7 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
         ))}
       </div>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }

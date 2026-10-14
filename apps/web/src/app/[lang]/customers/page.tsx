@@ -3,7 +3,7 @@ import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { dateLocale, resolveLang } from "@/i18n";
-import { getAmbassadors, getRegions } from "@/lib/data";
+import { getAmbassadors, getGrowVision, getRegions } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/customers">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.customers.title };
@@ -12,7 +12,11 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/customers"
 export default async function CustomersPage({ params }: PageProps<"/[lang]/customers">) {
   const { lang, dict } = await resolveLang(params);
   const c = dict.customers;
-  const [ambassadors, regions] = await Promise.all([getAmbassadors(lang), getRegions(lang)]);
+  const [ambassadors, regions, growVision] = await Promise.all([
+    getAmbassadors(lang),
+    getRegions(lang),
+    getGrowVision(lang),
+  ]);
   const total = regions.reduce((sum, r) => sum + r.count, 0);
 
   return (
@@ -86,7 +90,7 @@ export default async function CustomersPage({ params }: PageProps<"/[lang]/custo
         </div>
       </section>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }

@@ -4,7 +4,7 @@ import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { Media, PageHero, SectionHeading, stagger } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getCourses } from "@/lib/data";
+import { getCourses, getGrowVision } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/courses">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.courses.title };
@@ -13,7 +13,10 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/courses">)
 export default async function CoursesPage({ params }: PageProps<"/[lang]/courses">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.courses;
-  const courses = await getCourses(lang);
+  const [courses, growVision] = await Promise.all([
+    getCourses(lang),
+    getGrowVision(lang),
+  ]);
 
   return (
     <>
@@ -74,7 +77,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
         </div>
       </section>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }

@@ -3,7 +3,7 @@ import { GrowYourVision } from "@/components/grow-your-vision";
 import { ProductGrid } from "@/components/product-grid";
 import { Media, PageHero, SectionHeading } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getProducts } from "@/lib/data";
+import { getBrands, getGrowVision, getProducts } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/shop">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.shop.title };
@@ -12,9 +12,10 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/shop">): P
 export default async function ShopPage({ params }: PageProps<"/[lang]/shop">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.shop;
-  const [brands, products] = await Promise.all([
+  const [brands, products, growVision] = await Promise.all([
     getBrands(lang, "COUNTER"),
     getProducts(lang, { brandType: "COUNTER" }),
+    getGrowVision(lang),
   ]);
   const brandNames = Object.fromEntries(brands.map((b) => [b.slug, b.name]));
 
@@ -58,7 +59,7 @@ export default async function ShopPage({ params }: PageProps<"/[lang]/shop">) {
         </div>
       </section>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }

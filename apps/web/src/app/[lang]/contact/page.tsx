@@ -6,7 +6,7 @@ import { GrowYourVision } from "@/components/grow-your-vision";
 import { InquiryForm } from "@/components/inquiry-form";
 import { PageHero } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getCompany } from "@/lib/data";
+import { getCompany, getGrowVision } from "@/lib/data";
 import { contactFields } from "@/lib/forms";
 import { FormSkeleton } from "@/components/skeleton";
 
@@ -21,7 +21,7 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
   const d = dict.contact;
   const actions = d.actions.map((a, i) => ({ ...a, icon: icons[i] ?? Store }));
   const topics = d.topics;
-  const company = await getCompany(lang);
+  const [company, growVision] = await Promise.all([getCompany(lang), getGrowVision(lang)]);
 
   return (
     <>
@@ -105,7 +105,7 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
         </div>
       </section>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }
