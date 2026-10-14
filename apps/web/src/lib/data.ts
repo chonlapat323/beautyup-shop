@@ -78,10 +78,39 @@ interface CompanyRow {
   departments: { name: L; phone: string }[];
   bankAccounts: { bank: L; accountName: L; accountNo: string }[];
 }
+interface AboutRow {
+  eyebrow?: L;
+  headline?: L;
+  lead?: L;
+  welcomeText?: L;
+  founderName?: L;
+  founderRole?: L;
+  founderPhoto?: string;
+  education?: L;
+  slides?: { imageUrl: string; caption?: L }[];
+  socials?: Record<string, string>;
+  links?: { label: L; href: string }[];
+}
+
 interface SettingsRow {
   company?: CompanyRow;
+  about?: AboutRow;
   timeline?: { year: string; text: L }[];
   ppStudio?: { title: string; text: L }[];
+}
+
+export interface AboutData {
+  eyebrow: string;
+  headline: string;
+  lead: string;
+  welcomeText: string;
+  founderName: string;
+  founderRole: string;
+  founderPhoto: string;
+  education: string[];
+  slides: { imageUrl: string; caption: string }[];
+  socials: Record<string, string>;
+  links: { label: string; href: string }[];
 }
 
 export async function getCompany(lang: Locale): Promise<CompanyInfo> {
@@ -97,6 +126,69 @@ export async function getCompany(lang: Locale): Promise<CompanyInfo> {
     facebookGroup: c?.facebookGroup ?? "",
     departments: (c?.departments ?? []).map((d) => ({ name: t(d.name, lang), phone: d.phone })),
     bankAccounts: (c?.bankAccounts ?? []).map((b) => ({ bank: t(b.bank, lang), accountName: t(b.accountName, lang), accountNo: b.accountNo })),
+  };
+}
+
+export async function getAboutData(lang: Locale): Promise<AboutData> {
+  const dict = getDictionary(lang).about;
+  let a: AboutRow | undefined;
+  try {
+    const settings = await get<SettingsRow>("/settings");
+    a = settings.about;
+  } catch {
+    // fallback to defaults if settings not available
+  }
+
+  const headline = (a?.headline && t(a.headline, lang)) || dict.headline;
+  const eyebrow = (a?.eyebrow && t(a.eyebrow, lang)) || dict.eyebrow;
+  const lead = (a?.lead && t(a.lead, lang)) || dict.lead;
+  const welcomeText = (a?.welcomeText && t(a.welcomeText, lang)) || dict.welcomeText || "";
+  const founderName = (a?.founderName && t(a.founderName, lang)) || dict.founderName;
+  const founderRole = (a?.founderRole && t(a.founderRole, lang)) || dict.founderRole;
+  const founderPhoto = s(a?.founderPhoto) || "";
+  const educationRaw = (a?.education && t(a.education, lang)) || dict.educationText;
+  const education = educationRaw
+    .split("\n")
+    .map((x) => x.trim())
+    .filter(Boolean);
+
+  const defaultSlides = [
+    { imageUrl: "/slides/1.jpg", caption: "BeautyUp Official Salon Partner" },
+    { imageUrl: "/slides/2.jpg", caption: "Beauty Promotion" },
+    { imageUrl: "/slides/3.jpg", caption: "Nook Eco-Conscious Beauty" },
+    { imageUrl: "/slides/4.jpg", caption: "Sweet Professional Hair Treatment" },
+    { imageUrl: "/slides/10 La Prairie.jpg", caption: "La Prairie Luxury Skincare" },
+  ];
+
+  const slides = (a?.slides && a.slides.length > 0)
+    ? a.slides.map((sl) => ({ imageUrl: sl.imageUrl, caption: t(sl.caption, lang) }))
+    : defaultSlides;
+
+  const socials = a?.socials && Object.keys(a.socials).length > 0
+    ? a.socials
+    : {
+        facebook: "https://www.facebook.com/pholaphat.sothanarphisarn",
+        instagram: "https://www.instagram.com/pholraphatamy/",
+        tiktok: "https://www.tiktok.com/@pholraphatamysoth",
+        youtube: "https://www.youtube.com/@FanolaOfficial",
+      };
+
+  const links = (a?.links && a.links.length > 0)
+    ? a.links.map((l) => ({ label: t(l.label, lang), href: l.href }))
+    : dict.links.map((l) => ({ label: l.label, href: l.href }));
+
+  return {
+    eyebrow,
+    headline,
+    lead,
+    welcomeText,
+    founderName,
+    founderRole,
+    founderPhoto,
+    education,
+    slides,
+    socials,
+    links,
   };
 }
 

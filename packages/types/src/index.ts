@@ -296,11 +296,32 @@ export const companySetting = z.object({
     .default([]),
 });
 
-export const SETTING_KEYS = ["company", "timeline", "ppStudio", "regionCounts"] as const;
+export const aboutSlide = z.object({
+  imageUrl: z.string().default(""),
+  caption: localizedOptional,
+});
+
+export const aboutSetting = z.object({
+  eyebrow: localizedOptional,
+  headline: localizedOptional,
+  lead: localizedOptional,
+  welcomeText: localizedOptional,
+  founderName: localizedOptional,
+  founderRole: localizedOptional,
+  founderPhoto: z.string().default(""),
+  education: localizedOptional,
+  slides: z.array(aboutSlide).default([]),
+  socials: socials.default({}),
+  links: z.array(z.object({ label: localized, href: z.string().default("") })).default([]),
+});
+export type AboutSetting = z.infer<typeof aboutSetting>;
+
+export const SETTING_KEYS = ["company", "about", "timeline", "ppStudio", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
+  about: aboutSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
   ppStudio: z.array(z.object({ title: z.string(), text: localized })),
   /** Optional override for the salon directory counts until all salons are imported */

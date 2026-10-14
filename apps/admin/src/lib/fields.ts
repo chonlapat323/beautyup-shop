@@ -325,6 +325,39 @@ export const settingsUi = {
       },
     ] satisfies Field[],
   },
+  about: {
+    title: "หน้าเกี่ยวกับเรา",
+    description: "จัดการข้อความ รูปภาพผู้ก่อตั้ง ภาพสไลด์ และลิงก์ปุ่มในหน้าเกี่ยวกับเรา พร้อมดูตัวอย่างหน้าเว็บจริงได้ทันที",
+    fields: [
+      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)" },
+      { type: "localized", name: "headline", label: "ชื่อหัวเรื่องหลัก (Headline)", required: true },
+      { type: "localizedTextarea", name: "lead", label: "ข้อความบรรยายบริษัท (Lead Paragraph)" },
+      { type: "localizedTextarea", name: "welcomeText", label: "ข้อความยินดีต้อนรับ (Welcome Text)" },
+      { type: "image", name: "founderPhoto", label: "รูปผู้ก่อตั้ง (คุณเอมี่)" },
+      { type: "localized", name: "founderName", label: "ชื่อผู้ก่อตั้ง", required: true },
+      { type: "localized", name: "founderRole", label: "ตำแหน่งผู้ก่อตั้ง" },
+      { type: "localizedTextarea", name: "education", label: "ประวัติการศึกษา (หนึ่งบรรทัดต่อรายการ)" },
+      {
+        type: "list",
+        name: "slides",
+        label: "ภาพสไลด์ / แกลเลอรีในหน้าเกี่ยวกับเรา (กดเพิ่มภาพได้ตามต้องการ)",
+        item: [
+          { type: "image", name: "imageUrl", label: "รูปภาพ" },
+          { type: "localized", name: "caption", label: "คำบรรยายภาพ (ไม่บังคับ)" },
+        ],
+      },
+      { type: "socials", name: "socials", label: "โซเชียลมีเดียผู้ก่อตั้ง (Facebook, IG, TikTok, YouTube)" },
+      {
+        type: "list",
+        name: "links",
+        label: "ปุ่มลิงก์นำทาง (Quick Action Buttons)",
+        item: [
+          { type: "localized", name: "label", label: "ข้อความบนปุ่ม", required: true },
+          { type: "text", name: "href", label: "ลิงก์ปลายทาง (เช่น /products หรือ https://...)", required: true },
+        ],
+      },
+    ] satisfies Field[],
+  },
   timeline: {
     title: "เส้นทางของบิวตี้อัพ (หน้าเกี่ยวกับเรา)",
     fields: [

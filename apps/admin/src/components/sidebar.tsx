@@ -50,6 +50,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     title: "หน้าเว็บ",
     items: [
       { href: "/r/hero-slides", label: "สไลด์หน้าแรก", icon: Images },
+      { href: "/settings?tab=about", label: "หน้าเกี่ยวกับเรา", icon: Building2 },
       { href: "/r/menu-items", label: "เมนูเว็บไซต์", icon: MenuSquare },
       { href: "/r/posts", label: "บทความ / กิจกรรม", icon: Newspaper },
       { href: "/r/pages", label: "หน้าเนื้อหา", icon: FileText },
