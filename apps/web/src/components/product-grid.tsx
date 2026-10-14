@@ -55,10 +55,10 @@ export function ProductGrid({
                 setVisible(PAGE_SIZE);
               }}
               className={clsx(
-                "min-h-10 shrink-0 rounded-full border px-4 text-sm whitespace-nowrap transition-colors",
+                "min-h-10 shrink-0 rounded-full border px-4.5 py-1 text-sm font-medium whitespace-nowrap transition-all duration-300",
                 brand === slug
-                  ? "border-ink bg-ink text-cream"
-                  : "border-line bg-white text-ink hover:border-ink",
+                  ? "border-brand-pink bg-brand-pink text-white shadow-md shadow-brand-pink/25"
+                  : "border-line/80 bg-white/90 text-ink/80 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95",
               )}
             >
               {slug === "all" ? dict.common.all : brandNames[slug] ?? slug}

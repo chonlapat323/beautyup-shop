@@ -39,8 +39,10 @@ export default async function PostListPage({ params }: PageProps<"/[lang]/member
               href={`/members/${path}`}
               aria-current={path === segment ? "page" : undefined}
               className={clsx(
-                "inline-flex min-h-10 items-center rounded-full border px-4 text-sm transition-colors",
-                path === segment ? "border-ink bg-ink text-cream" : "border-line bg-white hover:border-ink",
+                "inline-flex min-h-10 items-center rounded-full border px-4.5 text-sm font-medium transition-all duration-300",
+                path === segment
+                  ? "border-brand-pink bg-brand-pink text-white shadow-md shadow-brand-pink/25"
+                  : "border-line/80 bg-white/90 text-ink/80 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95",
               )}
             >
               {dict.members.types[t as PostType]}

@@ -232,7 +232,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
                   setMemberDismissed(true);
                   (document.activeElement as HTMLElement)?.blur();
                 }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line py-1 pr-2.5 pl-1 text-sm transition-colors hover:border-ink xl:gap-2 xl:pr-3"
+                className="inline-flex items-center gap-1.5 rounded-full border border-line/80 bg-white py-1 pr-2.5 pl-1 text-sm transition-all duration-300 hover:border-brand-pink hover:text-brand-pink hover:shadow-md hover:shadow-brand-pink/15 hover:-translate-y-0.5 xl:gap-2 xl:pr-3"
               >
                 <MemberAvatar member={member} />
                 <span className="hidden max-w-28 truncate xl:inline">{dict.member.myAccount}</span>
@@ -278,8 +278,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           ) : (
             <Link
               href="/login"
-
-              className="hidden items-center gap-2 rounded-full border border-ink px-4 py-2 text-sm transition-colors hover:bg-ink hover:text-cream sm:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-line/80 bg-white px-4 py-1.5 text-sm font-medium text-ink transition-all duration-300 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95 sm:inline-flex"
             >
               <User className="size-4" />
               {dict.common.login}
