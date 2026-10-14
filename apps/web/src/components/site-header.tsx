@@ -65,13 +65,26 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const [dismissedMenu, setDismissedMenu] = useState<string | null>(null);
+  const [memberHovered, setMemberHovered] = useState(false);
+  const [memberDismissed, setMemberDismissed] = useState(false);
   const lang = useLang();
   const [member, setMember] = useMember(pathname);
   const logout = () => {
     setMember(null);
     setOpen(false);
+    setMemberDismissed(true);
     void logoutMember(lang);
   };
+
+  useEffect(() => {
+    setOpen(false);
+    setHoveredMenu(null);
+    setDismissedMenu(null);
+    setMemberHovered(false);
+    setMemberDismissed(false);
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -105,38 +118,77 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
         {/* Desktop nav */}
         <nav aria-label="Main" className="hidden lg:block">
           <ul className="flex items-center gap-0 xl:gap-2">
-            {menu.map((item) => (
-              <li key={item.href} className="group relative">
-                <Link
-                  href={item.href}
-                  className={clsx(
-                    "flex items-center gap-1 rounded-full px-1.5 py-2 text-sm whitespace-nowrap transition-colors xl:px-3 xl:text-[0.9375rem] hover:bg-sand hover:text-accent group-focus-within:text-accent group-hover:text-accent",
-                    isActive(pathname, item.href) ? "text-accent" : "text-ink",
-                  )}
+            {menu.map((item) => {
+              const isDropdownOpen = item.children && hoveredMenu === item.href && dismissedMenu !== item.href;
+              return (
+                <li
+                  key={item.href}
+                  className="relative"
+                  onMouseEnter={() => {
+                    setHoveredMenu(item.href);
+                    setDismissedMenu(null);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredMenu(null);
+                    setDismissedMenu(null);
+                  }}
                 >
-                  {item.label}
+                  <Link
+                    href={item.href}
+                    onClick={() => {
+                      setDismissedMenu(item.href);
+                      setHoveredMenu(null);
+                      setOpen(false);
+                      (document.activeElement as HTMLElement)?.blur();
+                    }}
+                    className={clsx(
+                      "flex items-center gap-1 rounded-full px-1.5 py-2 text-sm whitespace-nowrap transition-colors xl:px-3 xl:text-[0.9375rem] hover:bg-sand hover:text-accent",
+                      isActive(pathname, item.href) ? "text-accent" : "text-ink",
+                      isDropdownOpen && "text-accent bg-sand/50",
+                    )}
+                  >
+                    {item.label}
+                    {item.children && (
+                      <ChevronDown
+                        className={clsx(
+                          "size-3.5 transition-transform duration-200",
+                          isDropdownOpen && "rotate-180 text-accent",
+                        )}
+                      />
+                    )}
+                  </Link>
                   {item.children && (
-                    <ChevronDown className="size-3.5 transition-transform group-focus-within:rotate-180 group-hover:rotate-180" />
+                    <div
+                      className={clsx(
+                        "absolute top-full left-1/2 -translate-x-1/2 pt-2 transition-all duration-200",
+                        isDropdownOpen
+                          ? "visible opacity-100 translate-y-0"
+                          : "invisible opacity-0 translate-y-1 pointer-events-none",
+                      )}
+                    >
+                      <ul className="min-w-60 rounded-2xl border border-line bg-white p-2 shadow-xl shadow-ink/5">
+                        {item.children.map((child) => (
+                          <li key={child.href}>
+                            <Link
+                              href={child.href}
+                              onClick={() => {
+                                setDismissedMenu(item.href);
+                                setHoveredMenu(null);
+                                setOpen(false);
+                                (document.activeElement as HTMLElement)?.blur();
+                              }}
+                              className="block rounded-xl px-4 py-2.5 text-sm text-ink transition-colors hover:bg-mist hover:text-accent"
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
-                </Link>
-                {item.children && (
-                  <div className="invisible absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 transition-all duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                    <ul className="min-w-60 rounded-2xl border border-line bg-white p-2 shadow-xl shadow-ink/5">
-                      {item.children.map((child) => (
-                        <li key={child.href}>
-                          <Link
-                            href={child.href}
-                            className="block rounded-xl px-4 py-2.5 text-sm text-ink transition-colors hover:bg-mist hover:text-accent"
-                          >
-                            {child.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
@@ -161,21 +213,54 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           {member === undefined ? (
             <Skeleton className="hidden h-9 w-11 rounded-full sm:block xl:w-36" />
           ) : member ? (
-            <div className="group relative hidden sm:block">
+            <div
+              className="relative hidden sm:block"
+              onMouseEnter={() => {
+                setMemberHovered(true);
+                setMemberDismissed(false);
+              }}
+              onMouseLeave={() => {
+                setMemberHovered(false);
+                setMemberDismissed(false);
+              }}
+            >
               <Link
                 href="/account"
                 title={member.name}
                 aria-label={dict.member.myAccount}
+                onClick={() => {
+                  setMemberDismissed(true);
+                  (document.activeElement as HTMLElement)?.blur();
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-line py-1 pr-2.5 pl-1 text-sm transition-colors hover:border-ink xl:gap-2 xl:pr-3"
               >
                 <MemberAvatar member={member} />
                 <span className="hidden max-w-28 truncate xl:inline">{dict.member.myAccount}</span>
-                <ChevronDown className="size-3.5 transition-transform group-focus-within:rotate-180 group-hover:rotate-180" />
+                <ChevronDown
+                  className={clsx(
+                    "size-3.5 transition-transform duration-200",
+                    memberHovered && !memberDismissed && "rotate-180",
+                  )}
+                />
               </Link>
-              <div className="invisible absolute top-full right-0 pt-2 opacity-0 transition-all duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div
+                className={clsx(
+                  "absolute top-full right-0 pt-2 transition-all duration-200",
+                  memberHovered && !memberDismissed
+                    ? "visible opacity-100 translate-y-0"
+                    : "invisible opacity-0 translate-y-1 pointer-events-none",
+                )}
+              >
                 <div className="w-56 rounded-2xl border border-line bg-white p-2 shadow-xl shadow-ink/5">
                   <p className="truncate px-3 pt-1 pb-2 text-xs text-muted">{member.name}</p>
-                  <Link href="/account" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-mist hover:text-accent">
+                  <Link
+                    href="/account"
+                    onClick={() => {
+                      setMemberDismissed(true);
+                      (document.activeElement as HTMLElement)?.blur();
+                    }}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-mist hover:text-accent"
+                  >
                     <User className="size-4" />
                     {dict.member.myAccount}
                   </Link>
@@ -193,6 +278,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           ) : (
             <Link
               href="/login"
+
               className="hidden items-center gap-2 rounded-full border border-ink px-4 py-2 text-sm transition-colors hover:bg-ink hover:text-cream sm:inline-flex"
             >
               <User className="size-4" />
