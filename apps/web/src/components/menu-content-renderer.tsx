@@ -66,14 +66,14 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                     key={cIdx}
                     data-reveal
                     suppressHydrationWarning
-                    className="group relative flex flex-col justify-end overflow-hidden rounded-3xl border border-line bg-mist shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl aspect-[3/4] sm:aspect-[4/6] lg:aspect-[3/5]"
+                    className="group relative flex flex-col justify-end overflow-hidden rounded-3xl border border-line bg-mist shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl aspect-[9/16] min-h-[580px] sm:min-h-[620px]"
                   >
                     {/* Background Photo */}
                     {card.imageUrl ? (
                       <LoadingImage
                         src={card.imageUrl}
                         alt=""
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/20 to-mist" />
@@ -82,17 +82,19 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
-                    {/* Floating Glassmorphic White Card at Bottom */}
-                    <div className="relative z-10 m-4 rounded-2xl bg-white/95 p-5 sm:p-6 backdrop-blur-md border border-white/50 shadow-xl transition-all duration-300 group-hover:bg-white">
-                      <h3 className="font-sans text-xl sm:text-2xl font-bold text-ink group-hover:text-accent transition-colors">
-                        {card.title}
-                      </h3>
-                      {card.description && (
-                        <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-muted line-clamp-6">
-                          {card.description}
-                        </p>
-                      )}
-                      <div className="mt-4 pt-3 border-t border-line/50">
+                    {/* Floating Glassmorphic White Card at Bottom - exactly 50% height */}
+                    <div className="relative z-10 m-3 sm:m-4 h-[48%] max-h-[50%] flex flex-col justify-between overflow-hidden rounded-2xl bg-white/95 p-4 sm:p-5 backdrop-blur-md border border-white/60 shadow-xl transition-all duration-300 group-hover:bg-white">
+                      <div className="min-h-0 overflow-y-auto pr-1">
+                        <h3 className="font-sans text-lg sm:text-xl font-bold text-ink group-hover:text-accent transition-colors leading-snug">
+                          {card.title}
+                        </h3>
+                        {card.description && (
+                          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-muted line-clamp-4 sm:line-clamp-5">
+                            {card.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className="mt-3 pt-2.5 border-t border-line/60 shrink-0">
                         <Link
                           href={card.href || "#products"}
                           className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-accent group-hover:text-accent-dark transition-transform group-hover:translate-x-1"
