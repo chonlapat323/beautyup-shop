@@ -78,6 +78,12 @@ interface CompanyRow {
   departments: { name: L; phone: string }[];
   bankAccounts: { bank: L; accountName: L; accountNo: string }[];
 }
+interface AboutSlideRow {
+  imageUrl: string;
+  title?: L;
+  caption?: L;
+}
+
 interface AboutRow {
   eyebrow?: L;
   headline?: L;
@@ -87,7 +93,6 @@ interface AboutRow {
   founderRole?: L;
   founderPhoto?: string;
   education?: L;
-  slides?: { imageUrl: string; caption?: L }[];
   socials?: Record<string, string>;
   links?: { label: L; href: string }[];
 }
@@ -95,6 +100,7 @@ interface AboutRow {
 interface SettingsRow {
   company?: CompanyRow;
   about?: AboutRow;
+  aboutSlides?: AboutSlideRow[];
   timeline?: { year: string; text: L }[];
   ppStudio?: { title: string; text: L }[];
 }
@@ -131,13 +137,13 @@ export async function getCompany(lang: Locale): Promise<CompanyInfo> {
 
 export async function getAboutData(lang: Locale): Promise<AboutData> {
   const dict = getDictionary(lang).about;
-  let a: AboutRow | undefined;
+  let settings: SettingsRow | undefined;
   try {
-    const settings = await get<SettingsRow>("/settings");
-    a = settings.about;
+    settings = await get<SettingsRow>("/settings");
   } catch {
     // fallback to defaults if settings not available
   }
+  const a = settings?.about;
 
   const headline = (a?.headline && t(a.headline, lang)) || dict.headline;
   const eyebrow = (a?.eyebrow && t(a.eyebrow, lang)) || dict.eyebrow;
@@ -152,17 +158,14 @@ export async function getAboutData(lang: Locale): Promise<AboutData> {
     .map((x) => x.trim())
     .filter(Boolean);
 
-  const defaultSlides = [
-    { imageUrl: "/slides/1.jpg", caption: "BeautyUp Official Salon Partner" },
-    { imageUrl: "/slides/2.jpg", caption: "Beauty Promotion" },
-    { imageUrl: "/slides/3.jpg", caption: "Nook Eco-Conscious Beauty" },
-    { imageUrl: "/slides/4.jpg", caption: "Sweet Professional Hair Treatment" },
-    { imageUrl: "/slides/10 La Prairie.jpg", caption: "La Prairie Luxury Skincare" },
-  ];
-
-  const slides = (a?.slides && a.slides.length > 0)
-    ? a.slides.map((sl) => ({ imageUrl: sl.imageUrl, caption: t(sl.caption, lang) }))
-    : defaultSlides;
+  // About slides are managed strictly separate from the home hero slides
+  const rawSlides = settings?.aboutSlides ?? [];
+  const slides = rawSlides
+    .filter((sl) => sl.imageUrl && sl.imageUrl.trim())
+    .map((sl) => ({
+      imageUrl: sl.imageUrl,
+      caption: t(sl.caption, lang) || t(sl.title, lang),
+    }));
 
   const socials = a?.socials && Object.keys(a.socials).length > 0
     ? a.socials

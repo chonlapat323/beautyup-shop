@@ -82,13 +82,6 @@ async function seedSettings() {
         '- โรงเรียนบุญวาทย์วิทยาลัย, เทศบาลนครลำปาง\n- BBA. มหาวิทยาลัยเชียงใหม่\n- MBA. มหาวิทยาลัยโยนก',
         '- Bunyawat Witthayalai School, Lampang\n- B.B.A., Chiang Mai University\n- M.B.A., Yonok University',
       ),
-      slides: [
-        { imageUrl: '/slides/1.jpg', caption: L('BeautyUp Official Salon Partner', 'BeautyUp Official Salon Partner') },
-        { imageUrl: '/slides/2.jpg', caption: L('Beauty Promotion', 'Beauty Promotion') },
-        { imageUrl: '/slides/3.jpg', caption: L('Nook Eco-Conscious Beauty', 'Nook Eco-Conscious Beauty') },
-        { imageUrl: '/slides/4.jpg', caption: L('Sweet Professional Hair Treatment', 'Sweet Professional') },
-        { imageUrl: '/slides/10 La Prairie.jpg', caption: L('La Prairie Caviar Collection', 'La Prairie') },
-      ],
       socials: {
         facebook: 'https://www.facebook.com/pholaphat.sothanarphisarn',
         instagram: 'https://www.instagram.com/pholraphatamy/',
@@ -107,6 +100,7 @@ async function seedSettings() {
         { label: L('โปรโมทร้านทำผมฟรี (กลุ่มชี้เป้าร้านทำผม)', 'Free Salon Promotion'), href: 'https://www.facebook.com/groups/582427686617116' },
       ],
     },
+    aboutSlides: [],
     timeline: [
       { year: '2556', text: L('ก่อตั้ง ร้านบิวตี้อัพ จำหน่ายเครื่องสำอางค์เคาน์เตอร์แบรนด์', 'BeautyUp store founded, selling counter-brand cosmetics (2013)') },
       { year: '2557', text: L('จดทะเบียน บริษัท บิวตี้อัพ เอ็นเตอร์ไพร์ส จำกัด นำเข้า Nook (นุ๊ก) ผลิตภัณฑ์ซาลอนจากอิตาลี', 'Registered BeautyUp Enterprise Co., Ltd.; imported Nook salon products from Italy (2014)') },

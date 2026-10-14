@@ -327,7 +327,7 @@ export const settingsUi = {
   },
   about: {
     title: "หน้าเกี่ยวกับเรา",
-    description: "จัดการข้อความ รูปภาพผู้ก่อตั้ง ภาพสไลด์ และลิงก์ปุ่มในหน้าเกี่ยวกับเรา พร้อมดูตัวอย่างหน้าเว็บจริงได้ทันที",
+    description: "จัดการข้อความ รูปภาพผู้ก่อตั้ง และข้อมูลในหน้าเกี่ยวกับเรา (สไลด์จัดการแยกที่เมนู สไลด์หน้าเกี่ยวกับเรา)",
     fields: [
       { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)" },
       { type: "localized", name: "headline", label: "ชื่อหัวเรื่องหลัก (Headline)", required: true },
@@ -337,15 +337,6 @@ export const settingsUi = {
       { type: "localized", name: "founderName", label: "ชื่อผู้ก่อตั้ง", required: true },
       { type: "localized", name: "founderRole", label: "ตำแหน่งผู้ก่อตั้ง" },
       { type: "localizedTextarea", name: "education", label: "ประวัติการศึกษา (หนึ่งบรรทัดต่อรายการ)" },
-      {
-        type: "list",
-        name: "slides",
-        label: "ภาพสไลด์ / แกลเลอรีในหน้าเกี่ยวกับเรา (กดเพิ่มภาพได้ตามต้องการ)",
-        item: [
-          { type: "image", name: "imageUrl", label: "รูปภาพ" },
-          { type: "localized", name: "caption", label: "คำบรรยายภาพ (ไม่บังคับ)" },
-        ],
-      },
       { type: "socials", name: "socials", label: "โซเชียลมีเดียผู้ก่อตั้ง (Facebook, IG, TikTok, YouTube)" },
       {
         type: "list",
@@ -354,6 +345,22 @@ export const settingsUi = {
         item: [
           { type: "localized", name: "label", label: "ข้อความบนปุ่ม", required: true },
           { type: "text", name: "href", label: "ลิงก์ปลายทาง (เช่น /products หรือ https://...)", required: true },
+        ],
+      },
+    ] satisfies Field[],
+  },
+  aboutSlides: {
+    title: "สไลด์หน้าเกี่ยวกับเรา",
+    description: "จัดการภาพสไลด์สำหรับแสดงในหน้าเกี่ยวกับเราโดยเฉพาะ (แยกต่างหากจากสไลด์หน้าแรก ไม่ปนกัน)",
+    fields: [
+      {
+        type: "list",
+        name: "",
+        label: "รายการภาพสไลด์",
+        item: [
+          { type: "image", name: "imageUrl", label: "รูปภาพสไลด์" },
+          { type: "localized", name: "title", label: "ชื่อภาพ / หัวข้อ (ไม่บังคับ)" },
+          { type: "localized", name: "caption", label: "คำบรรยายภาพ (ไม่บังคับ)" },
         ],
       },
     ] satisfies Field[],

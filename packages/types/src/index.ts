@@ -296,10 +296,14 @@ export const companySetting = z.object({
     .default([]),
 });
 
-export const aboutSlide = z.object({
+export const aboutSlideItem = z.object({
   imageUrl: z.string().default(""),
+  title: localizedOptional,
   caption: localizedOptional,
 });
+
+export const aboutSlidesSetting = z.array(aboutSlideItem).default([]);
+export type AboutSlidesSetting = z.infer<typeof aboutSlidesSetting>;
 
 export const aboutSetting = z.object({
   eyebrow: localizedOptional,
@@ -310,18 +314,18 @@ export const aboutSetting = z.object({
   founderRole: localizedOptional,
   founderPhoto: z.string().default(""),
   education: localizedOptional,
-  slides: z.array(aboutSlide).default([]),
   socials: socials.default({}),
   links: z.array(z.object({ label: localized, href: z.string().default("") })).default([]),
 });
 export type AboutSetting = z.infer<typeof aboutSetting>;
 
-export const SETTING_KEYS = ["company", "about", "timeline", "ppStudio", "regionCounts"] as const;
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "timeline", "ppStudio", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
   about: aboutSetting,
+  aboutSlides: aboutSlidesSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
   ppStudio: z.array(z.object({ title: z.string(), text: localized })),
   /** Optional override for the salon directory counts until all salons are imported */

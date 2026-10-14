@@ -21,7 +21,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
   const initial = rootList ? { "": value ?? [] } : ((value as Record<string, unknown>) ?? {});
 
   const webUrl = process.env.WEB_URL || "http://localhost:3000";
-  const previewHref = key === "about" ? `${webUrl}/about` : undefined;
+  const previewHref = key === "about" || key === "aboutSlides" ? `${webUrl}/about` : undefined;
 
   return (
     <>
