@@ -103,6 +103,33 @@ async function main() {
   );
   console.log("Fanola features and series updated.");
 
+  // Also link MenuItem for Fanola to brandId, enable showProducts, and populate 4-column cards section
+  const menuSections = [
+    {
+      layout: "columns",
+      title: { th: "หมวดหมู่ผลิตภัณฑ์หลัก", en: "Specialized Collections" },
+      description: {
+        th: "4 คอลเลกชันคุณภาพเพื่อช่างผมมืออาชีพและร้านซาลอนชั้นนำ",
+        en: "4 Professional collections for salons and stylists",
+      },
+      cards: features.map((f) => ({
+        title: f.title,
+        description: f.description,
+        imageUrl: "",
+        href: f.href,
+      })),
+    },
+  ];
+
+  await prisma.$executeRawUnsafe(
+    `UPDATE "MenuItem"
+     SET "brandId" = $1, "brandSlug" = 'fanola', "showProducts" = true, "sections" = $2::jsonb
+     WHERE "href" = '/products/fanola'`,
+    fanolaBrand.id,
+    JSON.stringify(menuSections)
+  );
+  console.log("Fanola MenuItem updated with brandId, showProducts, and 4-column cards section.");
+
   // Products to categorize and insert if missing
   const salonProducts = [
     { slug: "no-red-mask-1000ml", nameTh: "No red Mask 1,000 ml. โนเรด มาส์ค", nameEn: "No Red Mask 1,000ml", price: 2590, badges: ["New"] },

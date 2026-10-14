@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { GrowYourVision } from "@/components/grow-your-vision";
+import { MenuContentRenderer } from "@/components/menu-content-renderer";
 import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
-import { getBrand, getBrands, getGrowVision, getProducts } from "@/lib/data";
+import { getBrand, getBrands, getGrowVision, getMenuItemByHref, getProducts } from "@/lib/data";
 
 export async function generateStaticParams({ params }: { params: { lang: string } }) {
   const brands = await getBrands(params.lang as Locale, "SALON");
@@ -25,13 +26,19 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products/[
 export default async function BrandPage({ params }: PageProps<"/[lang]/products/[brand]">) {
   const { lang, dict } = await resolveLang(params);
   const { brand: slug } = await params;
-  const [brand, products, growVision] = await Promise.all([
+  const [brand, menuItem, growVision] = await Promise.all([
     getBrand(lang, slug),
-    getProducts(lang, { brandSlug: slug }),
+    getMenuItemByHref(lang, `/products/${slug}`),
     getGrowVision(lang),
   ]);
 
   if (!brand || brand.type !== "SALON") notFound();
+
+  // If menu specifies a brand or default to current slug
+  const targetBrandSlug = menuItem?.brandSlug || slug;
+  const showProducts = menuItem?.showProducts ?? true;
+
+  const products = showProducts ? await getProducts(lang, { brandSlug: targetBrandSlug }) : [];
 
   // Group products by category (e.g. "Fanola Salon", "Fanola Hair Care")
   const categoryOrder: string[] = [];
@@ -52,6 +59,7 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
   }
 
   const hasCategories = categoryOrder.length > 0;
+  const hasMenuContent = menuItem && ((menuItem.sections && menuItem.sections.length > 0) || (menuItem.slides && menuItem.slides.length > 0));
 
   return (
     <>
@@ -79,56 +87,61 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
         </div>
       </PageHero>
 
-      {/* 1. Brand Pillars / Feature Highlights (e.g. 4 หมวดหลักของ Fanola) */}
-      {brand.features && brand.features.length > 0 && (
-        <section className="border-b border-line bg-mist/30 py-12 md:py-20">
-          <div className="container-page">
-            <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
-              <p className="eyebrow text-brand-pink font-semibold">Specialized Collections</p>
-              <h2 className="mt-2 font-display text-3xl sm:text-4xl text-ink">
-                หมวดหมู่ผลิตภัณฑ์หลัก
-              </h2>
-            </div>
+      {/* 1. Dynamic Menu Content (Configured directly in Admin > Menu Items) */}
+      {hasMenuContent ? (
+        <MenuContentRenderer menu={menuItem} />
+      ) : (
+        /* Fallback: Brand Pillars / Feature Highlights */
+        brand.features && brand.features.length > 0 && (
+          <section className="border-b border-line bg-mist/30 py-12 md:py-20">
+            <div className="container-page">
+              <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
+                <p className="eyebrow text-brand-pink font-semibold">Specialized Collections</p>
+                <h2 className="mt-2 font-display text-3xl sm:text-4xl text-ink">
+                  หมวดหมู่ผลิตภัณฑ์หลัก
+                </h2>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {brand.features.map((feat, i) => (
-                <div
-                  key={i}
-                  data-reveal
-                  suppressHydrationWarning
-                  style={stagger(i)}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-brand-pink/30"
-                >
-                  <div>
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-sm font-semibold text-accent-dark">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <h3 className="mt-4 font-display text-xl sm:text-2xl font-semibold text-ink group-hover:text-accent transition-colors">
-                      {feat.title}
-                    </h3>
-                    {feat.description && (
-                      <p className="mt-3 text-sm leading-relaxed text-muted line-clamp-6">
-                        {feat.description}
-                      </p>
-                    )}
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {brand.features.map((feat, i) => (
+                  <div
+                    key={i}
+                    data-reveal
+                    suppressHydrationWarning
+                    style={stagger(i)}
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-brand-pink/30"
+                  >
+                    <div>
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-sm font-semibold text-accent-dark">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <h3 className="mt-4 font-display text-xl sm:text-2xl font-semibold text-ink group-hover:text-accent transition-colors">
+                        {feat.title}
+                      </h3>
+                      {feat.description && (
+                        <p className="mt-3 text-sm leading-relaxed text-muted line-clamp-6">
+                          {feat.description}
+                        </p>
+                      )}
+                    </div>
 
-                  <div className="mt-6 pt-4 border-t border-line/60">
-                    <Link
-                      href={feat.href || "#products"}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-accent transition-transform group-hover:translate-x-1"
-                    >
-                      ดูสินค้า <span>→</span>
-                    </Link>
+                    <div className="mt-6 pt-4 border-t border-line/60">
+                      <Link
+                        href={feat.href || "#products"}
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-accent transition-transform group-hover:translate-x-1"
+                      >
+                        ดูสินค้า <span>→</span>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )
       )}
 
-      {/* 2. Series Quick Links / Pills (e.g. No yellow Care, After colour, Frequent...) */}
+      {/* 2. Series Quick Links / Pills */}
       {brand.series && brand.series.length > 0 && (
         <section className="border-b border-line bg-white py-6">
           <div className="container-page flex flex-wrap items-center gap-2 sm:gap-3">
@@ -148,66 +161,68 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
         </section>
       )}
 
-      {/* 3. Product Showcase (Categorized or Full Grid) */}
-      <section id="products" className="container-page py-12 md:py-20">
-        {products.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-line p-10 text-center sm:p-16">
-            <p className="font-display text-2xl">{dict.common.comingSoon}</p>
-            <p className="mt-2 text-muted">{dict.common.askTeam}</p>
-            <Link href="/contact/salon-partner" className="btn btn-primary mt-6">
-              {dict.common.contactToOrder}
-            </Link>
-          </div>
-        ) : hasCategories ? (
-          <div className="space-y-16 md:space-y-24">
-            {categoryOrder.map((catName) => {
-              const catItems = categorized[catName] || [];
-              return (
-                <div key={catName} className="scroll-mt-24">
+      {/* 3. Product Showcase (if showProducts is enabled) */}
+      {showProducts && (
+        <section id="products" className="container-page py-12 md:py-20">
+          {products.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-line p-10 text-center sm:p-16">
+              <p className="font-display text-2xl">{dict.common.comingSoon}</p>
+              <p className="mt-2 text-muted">{dict.common.askTeam}</p>
+              <Link href="/contact/salon-partner" className="btn btn-primary mt-6">
+                {dict.common.contactToOrder}
+              </Link>
+            </div>
+          ) : hasCategories ? (
+            <div className="space-y-16 md:space-y-24">
+              {categoryOrder.map((catName) => {
+                const catItems = categorized[catName] || [];
+                return (
+                  <div key={catName} className="scroll-mt-24">
+                    <SectionHeading
+                      eyebrow={brand.name}
+                      title={catName}
+                      description={`${catItems.length} รายการ`}
+                    />
+                    <ProductGrid
+                      products={catItems}
+                      brandNames={{ [brand.slug]: brand.name }}
+                      showFilter={false}
+                    />
+                  </div>
+                );
+              })}
+
+              {uncategorized.length > 0 && (
+                <div className="scroll-mt-24 pt-8 border-t border-line">
                   <SectionHeading
                     eyebrow={brand.name}
-                    title={catName}
-                    description={`${catItems.length} รายการ`}
+                    title="ผลิตภัณฑ์เพิ่มเติม"
+                    description={`${uncategorized.length} รายการ`}
                   />
                   <ProductGrid
-                    products={catItems}
+                    products={uncategorized}
                     brandNames={{ [brand.slug]: brand.name }}
                     showFilter={false}
                   />
                 </div>
-              );
-            })}
-
-            {uncategorized.length > 0 && (
-              <div className="scroll-mt-24 pt-8 border-t border-line">
-                <SectionHeading
-                  eyebrow={brand.name}
-                  title="ผลิตภัณฑ์เพิ่มเติม"
-                  description={`${uncategorized.length} รายการ`}
-                />
-                <ProductGrid
-                  products={uncategorized}
-                  brandNames={{ [brand.slug]: brand.name }}
-                  showFilter={false}
-                />
-              </div>
-            )}
-          </div>
-        ) : (
-          <div>
-            <SectionHeading
-              eyebrow={brand.name}
-              title={dict.products.headline}
-              description={`${products.length} รายการ`}
-            />
-            <ProductGrid
-              products={products}
-              brandNames={{ [brand.slug]: brand.name }}
-              showFilter={false}
-            />
-          </div>
-        )}
-      </section>
+              )}
+            </div>
+          ) : (
+            <div>
+              <SectionHeading
+                eyebrow={brand.name}
+                title={dict.products.headline}
+                description={`${products.length} รายการ`}
+              />
+              <ProductGrid
+                products={products}
+                brandNames={{ [brand.slug]: brand.name }}
+                showFilter={false}
+              />
+            </div>
+          )}
+        </section>
+      )}
 
       {/* 4. Bottom CTA */}
       <GrowYourVision data={growVision} />

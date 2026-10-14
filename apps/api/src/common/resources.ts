@@ -21,7 +21,12 @@ export interface ResourceConfig {
 const byOrder = [{ sortOrder: 'asc' as const }];
 
 export const resourceConfig: Record<ResourceName, ResourceConfig> = {
-  'menu-items': { model: 'menuItem', orderBy: [{ location: 'asc' }, ...byOrder], hasActive: true },
+  'menu-items': {
+    model: 'menuItem',
+    orderBy: [{ location: 'asc' }, ...byOrder],
+    hasActive: true,
+    include: { brand: { select: { id: true, slug: true, name: true } } },
+  },
   'hero-slides': {
     model: 'heroSlide',
     orderBy: byOrder,

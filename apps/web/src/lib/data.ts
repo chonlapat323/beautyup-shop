@@ -58,7 +58,59 @@ const s = (v: unknown) => (typeof v === "string" && v ? v : undefined);
 
 /* ----------------------------------------------------------------- menu */
 
-interface MenuRow { id: string; label: L; href: string; parentId: string | null; location: string }
+interface MenuRow {
+  id: string;
+  label: L;
+  href: string;
+  parentId: string | null;
+  location: string;
+  brandId?: string | null;
+  brandSlug?: string | null;
+  brand?: { id: string; slug: string; name: string } | null;
+  showProducts?: boolean;
+  slides?: { imageUrl: string; title?: L; caption?: L; href?: string }[];
+  sections?: {
+    layout: "columns" | "left-image" | "right-image" | "text-only";
+    title?: L;
+    description?: L;
+    imageUrl?: string;
+    buttonText?: L;
+    buttonHref?: string;
+    cards?: { title: L; description?: L; imageUrl?: string; href?: string }[];
+  }[];
+}
+
+export const toFullMenuItem = (r: MenuRow, lang: Locale): MenuItem => ({
+  id: r.id,
+  label: t(r.label, lang),
+  href: r.href,
+  location: r.location,
+  parentId: r.parentId,
+  brandId: r.brandId,
+  brandSlug: r.brand?.slug || r.brandSlug || undefined,
+  brandName: r.brand?.name || undefined,
+  showProducts: r.showProducts ?? true,
+  slides: (r.slides ?? []).map((sl) => ({
+    imageUrl: s(sl.imageUrl) || "",
+    title: s(t(sl.title, lang)),
+    caption: s(t(sl.caption, lang)),
+    href: sl.href || "",
+  })),
+  sections: (r.sections ?? []).map((sec) => ({
+    layout: sec.layout || "left-image",
+    title: s(t(sec.title, lang)),
+    description: s(t(sec.description, lang)),
+    imageUrl: s(sec.imageUrl),
+    buttonText: s(t(sec.buttonText, lang)),
+    buttonHref: sec.buttonHref || "",
+    cards: (sec.cards ?? []).map((cd) => ({
+      title: t(cd.title, lang),
+      description: s(t(cd.description, lang)),
+      imageUrl: s(cd.imageUrl),
+      href: cd.href || "",
+    })),
+  })),
+});
 
 export async function getMenu(lang: Locale): Promise<MenuItem[]> {
   const rows = (await get<MenuRow[]>("/resources/menu-items")).filter((r) => r.location === "header");
@@ -69,6 +121,20 @@ export async function getMenu(lang: Locale): Promise<MenuItem[]> {
       const children = rows.filter((c) => c.parentId === r.id).map(toItem);
       return { ...toItem(r), ...(children.length && { children }) };
     });
+}
+
+export async function getMenuItemByHref(lang: Locale, href: string): Promise<MenuItem | undefined> {
+  try {
+    const rows = await get<MenuRow[]>("/resources/menu-items");
+    const cleanHref = href.replace(/\/$/, "");
+    const found = rows.find((r) => {
+      const rClean = r.href.replace(/\/$/, "");
+      return rClean === cleanHref || rClean === `/products/${cleanHref}` || `/products/${rClean}` === cleanHref;
+    });
+    return found ? toFullMenuItem(found, lang) : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /* ------------------------------------------------------------- settings */

@@ -11,3 +11,5 @@ coverage
 !.env.server.example
 .DS_Store
 logs
+profile/
+slide/

@@ -81,11 +81,43 @@ export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
  * Admin input schemas (one per resource)
  * ------------------------------------------------------------------------- */
 
+export const menuSlideSchema = z.object({
+  imageUrl: url.default(""),
+  title: localizedOptional,
+  caption: localizedOptional,
+  href: z.string().trim().default(""),
+});
+export type MenuSlide = z.infer<typeof menuSlideSchema>;
+
+export const menuSectionCardSchema = z.object({
+  title: localized,
+  description: localizedOptional,
+  imageUrl: url.optional().default(""),
+  href: z.string().trim().default(""),
+});
+export type MenuSectionCard = z.infer<typeof menuSectionCardSchema>;
+
+export const menuSectionSchema = z.object({
+  layout: z.enum(["columns", "left-image", "right-image", "text-only"]).default("left-image"),
+  title: localizedOptional,
+  description: localizedOptional,
+  imageUrl: url.optional().default(""),
+  buttonText: localizedOptional,
+  buttonHref: z.string().trim().default(""),
+  cards: z.array(menuSectionCardSchema).default([]),
+});
+export type MenuSection = z.infer<typeof menuSectionSchema>;
+
 export const menuItemInput = z.object({
   label: localized,
   href: z.string().trim().min(1),
   location: z.enum(MENU_LOCATIONS).default("header"),
   parentId: z.string().nullable().optional().default(null),
+  brandId: z.string().nullable().optional().default(null),
+  brandSlug: z.string().trim().optional().default(""),
+  showProducts: z.boolean().default(true),
+  slides: z.array(menuSlideSchema).default([]),
+  sections: z.array(menuSectionSchema).default([]),
   sortOrder,
   isActive,
 });

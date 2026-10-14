@@ -71,15 +71,21 @@ model User {
 }
 
 model MenuItem {
-  id        String     @id @default(cuid())
-  label     Json
-  href      String
-  location  String     @default("header")
-  parentId  String?
-  parent    MenuItem?  @relation("MenuTree", fields: [parentId], references: [id], onDelete: Cascade)
-  children  MenuItem[] @relation("MenuTree")
-  sortOrder Int        @default(0)
-  isActive  Boolean    @default(true)
+  id           String     @id @default(cuid())
+  label        Json
+  href         String
+  location     String     @default("header")
+  parentId     String?
+  parent       MenuItem?  @relation("MenuTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children     MenuItem[] @relation("MenuTree")
+  sortOrder    Int        @default(0)
+  isActive     Boolean    @default(true)
+  brandId      String?
+  brand        Brand?     @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandSlug    String?    @default("")
+  showProducts Boolean    @default(true)
+  slides       Json       @default("[]")
+  sections     Json       @default("[]")
 }
 
 model Brand {
@@ -102,6 +108,7 @@ model Brand {
   isActive    Boolean     @default(true)
   products    Product[]
   heroSlides  HeroSlide[]
+  menuItems   MenuItem[]
 }
 
 model Product {

@@ -1,8 +1,41 @@
 // Website view models: API rows with localized fields already resolved to one language (see lib/data.ts).
 
+export interface MenuSlideItem {
+  imageUrl: string;
+  title?: string;
+  caption?: string;
+  href?: string;
+}
+
+export interface MenuSectionCardItem {
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  href?: string;
+}
+
+export interface MenuSectionItem {
+  layout: "columns" | "left-image" | "right-image" | "text-only";
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  buttonText?: string;
+  buttonHref?: string;
+  cards?: MenuSectionCardItem[];
+}
+
 export interface MenuItem {
+  id?: string;
   label: string;
   href: string;
+  location?: string;
+  parentId?: string | null;
+  brandId?: string | null;
+  brandSlug?: string | null;
+  brandName?: string | null;
+  showProducts?: boolean;
+  slides?: MenuSlideItem[];
+  sections?: MenuSectionItem[];
   children?: MenuItem[];
 }
 
