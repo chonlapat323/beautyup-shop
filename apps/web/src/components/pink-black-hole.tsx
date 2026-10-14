@@ -19,8 +19,10 @@ interface Mote {
 
 export function PinkBlackHoleEffect({
   className = "",
+  count = 55,
 }: {
   className?: string;
+  count?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -42,7 +44,7 @@ export function PinkBlackHoleEffect({
       "253, 242, 248",  // Warm Pinkish White
     ];
 
-    const MOTE_COUNT = 55; // จำนวนกำลังดี ไม่รก
+    const MOTE_COUNT = count; // จำนวนละออง
     const motes: Mote[] = [];
 
     const createMote = (): Mote => {

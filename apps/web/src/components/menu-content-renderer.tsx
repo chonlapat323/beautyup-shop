@@ -1,6 +1,7 @@
 import Link from "@/components/link";
 import { LoadingImage } from "@/components/loading-image";
 import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
+import { PinkBlackHoleEffect } from "@/components/pink-black-hole";
 import type { MenuItem } from "@/lib/types";
 
 export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
@@ -19,22 +20,36 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
         // Layout: 4 Columns (Wix Style - Tall photo card with bottom floating card)
         if (sec.layout === "columns" && sec.cards && sec.cards.length > 0) {
           return (
-            <section key={idx} className="container-page py-6">
-              {sec.title && (
-                <div className="mb-10 text-center max-w-3xl mx-auto">
-                  <h2 className="font-sans text-3xl sm:text-4xl text-ink font-bold tracking-tight">
-                    {sec.title}
-                  </h2>
-                  {sec.description && (
-                    <p className="mt-3 text-muted text-base sm:text-lg">{sec.description}</p>
-                  )}
-                </div>
-              )}
+            <section
+              key={idx}
+              className="relative py-12 md:py-20 overflow-hidden bg-gradient-to-b from-mist/50 via-blush/20 to-mist/30 border-y border-line/60"
+            >
+              {/* Ambient Brand-Pink Glow Backdrop (Aura ละอองแสงสีชมพู เหมือนหน้า Home) */}
+              <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[36rem] sm:size-[52rem] rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.15),transparent_70%)] blur-3xl animate-drift motion-reduce:animate-none" />
+                <div className="absolute -top-12 -right-12 size-96 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.13),transparent_65%)] blur-3xl" />
+                <div className="absolute -bottom-12 -left-12 size-96 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.11),transparent_65%)] blur-3xl" />
+              </div>
 
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
-                style={{ gap: "1.75rem" }}
-              >
+              {/* Floating Dreamy Pink Dust Particles (ละอองสีชมพูเหมือนหน้า Home) */}
+              <PinkBlackHoleEffect count={70} className="absolute inset-0 size-full pointer-events-none z-0" />
+
+              <div className="container-page relative z-10">
+                {sec.title && (
+                  <div className="mb-10 text-center max-w-3xl mx-auto">
+                    <h2 className="font-sans text-3xl sm:text-4xl text-ink font-bold tracking-tight">
+                      {sec.title}
+                    </h2>
+                    {sec.description && (
+                      <p className="mt-3 text-muted text-base sm:text-lg">{sec.description}</p>
+                    )}
+                  </div>
+                )}
+
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+                  style={{ gap: "1.75rem" }}
+                >
                 {sec.cards.map((card, cIdx) => (
                   <div
                     key={cIdx}
@@ -81,9 +96,10 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                   </div>
                 ))}
               </div>
-            </section>
-          );
-        }
+            </div>
+          </section>
+        );
+      }
 
         // Layout: Left Image / Right Text
         if (sec.layout === "left-image") {

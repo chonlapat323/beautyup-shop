@@ -3,6 +3,7 @@ import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { MenuContentRenderer } from "@/components/menu-content-renderer";
+import { PinkBlackHoleEffect } from "@/components/pink-black-hole";
 import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
@@ -93,8 +94,18 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
       ) : (
         /* Fallback: Brand Pillars / Feature Highlights */
         brand.features && brand.features.length > 0 && (
-          <section className="border-b border-line bg-mist/30 py-12 md:py-20">
-            <div className="container-page">
+          <section className="relative border-b border-line bg-gradient-to-b from-mist/50 via-blush/20 to-mist/30 py-12 md:py-20 overflow-hidden">
+            {/* Ambient Brand-Pink Glow Backdrop (Aura ละอองแสงสีชมพู เหมือนหน้า Home) */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[36rem] sm:size-[52rem] rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.15),transparent_70%)] blur-3xl animate-drift motion-reduce:animate-none" />
+              <div className="absolute -top-12 -right-12 size-96 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.13),transparent_65%)] blur-3xl" />
+              <div className="absolute -bottom-12 -left-12 size-96 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.11),transparent_65%)] blur-3xl" />
+            </div>
+
+            {/* Floating Dreamy Pink Dust Particles (ละอองสีชมพูเหมือนหน้า Home) */}
+            <PinkBlackHoleEffect count={70} className="absolute inset-0 size-full pointer-events-none z-0" />
+
+            <div className="container-page relative z-10">
               <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
                 <p className="eyebrow text-brand-pink font-semibold">Specialized Collections</p>
                 <h2 className="mt-2 font-display text-3xl sm:text-4xl text-ink">
