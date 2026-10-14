@@ -9,7 +9,7 @@ import { LoadingImage } from "./loading-image";
 import { PinkBlackHoleEffect } from "./pink-black-hole";
 import type { HeroSlide } from "@/lib/types";
 
-const INTERVAL = 5500;
+const INTERVAL = 7000;
 
 export function HomeHero({
   slides,

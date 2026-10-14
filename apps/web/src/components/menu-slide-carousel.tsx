@@ -8,7 +8,7 @@ import { LoadingImage } from "./loading-image";
 import { PinkBlackHoleEffect } from "./pink-black-hole";
 import type { MenuSlideItem } from "@/lib/types";
 
-const INTERVAL = 5500;
+const INTERVAL = 7000;
 
 export function MenuSlideCarousel({ slides }: { slides: MenuSlideItem[] }) {
   const [active, setActive] = useState(0);

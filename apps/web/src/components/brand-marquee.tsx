@@ -38,6 +38,23 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
 
   return (
     <section aria-label={label} className="relative border-y border-line/60 bg-gradient-to-r from-cream via-sand/30 to-cream py-3 sm:py-4 overflow-hidden">
+      {/* Self-contained 100% cache-proof animation for brand marquee */}
+      <style>{`
+        @keyframes brandMarqueeLoop {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        .brand-marquee-track {
+          display: flex;
+          width: max-content;
+          will-change: transform;
+          animation: brandMarqueeLoop 160s linear infinite !important;
+        }
+        .brand-marquee-track:hover {
+          animation-play-state: paused !important;
+        }
+      `}</style>
+
       {/* Ambient pink aura backdrop */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(214_41_127/0.06),transparent_70%)]"
@@ -46,10 +63,7 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
 
       {/* Smooth fade mask on left and right edges */}
       <div className="relative flex overflow-hidden py-2 -my-2 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-        <div
-          className="flex w-max shrink-0 will-change-transform hover:[animation-play-state:paused]"
-          style={{ animation: "marquee 160s linear infinite" }}
-        >
+        <div className="brand-marquee-track">
           {row(false)}
           {row(true)}
         </div>
