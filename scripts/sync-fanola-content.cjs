@@ -46,7 +46,7 @@ async function main() {
         en: "Effective hair care from root to tip and scalp, enhancing strength, silky smoothness, shine, and inner vitality. Prevents unwanted undertones (yellow, orange, red) while shielding hair from heat and pollution.",
       },
       href: "#fanola-hair-care",
-      imageUrl: "",
+      imageUrl: "/cards/fanola-1.jpg",
     },
     {
       title: { th: "ผลิตภัณฑ์ทำสีผม", en: "Hair Color Products" },
@@ -55,7 +55,7 @@ async function main() {
         en: "Exceptional hair color with 5 distinctive collections. Fast-acting, rich, long-lasting pigments without brassiness. Ammonia-free, enriched with 24k gold, keratin, and argan oil.",
       },
       href: "#fanola-salon",
-      imageUrl: "",
+      imageUrl: "/cards/fanola-2.jpg",
     },
     {
       title: { th: "ผลิตภัณฑ์ฟอกสีผม", en: "Hair Bleaching Products" },
@@ -64,7 +64,7 @@ async function main() {
         en: "Advanced lightening with 8 formulas lifting up to 9 levels. Gentle bleaching cream for fragile hair, specialized violet/blue/green toning bleaches to neutralize yellow/orange/red undertones.",
       },
       href: "#fanola-salon",
-      imageUrl: "",
+      imageUrl: "/cards/fanola-3.jpg",
     },
     {
       title: { th: "ผลิตภัณฑ์ยืดดัดผม", en: "Perm & Straightening" },
@@ -73,7 +73,7 @@ async function main() {
         en: "Ammonia-free straightening and perming enriched with almond protein. Gentle scent, easy application for cold and digital perm, leaving hair bouncy, resilient, and full of natural shine.",
       },
       href: "#fanola-salon",
-      imageUrl: "",
+      imageUrl: "/cards/fanola-4.jpg",
     },
   ];
 
@@ -103,7 +103,13 @@ async function main() {
   );
   console.log("Fanola features and series updated.");
 
-  // Also link MenuItem for Fanola to brandId, enable showProducts, and populate 4-column cards section
+  const cardImages = [
+    "/cards/fanola-1.jpg",
+    "/cards/fanola-2.jpg",
+    "/cards/fanola-3.jpg",
+    "/cards/fanola-4.jpg",
+  ];
+
   const menuSections = [
     {
       layout: "columns",
@@ -112,10 +118,10 @@ async function main() {
         th: "4 คอลเลกชันคุณภาพเพื่อช่างผมมืออาชีพและร้านซาลอนชั้นนำ",
         en: "4 Professional collections for salons and stylists",
       },
-      cards: features.map((f) => ({
+      cards: features.map((f, i) => ({
         title: f.title,
         description: f.description,
-        imageUrl: "",
+        imageUrl: cardImages[i] || "",
         href: f.href,
       })),
     },

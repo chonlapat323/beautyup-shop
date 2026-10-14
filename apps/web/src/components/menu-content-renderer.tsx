@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "@/components/link";
 import { LoadingImage } from "@/components/loading-image";
 import type { MenuItem } from "@/lib/types";
@@ -15,18 +14,15 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
       {slides.length > 0 && (
         <section className="relative overflow-hidden border-b border-line bg-black">
           <div className="relative aspect-[16/7] min-h-[300px] w-full max-h-[560px]">
-            <Image
+            <LoadingImage
               src={slides[0].imageUrl}
-              alt={slides[0].title || menu.label}
-              fill
-              priority
-              className="object-cover opacity-90"
-              sizes="100vw"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover opacity-90"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
             <div className="absolute inset-x-0 bottom-0 p-8 sm:p-14 lg:p-20 text-white container-page">
               {slides[0].title && (
-                <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight max-w-2xl">
+                <h2 className="font-sans text-3xl sm:text-5xl font-bold tracking-tight max-w-2xl">
                   {slides[0].title}
                 </h2>
               )}
@@ -55,7 +51,7 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
             <section key={idx} className="container-page py-6">
               {sec.title && (
                 <div className="mb-10 text-center max-w-3xl mx-auto">
-                  <h2 className="font-display text-3xl sm:text-4xl text-ink font-semibold">
+                  <h2 className="font-sans text-3xl sm:text-4xl text-ink font-bold tracking-tight">
                     {sec.title}
                   </h2>
                   {sec.description && (
@@ -74,23 +70,21 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                   >
                     {/* Background Photo */}
                     {card.imageUrl ? (
-                      <Image
+                      <LoadingImage
                         src={card.imageUrl}
-                        alt={card.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/20 to-mist" />
                     )}
 
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
                     {/* Floating Glassmorphic White Card at Bottom */}
                     <div className="relative z-10 m-4 rounded-2xl bg-white/95 p-5 sm:p-6 backdrop-blur-md border border-white/50 shadow-xl transition-all duration-300 group-hover:bg-white">
-                      <h3 className="font-display text-xl sm:text-2xl font-bold text-ink group-hover:text-accent transition-colors">
+                      <h3 className="font-sans text-xl sm:text-2xl font-bold text-ink group-hover:text-accent transition-colors">
                         {card.title}
                       </h3>
                       {card.description && (
@@ -123,14 +117,14 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-line shadow-md bg-mist">
                     <LoadingImage
                       src={sec.imageUrl}
-                      alt={sec.title || "Section Image"}
+                      alt=""
                       className="h-full w-full object-cover"
                     />
                   </div>
                 )}
                 <div>
                   {sec.title && (
-                    <h2 className="font-display text-3xl sm:text-4xl text-ink font-semibold">
+                    <h2 className="font-sans text-3xl sm:text-4xl text-ink font-bold">
                       {sec.title}
                     </h2>
                   )}
@@ -159,7 +153,7 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 lg:gap-20 items-center">
                 <div className="order-2 md:order-1">
                   {sec.title && (
-                    <h2 className="font-display text-3xl sm:text-4xl text-ink font-semibold">
+                    <h2 className="font-sans text-3xl sm:text-4xl text-ink font-bold">
                       {sec.title}
                     </h2>
                   )}
@@ -180,7 +174,7 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                   <div className="order-1 md:order-2 relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-line shadow-md bg-mist">
                     <LoadingImage
                       src={sec.imageUrl}
-                      alt={sec.title || "Section Image"}
+                      alt=""
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -195,7 +189,7 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
           <section key={idx} className="container-page py-6">
             <div className="max-w-3xl mx-auto text-center rounded-3xl border border-line bg-mist/40 p-8 sm:p-14">
               {sec.title && (
-                <h2 className="font-display text-3xl sm:text-4xl text-ink font-semibold">
+                <h2 className="font-sans text-3xl sm:text-4xl text-ink font-bold">
                   {sec.title}
                 </h2>
               )}
@@ -218,3 +212,4 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
     </div>
   );
 }
+
