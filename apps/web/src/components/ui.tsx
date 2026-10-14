@@ -146,7 +146,7 @@ export function SocialLinks({ socials, className }: { socials?: Socials; classNa
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line/80 bg-white/90 px-3.5 text-xs font-medium text-ink/80 shadow-xs transition-all duration-300 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95"
+            className="btn-pill !min-h-9 !px-3.5 !text-xs"
           >
             {socialLabels[key]}
             <ArrowUpRight className="size-3" />

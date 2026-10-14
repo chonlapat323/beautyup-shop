@@ -278,7 +278,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           ) : (
             <Link
               href="/login"
-              className="hidden items-center gap-2 rounded-full border border-line/80 bg-white px-4 py-1.5 text-sm font-medium text-ink transition-all duration-300 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95 sm:inline-flex"
+              className="btn-pill hidden sm:inline-flex"
             >
               <User className="size-4" />
               {dict.common.login}

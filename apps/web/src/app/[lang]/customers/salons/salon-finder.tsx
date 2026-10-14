@@ -55,12 +55,7 @@ export function SalonFinder({
               role="tab"
               aria-selected={region === r.key}
               onClick={() => setRegion(r.key)}
-              className={clsx(
-                "min-h-10 shrink-0 rounded-full border px-4 text-left text-sm font-medium whitespace-nowrap transition-all duration-300 lg:rounded-xl",
-                region === r.key
-                  ? "border-brand-pink bg-brand-pink text-white shadow-md shadow-brand-pink/25"
-                  : "border-line/80 bg-white/90 text-ink/80 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95",
-              )}
+              className="btn-tab text-left lg:rounded-xl"
             >
               {r.label}
             </button>

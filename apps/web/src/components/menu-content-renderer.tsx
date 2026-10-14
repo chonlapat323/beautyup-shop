@@ -87,7 +87,7 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                       <div className="mt-5 pt-3.5 border-t border-line/60">
                         <Link
                           href={card.href || "#products"}
-                          className="inline-flex items-center gap-2 rounded-full border border-line/80 bg-white/90 px-4 py-1.5 text-xs sm:text-sm font-medium text-ink shadow-xs transition-all duration-300 hover:border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/20 hover:-translate-y-0.5 active:scale-95 group-hover:border-brand-pink/60 group-hover:text-brand-pink"
+                          className="btn-pill !text-xs sm:!text-sm group-hover:border-brand-pink group-hover:text-brand-pink"
                         >
                           <span>ดูสินค้า</span>
                           <span className="transition-transform group-hover:translate-x-1">→</span>

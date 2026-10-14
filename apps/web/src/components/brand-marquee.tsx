@@ -12,7 +12,7 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
           <Link
             href={href(b)}
             tabIndex={hidden ? -1 : undefined}
-            className="group/brand relative flex items-center gap-3 rounded-full border border-line/80 bg-white/90 px-5 py-2.5 text-ink/85 shadow-sm shadow-black/[0.03] backdrop-blur-md transition-all duration-300 hover:z-20 hover:-translate-y-1 hover:border-brand-pink/70 hover:bg-white hover:text-brand-pink hover:shadow-xl hover:shadow-brand-pink/20 active:scale-95"
+            className="btn-pill group/brand relative !gap-3 !px-5 !py-2.5 hover:z-20"
           >
             {/* Elegant Brand Pink Accent Dot */}
             <span className="size-1.5 shrink-0 rounded-full bg-brand-pink/60 transition-transform duration-300 group-hover/brand:scale-150 group-hover/brand:bg-brand-pink" />
