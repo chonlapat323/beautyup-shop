@@ -17,7 +17,7 @@
   --font-display: var(--font-serif-thai), ui-serif, Georgia, serif;
 
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee: marquee 35s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-drift: drift 18s ease-in-out infinite;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -43,8 +43,11 @@
   }
 
   @keyframes marquee {
-    to {
-      transform: translateX(-50%);
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
@@ -262,6 +265,10 @@
       box-shadow: 0 4px 14px -2px rgb(214 41 127 / 0.35);
       transform: none;
     }
+  }
+
+  .animate-marquee {
+    animation: marquee 35s linear infinite;
   }
 
   .eyebrow {

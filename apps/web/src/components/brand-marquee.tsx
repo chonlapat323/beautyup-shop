@@ -45,8 +45,8 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
       />
 
       {/* Smooth fade mask on left and right edges */}
-      <div className="group relative flex overflow-hidden py-2 -my-2 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-        <div className="flex animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+      <div className="relative flex overflow-hidden py-2 -my-2 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+        <div className="flex w-max shrink-0 animate-marquee hover:[animation-play-state:paused] will-change-transform">
           {row(false)}
           {row(true)}
         </div>
