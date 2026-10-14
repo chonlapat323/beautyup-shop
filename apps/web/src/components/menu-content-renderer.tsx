@@ -1,5 +1,6 @@
 import Link from "@/components/link";
 import { LoadingImage } from "@/components/loading-image";
+import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
 import type { MenuItem } from "@/lib/types";
 
 export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
@@ -10,38 +11,8 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
 
   return (
     <div className="space-y-16 md:space-y-24">
-      {/* 1. Optional Slides Banner */}
-      {slides.length > 0 && (
-        <section className="relative overflow-hidden border-b border-line bg-black">
-          <div className="relative aspect-[16/7] min-h-[300px] w-full max-h-[560px]">
-            <LoadingImage
-              src={slides[0].imageUrl}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover opacity-90"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
-            <div className="absolute inset-x-0 bottom-0 p-8 sm:p-14 lg:p-20 text-white container-page">
-              {slides[0].title && (
-                <h2 className="font-sans text-3xl sm:text-5xl font-bold tracking-tight max-w-2xl">
-                  {slides[0].title}
-                </h2>
-              )}
-              {slides[0].caption && (
-                <p className="mt-4 text-base sm:text-xl text-white/80 max-w-xl">
-                  {slides[0].caption}
-                </p>
-              )}
-              {slides[0].href && (
-                <div className="mt-6">
-                  <Link href={slides[0].href} className="btn btn-primary">
-                    ดูเพิ่มเติม →
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* 1. Interactive Slides Banner with Pink Black Hole & Aura Effect (เหมือนหน้า Home) */}
+      {slides.length > 0 && <MenuSlideCarousel slides={slides} />}
 
       {/* 2. Sections */}
       {sections.map((sec, idx) => {
