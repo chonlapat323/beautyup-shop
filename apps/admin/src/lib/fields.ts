@@ -129,10 +129,9 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       isActive,
     ],
     columns: [
-      { name: "imageUrl", label: "", kind: "image" },
-      { name: "product", label: "สินค้า", kind: "localized" },
-      { name: "brand", label: "แบรนด์", kind: "brand" },
-      { name: "tint", label: "สี", kind: "color" },
+      { name: "imageUrl", label: "ภาพแบนเนอร์", kind: "image" },
+      { name: "product", label: "ชื่อสไลด์ / แบนเนอร์", kind: "localized" },
+      { name: "href", label: "ลิงก์ปลายทาง" },
       activeCol,
     ],
   },

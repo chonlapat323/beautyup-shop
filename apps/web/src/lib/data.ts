@@ -199,18 +199,18 @@ export async function getHeroSlides(lang: Locale): Promise<HeroSlide[]> {
   try {
     const rows = await get<SlideRow[]>("/resources/hero-slides");
     if (!rows || rows.length === 0) return defaultSlides;
-    const slides = rows.map((r, i) => ({
-      brandSlug: r.brand?.slug ?? `slide-${i}`,
-      brand: r.brand?.name ?? "",
-      product: t(r.product, lang),
-      caption: t(r.caption, lang),
-      href: r.href,
-      imageUrl: s(r.imageUrl),
-      tint: r.tint,
-    }));
-    // If none of the slides have an imageUrl uploaded yet, use the default slide pictures
-    const hasAnyImage = slides.some((s) => Boolean(s.imageUrl));
-    return hasAnyImage ? slides : defaultSlides;
+    return rows.map((r, i) => {
+      const img = s(r.imageUrl);
+      return {
+        brandSlug: r.brand?.slug ?? `slide-${i}`,
+        brand: r.brand?.name ?? "",
+        product: t(r.product, lang),
+        caption: t(r.caption, lang),
+        href: r.href || "/products",
+        imageUrl: img || defaultSlides[i % defaultSlides.length].imageUrl,
+        tint: r.tint || "#1c1917",
+      };
+    });
   } catch {
     return defaultSlides;
   }
