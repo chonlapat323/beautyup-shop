@@ -4,8 +4,25 @@
  * Run safely on local or production server:
  *   node scripts/sync-slides.cjs
  */
+const fs = require("node:fs");
+const path = require("node:path");
 const { PrismaPg } = require("../apps/api/node_modules/@prisma/adapter-pg");
 const { PrismaClient } = require("../apps/api/dist/generated/prisma/client.js");
+
+// Load DATABASE_URL from apps/api/.env if not present in process.env
+if (!process.env.DATABASE_URL) {
+  const envPath = path.resolve(__dirname, "../apps/api/.env");
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, "utf-8");
+    for (const line of content.split("\n")) {
+      const match = line.match(/^DATABASE_URL=["']?(.*?)["']?$/);
+      if (match) {
+        process.env.DATABASE_URL = match[1].trim();
+        break;
+      }
+    }
+  }
+}
 
 const connectionString =
   process.env.DATABASE_URL ||
