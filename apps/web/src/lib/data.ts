@@ -187,12 +187,21 @@ export async function getProducts(lang: Locale, opts?: { brandSlug?: string; bra
 interface SlideRow extends Row { product: L; caption: L; href: string; imageUrl: string; tint: string; brand: { slug: string; name: string } | null }
 
 const defaultSlides: HeroSlide[] = [
-  { brandSlug: "slide-1", brand: "BeautyUp", product: "BeautyUp Professional", caption: "", href: "/products", imageUrl: "/slides/1.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-2", brand: "BeautyUp", product: "Special Promotions", caption: "", href: "/products", imageUrl: "/slides/2.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-3", brand: "BeautyUp", product: "Hair & Salon Care", caption: "", href: "/products", imageUrl: "/slides/3.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-4", brand: "BeautyUp", product: "Exclusive Products", caption: "", href: "/products", imageUrl: "/slides/4.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-10", brand: "La Prairie", product: "La Prairie Luxury Skincare", caption: "", href: "/shop", imageUrl: "/slides/10 La Prairie.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-14", brand: "BeautyUp", product: "Salon Partner", caption: "", href: "/contact/salon-partner", imageUrl: "/slides/14.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-1", brand: "BeautyUp", product: "BeautyUp Official Salon Partner", caption: "ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ", href: "/products", imageUrl: "/slides/1.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-2", brand: "BeautyUp", product: "Beauty Promotion 2", caption: "โปรโมชันสุดคุ้มเพื่อช่างผมมืออาชีพ", href: "/products", imageUrl: "/slides/2.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-3", brand: "BeautyUp", product: "Nook Eco-Conscious Beauty", caption: "ผลิตภัณฑ์ดูแลเส้นผมธรรมชาติจากอิตาลี", href: "/products/nook", imageUrl: "/slides/3.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-4", brand: "BeautyUp", product: "Sweet Professional Hair Treatment", caption: "นวัตกรรมยืดผมระดับสากลจากบราซิล", href: "/products/sweet-professional", imageUrl: "/slides/4.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-5", brand: "BeautyUp", product: "BeautyUp Hair Product 5", caption: "ผลิตภัณฑ์บำรุงและฟื้นฟูเส้นผมล้ำลึก", href: "/products", imageUrl: "/slides/5.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-6", brand: "BeautyUp", product: "BeautyUp Professional Care 6", caption: "มาตรฐานการดูแลเส้นผมระดับซาลอนชั้นนำ", href: "/products", imageUrl: "/slides/6.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-7", brand: "BeautyUp", product: "Salon Inspiration 7", caption: "สร้างสรรค์ผลงานช่างผมมืออาชีพ", href: "/products", imageUrl: "/slides/7.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-8", brand: "BeautyUp", product: "BeautyUp Essential 8", caption: "ผลิตภัณฑ์จำเป็นสำหรับร้านซาลอน", href: "/products", imageUrl: "/slides/8.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-9", brand: "La Prairie", product: "La Prairie Caviar Collection", caption: "ศาสตร์แห่งการชะลอวัยชั้นเลิศจากสวิตเซอร์แลนด์", href: "/shop", imageUrl: "/slides/10 La Prairie.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-10", brand: "BeautyUp", product: "BeautyUp Showcase 10", caption: "คอลเลกชันสินค้าคุณภาพยอดนิยม", href: "/shop", imageUrl: "/slides/10.png", tint: "#1c1917" },
+  { brandSlug: "slide-11", brand: "BeautyUp", product: "BeautyUp Premium 11", caption: "ผลิตภัณฑ์ระดับพรีเมียม", href: "/products", imageUrl: "/slides/11.png", tint: "#1c1917" },
+  { brandSlug: "slide-12", brand: "BeautyUp", product: "BeautyUp Trend 12", caption: "อัปเดตเทรนด์ความงามใหม่ล่าสุด", href: "/products", imageUrl: "/slides/12.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-13", brand: "BeautyUp", product: "BeautyUp Special 13", caption: "สิทธิประโยชน์สำหรับสมาชิกและซาลอน", href: "/contact/salon-partner", imageUrl: "/slides/13.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-14", brand: "BeautyUp", product: "Salon Partner Community 14", caption: "ร่วมเป็นพันธมิตรซาลอนกับบิวตี้อัพทั่วประเทศ", href: "/contact/salon-partner", imageUrl: "/slides/14.jpg", tint: "#1c1917" },
+  { brandSlug: "slide-15", brand: "BeautyUp", product: "BeautyUp Academy 15", caption: "คอร์สเรียนและพัฒนาทักษะช่างผม", href: "/courses", imageUrl: "/slides/15.jpg", tint: "#1c1917" },
 ];
 
 export async function getHeroSlides(lang: Locale): Promise<HeroSlide[]> {

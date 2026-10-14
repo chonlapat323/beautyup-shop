@@ -9,17 +9,23 @@ const path = require("node:path");
 const { PrismaPg } = require("../apps/api/node_modules/@prisma/adapter-pg");
 const { PrismaClient } = require("../apps/api/dist/generated/prisma/client.js");
 
-// Load DATABASE_URL from apps/api/.env if not present in process.env
+// Load DATABASE_URL from root .env or apps/api/.env if not present in process.env
 if (!process.env.DATABASE_URL) {
-  const envPath = path.resolve(__dirname, "../apps/api/.env");
-  if (fs.existsSync(envPath)) {
-    const content = fs.readFileSync(envPath, "utf-8");
-    for (const line of content.split("\n")) {
-      const match = line.match(/^DATABASE_URL=["']?(.*?)["']?$/);
-      if (match) {
-        process.env.DATABASE_URL = match[1].trim();
-        break;
+  const envCandidates = [
+    path.resolve(__dirname, "../.env"),
+    path.resolve(__dirname, "../apps/api/.env"),
+  ];
+  for (const envPath of envCandidates) {
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, "utf-8");
+      for (const line of content.split("\n")) {
+        const match = line.match(/^DATABASE_URL=["']?(.*?)["']?$/);
+        if (match) {
+          process.env.DATABASE_URL = match[1].trim();
+          break;
+        }
       }
+      if (process.env.DATABASE_URL) break;
     }
   }
 }
