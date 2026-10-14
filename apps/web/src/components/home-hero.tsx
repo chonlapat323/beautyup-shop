@@ -21,7 +21,8 @@ export function HomeHero({
   const dict = useDict();
   const h = dict.home;
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
   const nextSlide = useCallback(() => {
@@ -33,11 +34,10 @@ export function HomeHero({
   }, [slides.length]);
 
   useEffect(() => {
-    if (paused || slides.length < 2) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (isPaused || isHovered || slides.length < 2) return;
     const id = window.setInterval(nextSlide, INTERVAL);
     return () => window.clearInterval(id);
-  }, [paused, slides.length, nextSlide]);
+  }, [isPaused, isHovered, slides.length, nextSlide]);
 
   if (!slides.length) return null;
 
@@ -88,11 +88,11 @@ export function HomeHero({
         {/* Visual: Right column (16:9 Carousel banner fitting comfortably without pixelation) */}
         <div
           className="relative lg:col-span-6 w-full"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           onTouchStart={(e) => {
             touchStartX.current = e.touches[0].clientX;
-            setPaused(true);
+            setIsHovered(true);
           }}
           onTouchEnd={(e) => {
             if (touchStartX.current !== null) {
@@ -101,7 +101,7 @@ export function HomeHero({
               else if (deltaX < -40) nextSlide();
               touchStartX.current = null;
             }
-            setPaused(false);
+            setIsHovered(false);
           }}
         >
           {/* Ambient Brand-Pink Glow Backdrop (Aura ละอองแสงสีชมพู) */}
@@ -202,11 +202,19 @@ export function HomeHero({
 
                 <button
                   type="button"
-                  onClick={() => setPaused(!paused)}
-                  aria-label={paused ? "Resume autoplay" : "Pause autoplay"}
+                  onClick={() => {
+                    if (isPaused) {
+                      setIsPaused(false);
+                      setIsHovered(false);
+                      nextSlide();
+                    } else {
+                      setIsPaused(true);
+                    }
+                  }}
+                  aria-label={isPaused ? "Resume autoplay" : "Pause autoplay"}
                   className="ml-1 text-white/80 hover:text-white transition-colors"
                 >
-                  {paused ? <Play className="size-3 fill-current" /> : <Pause className="size-3 fill-current" />}
+                  {isPaused ? <Play className="size-3 fill-current" /> : <Pause className="size-3 fill-current" />}
                 </button>
               </div>
             )}
