@@ -319,13 +319,27 @@ export const aboutSetting = z.object({
 });
 export type AboutSetting = z.infer<typeof aboutSetting>;
 
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "timeline", "ppStudio", "regionCounts"] as const;
+export const growVisionItem = z.object({
+  title: localized,
+  text: localizedOptional,
+  href: z.string().default(""),
+});
+
+export const growVisionSetting = z.object({
+  imageUrl: z.string().default(""),
+  badge: localizedOptional,
+  items: z.array(growVisionItem).default([]),
+});
+export type GrowVisionSetting = z.infer<typeof growVisionSetting>;
+
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
   about: aboutSetting,
   aboutSlides: aboutSlidesSetting,
+  growVision: growVisionSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
   ppStudio: z.array(z.object({ title: z.string(), text: localized })),
   /** Optional override for the salon directory counts until all salons are imported */

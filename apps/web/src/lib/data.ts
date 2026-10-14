@@ -97,10 +97,17 @@ interface AboutRow {
   links?: { label: L; href: string }[];
 }
 
+interface GrowVisionRow {
+  imageUrl?: string;
+  badge?: L;
+  items?: { title: L; text?: L; href: string }[];
+}
+
 interface SettingsRow {
   company?: CompanyRow;
   about?: AboutRow;
   aboutSlides?: AboutSlideRow[];
+  growVision?: GrowVisionRow;
   timeline?: { year: string; text: L }[];
   ppStudio?: { title: string; text: L }[];
 }
@@ -193,6 +200,35 @@ export async function getAboutData(lang: Locale): Promise<AboutData> {
     socials,
     links,
   };
+}
+
+export interface GrowVisionData {
+  imageUrl: string;
+  badge: string;
+  items: { title: string; text: string; href: string }[];
+}
+
+export async function getGrowVision(lang: Locale): Promise<GrowVisionData> {
+  const dict = getDictionary(lang).grow;
+  let settings: SettingsRow | undefined;
+  try {
+    settings = await get<SettingsRow>("/settings");
+  } catch {
+    // fallback
+  }
+  const g = settings?.growVision;
+
+  const imageUrl = s(g?.imageUrl) || "/slides/14.jpg";
+  const badge = (g?.badge && t(g.badge, lang)) || "Heona · No Yellow · Sweet";
+  const items = (g?.items && g.items.length > 0)
+    ? g.items.map((it) => ({
+        title: t(it.title, lang),
+        text: (it.text && t(it.text, lang)) || "",
+        href: it.href,
+      }))
+    : dict.items;
+
+  return { imageUrl, badge, items };
 }
 
 export async function getTimeline(lang: Locale) {

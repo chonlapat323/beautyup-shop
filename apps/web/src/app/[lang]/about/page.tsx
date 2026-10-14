@@ -3,7 +3,7 @@ import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getAboutData, getTimeline } from "@/lib/data";
+import { getAboutData, getGrowVision, getTimeline } from "@/lib/data";
 import { LoadingImage } from "@/components/loading-image";
 import { AboutSlider } from "@/components/about-slider";
 
@@ -21,6 +21,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
   const a = dict.about;
   const about = await getAboutData(lang);
   const timeline = await getTimeline(lang);
+  const growVision = await getGrowVision(lang);
 
   return (
     <>
@@ -162,7 +163,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
         </div>
       </section>
 
-      <GrowYourVision dict={dict.grow} />
+      <GrowYourVision data={growVision} />
     </>
   );
 }

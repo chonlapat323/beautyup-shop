@@ -1,18 +1,22 @@
 import Link from "@/components/link";
 import { LoadingImage } from "./loading-image";
 import type { Dictionary } from "@/i18n";
+import type { GrowVisionData } from "@/lib/data";
 
 export function GrowYourVision({
   dict,
-  imageUrl = "/slides/14.jpg",
+  data,
+  imageUrl,
   imageAlt = "BeautyUp Grow Your Vision - Heona, No Yellow, Sweet",
 }: {
-  dict: Dictionary["grow"];
+  dict?: Dictionary["grow"];
+  data?: GrowVisionData;
   imageUrl?: string;
   imageAlt?: string;
 }) {
-  const items = dict.items;
-  const photo = imageUrl || "/slides/14.jpg";
+  const items = data?.items || dict?.items || [];
+  const photo = data?.imageUrl || imageUrl || "/slides/14.jpg";
+  const badge = data?.badge || "Heona · No Yellow · Sweet";
 
   return (
     <section className="section">
@@ -59,7 +63,7 @@ export function GrowYourVision({
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             <div className="absolute bottom-5 left-5 right-5 text-white drop-shadow-md sm:bottom-6 sm:left-6">
               <span className="inline-block rounded-full bg-white/20 px-3.5 py-1 text-xs sm:text-sm backdrop-blur-md uppercase tracking-wider font-medium text-white/95 border border-white/20">
-                Heona · No Yellow · Sweet
+                {badge}
               </span>
             </div>
           </div>

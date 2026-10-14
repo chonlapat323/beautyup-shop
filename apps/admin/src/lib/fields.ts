@@ -365,6 +365,24 @@ export const settingsUi = {
       },
     ] satisfies Field[],
   },
+  growVision: {
+    title: "แถบ Grow Your Vision",
+    description: "จัดการรูปภาพ ป้ายข้อความ และลิงก์ในกล่อง Grow Your Vision ที่แสดงอยู่ก่อนถึง Footer ของทุกหน้า",
+    fields: [
+      { type: "image", name: "imageUrl", label: "รูปภาพฝั่งขวา", help: "ภาพประกอบสำหรับแถบ Grow Your Vision" },
+      { type: "localized", name: "badge", label: "ป้ายข้อความบนรูป", help: "เช่น Heona · No Yellow · Sweet" },
+      {
+        type: "list",
+        name: "items",
+        label: "รายการลิงก์และข้อความ (3 รายการ)",
+        item: [
+          { type: "localized", name: "title", label: "หัวข้อ", required: true },
+          { type: "localized", name: "text", label: "คำบรรยายสั้น" },
+          { type: "text", name: "href", label: "ลิงก์ปลายทาง (เช่น /products หรือ https://...)", required: true },
+        ],
+      },
+    ] satisfies Field[],
+  },
   timeline: {
     title: "เส้นทางของบิวตี้อัพ (หน้าเกี่ยวกับเรา)",
     fields: [
