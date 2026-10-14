@@ -9,30 +9,28 @@ const path = require("node:path");
 const { PrismaPg } = require("../apps/api/node_modules/@prisma/adapter-pg");
 const { PrismaClient } = require("../apps/api/dist/generated/prisma/client.js");
 
-// Load DATABASE_URL from root .env or apps/api/.env if not present in process.env
-if (!process.env.DATABASE_URL) {
-  const envCandidates = [
-    path.resolve(__dirname, "../.env"),
-    path.resolve(__dirname, "../apps/api/.env"),
-  ];
-  for (const envPath of envCandidates) {
-    if (fs.existsSync(envPath)) {
-      const content = fs.readFileSync(envPath, "utf-8");
-      for (const line of content.split("\n")) {
-        const match = line.match(/^DATABASE_URL=["']?(.*?)["']?$/);
-        if (match) {
-          process.env.DATABASE_URL = match[1].trim();
-          break;
-        }
+const apiEnv = path.resolve(__dirname, "../apps/api/.env");
+if (fs.existsSync(apiEnv)) {
+  try {
+    require("../apps/api/node_modules/dotenv").config({ path: apiEnv });
+  } catch {
+    const content = fs.readFileSync(apiEnv, "utf-8");
+    for (const rawLine of content.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      const match = line.match(/^DATABASE_URL\s*=\s*["']?(.*?)["']?$/);
+      if (match) {
+        process.env.DATABASE_URL = match[1].trim();
+        break;
       }
-      if (process.env.DATABASE_URL) break;
     }
   }
 }
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  "postgresql://beautyup:beautyup@localhost:5433/beautyup_shop";
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  console.error("Error: DATABASE_URL is not defined in environment or apps/api/.env");
+  process.exit(1);
+}
 
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
