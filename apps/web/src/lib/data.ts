@@ -151,7 +151,7 @@ export async function getAboutData(lang: Locale): Promise<AboutData> {
   const welcomeText = (a?.welcomeText && t(a.welcomeText, lang)) || dict.welcomeText || "";
   const founderName = (a?.founderName && t(a.founderName, lang)) || dict.founderName;
   const founderRole = (a?.founderRole && t(a.founderRole, lang)) || dict.founderRole;
-  const founderPhoto = s(a?.founderPhoto) || "";
+  const founderPhoto = s(a?.founderPhoto) || "/founder.png";
   const educationRaw = (a?.education && t(a.education, lang)) || dict.educationText;
   const education = educationRaw
     .split("\n")
