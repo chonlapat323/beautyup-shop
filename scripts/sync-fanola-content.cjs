@@ -93,13 +93,14 @@ async function main() {
     return;
   }
 
-  await prisma.brand.update({
-    where: { slug: "fanola" },
-    data: {
-      features: features,
-      series: series,
-    },
-  });
+  const featuresJson = JSON.stringify(features);
+  const seriesJson = JSON.stringify(series);
+
+  await prisma.$executeRawUnsafe(
+    `UPDATE "Brand" SET "features" = $1::jsonb, "series" = $2::jsonb WHERE "slug" = 'fanola'`,
+    featuresJson,
+    seriesJson
+  );
   console.log("Fanola features and series updated.");
 
   // Products to categorize and insert if missing
@@ -128,47 +129,53 @@ async function main() {
 
   let order = 0;
   for (const item of salonProducts) {
-    await prisma.product.upsert({
-      where: { slug: item.slug },
-      create: {
-        slug: item.slug,
-        name: { th: item.nameTh, en: item.nameEn },
-        description: { th: "", en: "" },
-        brandId: fanolaBrand.id,
-        category: "Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)",
-        price: item.price,
-        badges: item.badges,
-        sortOrder: order++,
-        isActive: true,
-      },
-      update: {
-        category: "Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)",
-        price: item.price,
-        name: { th: item.nameTh, en: item.nameEn },
-      },
-    });
+    const existing = await prisma.product.findUnique({ where: { slug: item.slug } });
+    if (existing) {
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Product" SET "category" = $1, "price" = $2 WHERE "slug" = $3`,
+        "Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)",
+        item.price,
+        item.slug
+      );
+    } else {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO "Product" ("id", "slug", "name", "description", "category", "brandId", "price", "badges", "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt")
+         VALUES (gen_random_uuid()::text, $1, $2::jsonb, $3::jsonb, $4, $5, $6, $7::text[], '', $8, true, NOW(), NOW())`,
+        item.slug,
+        JSON.stringify({ th: item.nameTh, en: item.nameEn }),
+        JSON.stringify({ th: "", en: "" }),
+        "Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)",
+        fanolaBrand.id,
+        item.price,
+        item.badges,
+        order++
+      );
+    }
   }
 
   for (const item of hairCareProducts) {
-    await prisma.product.upsert({
-      where: { slug: item.slug },
-      create: {
-        slug: item.slug,
-        name: { th: item.nameTh, en: item.nameEn },
-        description: { th: "", en: "" },
-        brandId: fanolaBrand.id,
-        category: "Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)",
-        price: item.price,
-        badges: item.badges,
-        sortOrder: order++,
-        isActive: true,
-      },
-      update: {
-        category: "Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)",
-        price: item.price,
-        name: { th: item.nameTh, en: item.nameEn },
-      },
-    });
+    const existing = await prisma.product.findUnique({ where: { slug: item.slug } });
+    if (existing) {
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Product" SET "category" = $1, "price" = $2 WHERE "slug" = $3`,
+        "Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)",
+        item.price,
+        item.slug
+      );
+    } else {
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO "Product" ("id", "slug", "name", "description", "category", "brandId", "price", "badges", "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt")
+         VALUES (gen_random_uuid()::text, $1, $2::jsonb, $3::jsonb, $4, $5, $6, $7::text[], '', $8, true, NOW(), NOW())`,
+        item.slug,
+        JSON.stringify({ th: item.nameTh, en: item.nameEn }),
+        JSON.stringify({ th: "", en: "" }),
+        "Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)",
+        fanolaBrand.id,
+        item.price,
+        item.badges,
+        order++
+      );
+    }
   }
 
   console.log("Fanola products categorized successfully!");
