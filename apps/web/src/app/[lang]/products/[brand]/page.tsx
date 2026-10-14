@@ -152,7 +152,7 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
               <Link
                 key={idx}
                 href={item.href || "#products"}
-                className="rounded-full border border-line bg-mist/60 px-4 py-1.5 text-xs sm:text-sm font-medium text-ink transition-all hover:border-accent hover:bg-accent-soft hover:text-accent-dark hover:scale-105"
+                className="relative hover:z-10 rounded-full border border-line bg-mist/60 px-4 py-1.5 text-xs sm:text-sm font-medium text-ink transition-all hover:border-accent hover:bg-accent-soft hover:text-accent-dark hover:scale-105"
               >
                 {item.name}
               </Link>

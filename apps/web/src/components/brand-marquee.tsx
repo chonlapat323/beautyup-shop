@@ -6,13 +6,13 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
   const href = (b: Brand) => (b.type === "SALON" ? `/products/${b.slug}` : "/shop");
 
   const row = (hidden: boolean) => (
-    <ul aria-hidden={hidden || undefined} className="flex shrink-0 items-center gap-4 pr-4 sm:gap-6 sm:pr-6">
+    <ul aria-hidden={hidden || undefined} className="flex shrink-0 items-center gap-4 py-4 pr-4 sm:gap-6 sm:py-5 sm:pr-6">
       {brands.map((b) => (
-        <li key={b.slug + (hidden ? "-dup" : "")}>
+        <li key={b.slug + (hidden ? "-dup" : "")} className="relative hover:z-20">
           <Link
             href={href(b)}
             tabIndex={hidden ? -1 : undefined}
-            className="group/brand relative flex items-center gap-3 rounded-full border border-line/80 bg-white/90 px-5 py-2.5 text-ink/85 shadow-sm shadow-black/[0.03] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-pink/60 hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/15 active:scale-95"
+            className="group/brand relative flex items-center gap-3 rounded-full border border-line/80 bg-white/90 px-5 py-2.5 text-ink/85 shadow-sm shadow-black/[0.03] backdrop-blur-md transition-all duration-300 hover:z-20 hover:-translate-y-1 hover:border-brand-pink/70 hover:bg-white hover:text-brand-pink hover:shadow-xl hover:shadow-brand-pink/20 active:scale-95"
           >
             {/* Elegant Brand Pink Accent Dot */}
             <span className="size-1.5 shrink-0 rounded-full bg-brand-pink/60 transition-transform duration-300 group-hover/brand:scale-150 group-hover/brand:bg-brand-pink" />
@@ -37,7 +37,7 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
   );
 
   return (
-    <section aria-label={label} className="relative border-y border-line/60 bg-gradient-to-r from-cream via-sand/30 to-cream py-6 sm:py-7 overflow-hidden">
+    <section aria-label={label} className="relative border-y border-line/60 bg-gradient-to-r from-cream via-sand/30 to-cream py-3 sm:py-4 overflow-hidden">
       {/* Ambient pink aura backdrop */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(214_41_127/0.06),transparent_70%)]"
@@ -45,7 +45,7 @@ export function BrandMarquee({ brands, label }: { brands: Brand[]; label: string
       />
 
       {/* Smooth fade mask on left and right edges */}
-      <div className="group relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+      <div className="group relative flex overflow-hidden py-2 -my-2 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div className="flex animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
           {row(false)}
           {row(true)}
