@@ -82,22 +82,22 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
-                    {/* Floating Glassmorphic White Card at Bottom - exactly 50% height */}
-                    <div className="relative z-10 m-3 sm:m-4 h-[48%] max-h-[50%] flex flex-col justify-between overflow-hidden rounded-2xl bg-white/95 p-4 sm:p-5 backdrop-blur-md border border-white/60 shadow-xl transition-all duration-300 group-hover:bg-white">
+                    {/* Floating Glassmorphic White Card at Bottom - exactly 35% height */}
+                    <div className="relative z-10 m-3 sm:m-4 h-[35%] max-h-[35%] flex flex-col justify-between overflow-hidden rounded-2xl bg-white/95 p-3.5 sm:p-4 backdrop-blur-md border border-white/60 shadow-xl transition-all duration-300 group-hover:bg-white">
                       <div className="min-h-0 overflow-y-auto pr-1">
-                        <h3 className="font-sans text-lg sm:text-xl font-bold text-ink group-hover:text-accent transition-colors leading-snug">
+                        <h3 className="font-sans text-base sm:text-lg font-bold text-ink group-hover:text-accent transition-colors leading-tight">
                           {card.title}
                         </h3>
                         {card.description && (
-                          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-muted line-clamp-4 sm:line-clamp-5">
+                          <p className="mt-1.5 text-xs sm:text-[13px] leading-relaxed text-muted line-clamp-3 sm:line-clamp-4">
                             {card.description}
                           </p>
                         )}
                       </div>
-                      <div className="mt-3 pt-2.5 border-t border-line/60 shrink-0">
+                      <div className="mt-2 pt-2 border-t border-line/60 shrink-0">
                         <Link
                           href={card.href || "#products"}
-                          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-accent group-hover:text-accent-dark transition-transform group-hover:translate-x-1"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent group-hover:text-accent-dark transition-transform group-hover:translate-x-1"
                         >
                           ดูสินค้า <span>→</span>
                         </Link>
