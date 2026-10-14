@@ -6,7 +6,6 @@ import { resolveLang } from "@/i18n";
 import { getGrowVision, getPage } from "@/lib/data";
 
 export const instant = false;
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/[...rest]">): Promise<Metadata> {
   const { lang } = await resolveLang(params);
