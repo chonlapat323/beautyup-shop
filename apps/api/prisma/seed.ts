@@ -18,7 +18,7 @@ async function main() {
   await seedSettings();
   const brandIds = await seedBrands();
   await seedProducts(brandIds);
-  await fillIfEmpty('heroSlide', heroSlides(brandIds));
+  await syncHeroSlides();
   await fillIfEmpty('video', videos);
   await fillIfEmpty('ambassador', ambassadors);
   await fillIfEmpty('salon', salons);
@@ -175,15 +175,30 @@ async function seedProducts(brand: Record<string, string>) {
 
 /* ---------------------------------------------------------- other lists */
 
-// Hero slides using the uploaded banner images
-const heroSlides = (brand: Record<string, string>) => [
-  { brandId: brand['fanola'], product: L('BeautyUp Official Salon Partner', 'BeautyUp Official Salon Partner'), caption: L('ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ', 'Professional Salon & Beauty Products'), href: '/products', imageUrl: '/uploads/1.jpg', tint: '#d6297f', sortOrder: 0 },
-  { brandId: null, product: L('Special Beauty Promotions', 'Special Beauty Promotions'), caption: L('โปรโมชันสุดคุ้มเพื่อช่างผมมืออาชีพ', 'Exclusive Salon Deals'), href: '/products', imageUrl: '/uploads/2.jpg', tint: '#1c1917', sortOrder: 1 },
-  { brandId: brand['nook'], product: L('Nook Eco-Conscious Beauty', 'Nook Eco-Conscious Beauty'), caption: L('ผลิตภัณฑ์ดูแลเส้นผมจากธรรมชาติ', 'Nature-inspired salon care from Italy'), href: '/products/nook', imageUrl: '/uploads/3.jpg', tint: '#5f7d5a', sortOrder: 2 },
-  { brandId: brand['sweet-professional'], product: L('Sweet Professional Hair Treatment', 'Sweet Professional Hair Treatment'), caption: L('นวัตกรรมยืดผมระดับโลก', 'Global Hair Transformation'), href: '/products/sweet-professional', imageUrl: '/uploads/4.jpg', tint: '#b08a4e', sortOrder: 3 },
-  { brandId: null, product: L('La Prairie Caviar Collection', 'La Prairie Caviar Collection'), caption: L('ศาสตร์แห่งการชะลอวัยชั้นเลิศ', 'The Swiss Luxury Skincare'), href: '/shop', imageUrl: '/uploads/10 La Prairie.jpg', tint: '#1e3a8a', sortOrder: 4 },
-  { brandId: null, product: L('Salon Partner Community', 'Salon Partner Community'), caption: L('เติบโตไปพร้อมกับเครือข่ายร้านซาลอนทั่วประเทศ', 'Grow your vision with BeautyUp'), href: '/contact/salon-partner', imageUrl: '/uploads/14.jpg', tint: '#7c4630', sortOrder: 5 },
-];
+async function syncHeroSlides() {
+  const all15Slides = [
+    { product: L('BeautyUp Official Salon Partner', 'BeautyUp Official Salon Partner'), caption: L('ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ', 'Professional Salon & Beauty Products'), href: '/products', imageUrl: '/slides/1.jpg', sortOrder: 0, isActive: true },
+    { product: L('Beauty Promotion 2', 'Beauty Promotion 2'), caption: L('โปรโมชันสุดคุ้มเพื่อช่างผมมืออาชีพ', 'Exclusive Salon Deals'), href: '/products', imageUrl: '/slides/2.jpg', sortOrder: 1, isActive: true },
+    { product: L('Nook Eco-Conscious Beauty', 'Nook Eco-Conscious Beauty'), caption: L('ผลิตภัณฑ์ดูแลเส้นผมธรรมชาติจากอิตาลี', 'Nature-inspired salon care from Italy'), href: '/products/nook', imageUrl: '/slides/3.jpg', sortOrder: 2, isActive: true },
+    { product: L('Sweet Professional Hair Treatment', 'Sweet Professional Hair Treatment'), caption: L('นวัตกรรมยืดผมระดับสากลจากบราซิล', 'Global Hair Transformation'), href: '/products/sweet-professional', imageUrl: '/slides/4.jpg', sortOrder: 3, isActive: true },
+    { product: L('BeautyUp Hair Product 5', 'BeautyUp Hair Product 5'), caption: L('ผลิตภัณฑ์บำรุงและฟื้นฟูเส้นผมล้ำลึก', 'Deep Hair Nourishment'), href: '/products', imageUrl: '/slides/5.jpg', sortOrder: 4, isActive: true },
+    { product: L('BeautyUp Professional Care 6', 'BeautyUp Professional Care 6'), caption: L('มาตรฐานการดูแลเส้นผมระดับซาลอนชั้นนำ', 'Professional Salon Standard'), href: '/products', imageUrl: '/slides/6.jpg', sortOrder: 5, isActive: true },
+    { product: L('Salon Inspiration 7', 'Salon Inspiration 7'), caption: L('สร้างสรรค์ผลงานช่างผมมืออาชีพ', 'Creative Styling Solutions'), href: '/products', imageUrl: '/slides/7.jpg', sortOrder: 6, isActive: true },
+    { product: L('BeautyUp Essential 8', 'BeautyUp Essential 8'), caption: L('ผลิตภัณฑ์จำเป็นสำหรับร้านซาลอน', 'Essential Salon Care'), href: '/products', imageUrl: '/slides/8.jpg', sortOrder: 7, isActive: true },
+    { product: L('La Prairie Caviar Collection', 'La Prairie Caviar Collection'), caption: L('ศาสตร์แห่งการชะลอวัยชั้นเลิศจากสวิตเซอร์แลนด์', 'The Swiss Luxury Skincare'), href: '/shop', imageUrl: '/slides/10 La Prairie.jpg', sortOrder: 8, isActive: true },
+    { product: L('BeautyUp Showcase 10', 'BeautyUp Showcase 10'), caption: L('คอลเลกชันสินค้าคุณภาพยอดนิยม', 'Featured Collection'), href: '/shop', imageUrl: '/slides/10.png', sortOrder: 9, isActive: true },
+    { product: L('BeautyUp Premium 11', 'BeautyUp Premium 11'), caption: L('ผลิตภัณฑ์ระดับพรีเมียม', 'Premium Beauty Line'), href: '/products', imageUrl: '/slides/11.png', sortOrder: 10, isActive: true },
+    { product: L('BeautyUp Trend 12', 'BeautyUp Trend 12'), caption: L('อัปเดตเทรนด์ความงามใหม่ล่าสุด', 'Latest Beauty Trends'), href: '/products', imageUrl: '/slides/12.jpg', sortOrder: 11, isActive: true },
+    { product: L('BeautyUp Special 13', 'BeautyUp Special 13'), caption: L('สิทธิประโยชน์สำหรับสมาชิกและซาลอน', 'Member Exclusive'), href: '/contact/salon-partner', imageUrl: '/slides/13.jpg', sortOrder: 12, isActive: true },
+    { product: L('Salon Partner Community 14', 'Salon Partner Community 14'), caption: L('ร่วมเป็นพันธมิตรซาลอนกับบิวตี้อัพทั่วประเทศ', 'Grow your vision with BeautyUp'), href: '/contact/salon-partner', imageUrl: '/slides/14.jpg', sortOrder: 13, isActive: true },
+    { product: L('BeautyUp Academy 15', 'BeautyUp Academy 15'), caption: L('คอร์สเรียนและพัฒนาทักษะช่างผม', 'Professional Hairdressing Academy'), href: '/courses', imageUrl: '/slides/15.jpg', sortOrder: 14, isActive: true },
+  ];
+
+  await prisma.heroSlide.deleteMany();
+  for (const s of all15Slides) {
+    await prisma.heroSlide.create({ data: s });
+  }
+}
 
 const videos = [
   { title: L('20 YEARS OF FANOLA - Official Campaign', '20 YEARS OF FANOLA - Official Campaign'), youtubeUrl: 'https://www.youtube.com/@FanolaOfficial', sortOrder: 0 },
