@@ -43,7 +43,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
   salons: { model: 'salon', orderBy: [{ region: 'asc' }, { province: 'asc' }, { name: 'asc' }], hasActive: true, searchFields: ['name', 'province'] },
   courses: { model: 'course', orderBy: byOrder, slugField: 'slug', hasActive: true, searchFields: ['slug'] },
   posts: { model: 'post', orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }], slugField: 'slug', hasActive: false, searchFields: ['slug'] },
-  pages: { model: 'page', orderBy: [{ slug: 'asc' }], slugField: 'slug', hasActive: false },
+  pages: { model: 'page', orderBy: [{ slug: 'asc' }], slugField: 'slug', hasActive: true },
   team: { model: 'teamMember', orderBy: [{ department: 'asc' }, ...byOrder], hasActive: true },
 };
 

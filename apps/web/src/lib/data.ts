@@ -251,7 +251,9 @@ export async function getCurrentYear() {
 
 interface BrandRow extends Row {
   slug: string; type: "SALON" | "COUNTER"; name: string; localName: L; country: L; tagline: L; description: L;
-  highlights: L[]; logoUrl: string; website: string; catalogUrl: string; socials: Brand["socials"];
+  highlights: L[]; features?: { title: L; description?: L; href?: string; imageUrl?: string }[];
+  series?: { name: string; href?: string }[];
+  logoUrl: string; website: string; catalogUrl: string; socials: Brand["socials"];
 }
 
 const toBrand = (b: BrandRow, lang: Locale): Brand => ({
@@ -263,6 +265,16 @@ const toBrand = (b: BrandRow, lang: Locale): Brand => ({
   tagline: s(t(b.tagline, lang)),
   description: s(t(b.description, lang)),
   highlights: (b.highlights ?? []).map((h) => t(h, lang)).filter(Boolean),
+  features: (b.features ?? []).map((f) => ({
+    title: t(f.title, lang),
+    description: s(t(f.description, lang)),
+    href: f.href || "",
+    imageUrl: s(f.imageUrl),
+  })),
+  series: (b.series ?? []).map((sr) => ({
+    name: sr.name,
+    href: sr.href || "",
+  })),
   logoUrl: s(b.logoUrl),
   website: s(b.website),
   catalogUrl: s(b.catalogUrl),
@@ -283,6 +295,7 @@ export async function getBrand(lang: Locale, slug: string) {
 
 interface ProductRow extends Row {
   slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; imageUrl: string;
+  category?: string; series?: string;
   brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
 }
 
@@ -292,6 +305,8 @@ const toProduct = (p: ProductRow, lang: Locale): Product => ({
   brandSlug: p.brand.slug,
   brandName: p.brand.name,
   brandType: p.brand.type,
+  category: p.category || undefined,
+  series: p.series || undefined,
   price: p.price,
   salePrice: p.salePrice ?? undefined,
   badges: p.badges,

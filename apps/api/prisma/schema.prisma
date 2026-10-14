@@ -92,6 +92,8 @@ model Brand {
   tagline     Json
   description Json
   highlights  Json        @default("[]")
+  features    Json        @default("[]")
+  series      Json        @default("[]")
   logoUrl     String      @default("")
   website     String      @default("")
   catalogUrl  String      @default("")
@@ -107,6 +109,8 @@ model Product {
   slug        String   @unique
   name        Json
   description Json
+  category    String   @default("")
+  series      String   @default("")
   brandId     String
   brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Restrict)
   price       Decimal  @db.Decimal(12, 2)
@@ -119,6 +123,7 @@ model Product {
   updatedAt   DateTime @updatedAt
 
   @@index([brandId])
+  @@index([category])
 }
 
 model HeroSlide {
@@ -201,6 +206,7 @@ model Page {
   slug      String   @unique
   title     Json
   body      Json
+  isActive  Boolean  @default(true)
   updatedAt DateTime @updatedAt
 }
 

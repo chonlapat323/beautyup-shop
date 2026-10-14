@@ -16,6 +16,18 @@ export interface Socials {
 
 export type BrandType = "SALON" | "COUNTER";
 
+export interface BrandFeatureItem {
+  title: string;
+  description?: string;
+  href?: string;
+  imageUrl?: string;
+}
+
+export interface BrandSeriesItem {
+  name: string;
+  href?: string;
+}
+
 export interface Brand {
   slug: string;
   type: BrandType;
@@ -25,6 +37,8 @@ export interface Brand {
   tagline?: string;
   description?: string;
   highlights?: string[];
+  features?: BrandFeatureItem[];
+  series?: BrandSeriesItem[];
   logoUrl?: string;
   website?: string;
   catalogUrl?: string;
@@ -37,6 +51,8 @@ export interface Product {
   brandSlug: string;
   brandName?: string;
   brandType?: BrandType;
+  category?: string;
+  series?: string;
   price: number;
   salePrice?: number;
   badges?: string[];

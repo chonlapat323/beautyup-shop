@@ -132,6 +132,53 @@ async function seedBrands() {
       tagline: L('ปลดปล่อยความคิดสร้างสรรค์และความเป็นที่สุดของคุณ!', 'Unleash your creativity and be your very best!'),
       description: L('ผลิตภัณฑ์นำเข้าจากอิตาลีสำหรับร้านเสริมสวยและช่างผมมืออาชีพ', 'Imported from Italy for salons and professional hairdressers'),
       highlights: [L('Fashion precision', 'Fashion precision'), L('Creative thinking', 'Creative thinking'), L('ปกป้องและฟื้นฟู', 'Protect & restore'), L('หนังศีรษะสุขภาพดี', 'Healthy scalp'), L('Vegan', 'Vegan')],
+      features: [
+        {
+          title: L('ผลิตภัณฑ์ดูแลผม', 'Hair Care Products'),
+          description: L(
+            'การดูแลผมที่มีประสิทธิภาพตั้งแต่เส้นผมรากผมและหนังศีรษะช่วยให้ผมแข็งแรงนุ่มสลวยเงางามมีน้ำหนัก สุขภาพดีตั้งแต่ภายใน ป้องกันการสร้างเม็ดสีแฝง (เหลือง ส้ม แดง) ที่เกิดขึ้นใหม่ตลอดเวลา ผลิตภัณฑ์ฟาโนลามีกลิ่นหอมหรูหราด้วยแรงบันดาลใจจากน้ำหอมชั้นดี ปกป้องเส้นผมจากมลภาวะแสงแดดสารเคมีและความร้อน ทำให้เส้นผมสีสันสวยงามอยู่ทนนานเป็นพิเศษเหมือนออกจากซาลอนทุกวัน',
+            'Effective hair care from root to tip and scalp, enhancing strength, silky smoothness, shine, and inner vitality. Prevents unwanted undertones (yellow, orange, red) while shielding hair from heat and pollution.',
+          ),
+          href: '#fanola-hair-care',
+          imageUrl: '',
+        },
+        {
+          title: L('ผลิตภัณฑ์ทำสีผม', 'Hair Color Products'),
+          description: L(
+            'การทำสีผมที่มีความแตกต่าง มีรายละเอียดสูง เอกลักษณ์โดดเด่น ตอบโจทย์ความคิดสร้างสรรค์ สีทำผม 5 คอลเลคชั่น การทำงานของสีรวดเร็ว เม็ดสีติดแน่นทนนาน ไม่ติดแดงติดส้ม มีสารป้องกันเม็ดสีเหลืองแฝงในเส้นผม ช่วยให้ทำสีได้สวย ตรงใจ สีย้อมผมที่ให้ความเงางามมีระดับปราศจากกลิ่นฉุนไม่พึงประสงค์ ปราศจากแอมโมเนียและสารก่อมะเร็ง มีส่วนผสมพิเศษ อาทิ ทองคำ 24k เคราติน อาร์แกนออยล์',
+            'Exceptional hair color with 5 distinctive collections. Fast-acting, rich, long-lasting pigments without brassiness. Ammonia-free, enriched with 24k gold, keratin, and argan oil.',
+          ),
+          href: '#fanola-salon',
+          imageUrl: '',
+        },
+        {
+          title: L('ผลิตภัณฑ์ฟอกสีผม', 'Hair Bleaching Products'),
+          description: L(
+            'การฟอกสีผม ด้วยความเข้าใจในสภาพเส้นผมและความต้องการที่แตกต่างกัน รองรับการฟอกผมทุกสภาพทุกสไตล์ ด้วยผลิตภัณฑ์ฟอกผม 8 แบบ ตั้งแต่การยกระดับ 9 ระดับ รวดเร็วให้ความสว่างสดใส, ครีมฟอกที่ให้ความนวลกลมกลืน และอ่อนโยนแม้กับเส้นผมอ่อนแอเส้นเล็ก, ผงฟอกแม่ม่วง/แม่น้ำเงิน/แม่เขียว กำจัดเม็ดสีเหลือง/ส้ม/แดง อย่างตรงจุด ทนุถนอมเส้นผมและเพิ่มความชุ่มชื้น ผมไม่แห้ง ผมเงางาม สุขภาพดี',
+            'Advanced lightening with 8 formulas lifting up to 9 levels. Gentle bleaching cream for fragile hair, specialized violet/blue/green toning bleaches to neutralize yellow/orange/red undertones.',
+          ),
+          href: '#fanola-salon',
+          imageUrl: '',
+        },
+        {
+          title: L('ผลิตภัณฑ์ยืดดัดผม', 'Perm & Straightening'),
+          description: L(
+            'การดัดผม ยืดผมด้วยน้ำยาที่มีส่วนผสมพิเศษ อาทิ โปรตีนอัลมอนด์ สูตรปราศจากแอมโมเนีย อ่อนโยนต่อเส้นผม ปลอดภัยต่อสุขภาพในระยะยาว น้ำยาดัดผมกลิ่นอ่อนโยน กลิ่นไม่ฉุน ขั้นตอนการทำงานไม่ยุ่งยาก น้ำยาดัดเย็น และ น้ำยาดัด/ยืดดิจิตอล สามารถดัดผมอ่อนแอและผมแข็งแรงได้อย่างมีประสิทธิภาพ ให้ผลลัพธ์คือ ผมสวยลอนเด้งกระชับ อยู่ทรงนานและผมมีสุขภาพดีเงางาม',
+            'Ammonia-free straightening and perming enriched with almond protein. Gentle scent, easy application for cold and digital perm, leaving hair bouncy, resilient, and full of natural shine.',
+          ),
+          href: '#fanola-salon',
+          imageUrl: '',
+        },
+      ],
+      series: [
+        { name: 'No yellow Care', href: '#fanola-salon' },
+        { name: 'After colour', href: '#fanola-salon' },
+        { name: 'Frequent', href: '#fanola-salon' },
+        { name: 'Scrub Gel', href: '#fanola-salon' },
+        { name: 'Rebalance Purity', href: '#fanola-salon' },
+        { name: 'NO MORE', href: '#fanola-salon' },
+        { name: 'FIBER FIX', href: '#fanola-salon' },
+      ],
       website: 'https://www.fanola.it/fa_en/',
       socials: { youtube: 'https://www.youtube.com/@FanolaOfficial' },
     },
@@ -180,29 +227,29 @@ async function seedBrands() {
 /* ------------------------------------------------------------- products */
 
 async function seedProducts(brand: Record<string, string>) {
-  const items: [string, string, string, number, number | null, string[]][] = [
-    ['skin-caviar-harmony-lextrait', "Skin Caviar Harmony L'Extrait", 'la-prairie', 30500, 21350, ['New']],
-    ['la-prairie-caviar-set', 'La Prairie Caviar Set', 'la-prairie', 78000, 54600, []],
-    ['no-red-set-100ml', 'No Red Set 100ml (Shampoo & Mask)', 'fanola', 1080, null, ['New']],
-    ['no-red-mask-350ml', 'No Red Mask 350ml', 'fanola', 1390, null, ['New']],
-    ['no-red-mask-1000ml', 'No Red Mask 1,000ml', 'fanola', 2590, null, ['New']],
-    ['no-red-shampoo-350ml', 'No Red Shampoo 350ml', 'fanola', 1168, null, ['New']],
-    ['blue-foam-no-orange-250ml', 'Blue Foam No Orange 250ml', 'fanola', 2250, null, ['New']],
-    ['no-orange-mask-350ml', 'No Orange Mask 350ml', 'fanola', 1390, null, ['Hot']],
-    ['no-orange-mask-1000ml', 'No Orange Mask 1,000ml', 'fanola', 2590, null, ['Hot']],
-    ['no-orange-shampoo-350ml', 'No Orange Shampoo 350ml', 'fanola', 1168, null, ['Hot']],
-    ['no-orange-shampoo-1000ml', 'No Orange Shampoo 1,000ml', 'fanola', 1950, null, ['Hot']],
-    ['nutri-care-shampoo-1000ml', 'Nutri Care Shampoo 1,000ml', 'fanola', 1850, null, ['Soft hair']],
-    ['shield-protective-mist-100ml', 'Shield Protective Mist 100ml', 'fanola', 1590, null, []],
-    ['2-phase-potion-leave-in-150ml', '2-Phase Potion Leave In Conditioner 150ml', 'fanola', 1290, null, []],
-    ['thermo-protective-cream-150ml', 'Thermo-Protective Cream 150ml', 'fanola', 1650, null, []],
+  const items: [string, string, string, string, number, number | null, string[]][] = [
+    ['skin-caviar-harmony-lextrait', "Skin Caviar Harmony L'Extrait", 'la-prairie', '', 30500, 21350, ['New']],
+    ['la-prairie-caviar-set', 'La Prairie Caviar Set', 'la-prairie', '', 78000, 54600, []],
+    ['no-red-set-100ml', 'No Red Set 100ml (Shampoo & Mask)', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1080, null, ['New']],
+    ['no-red-mask-350ml', 'No Red Mask 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1390, null, ['New']],
+    ['no-red-mask-1000ml', 'No Red Mask 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 2590, null, ['New']],
+    ['no-red-shampoo-350ml', 'No Red Shampoo 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1168, null, ['New']],
+    ['blue-foam-no-orange-250ml', 'Blue Foam No Orange 250ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 2250, null, ['New']],
+    ['no-orange-mask-350ml', 'No Orange Mask 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1390, null, ['Hot']],
+    ['no-orange-mask-1000ml', 'No Orange Mask 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 2590, null, ['Hot']],
+    ['no-orange-shampoo-350ml', 'No Orange Shampoo 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1168, null, ['Hot']],
+    ['no-orange-shampoo-1000ml', 'No Orange Shampoo 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1950, null, ['Hot']],
+    ['nutri-care-shampoo-1000ml', 'Nutri Care Shampoo 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1850, null, ['Soft hair']],
+    ['shield-protective-mist-100ml', 'Shield Protective Mist 100ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1590, null, []],
+    ['2-phase-potion-leave-in-150ml', '2-Phase Potion Leave In Conditioner 150ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1290, null, []],
+    ['thermo-protective-cream-150ml', 'Thermo-Protective Cream 150ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1650, null, []],
   ];
   let order = 0;
-  for (const [slug, name, b, price, salePrice, badges] of items) {
+  for (const [slug, name, b, category, price, salePrice, badges] of items) {
     await prisma.product.upsert({
       where: { slug },
-      create: { slug, name: L(name, name), description: L('', ''), brandId: brand[b], price, salePrice, badges, sortOrder: order++ },
-      update: {},
+      create: { slug, name: L(name, name), description: L('', ''), brandId: brand[b], category, price, salePrice, badges, sortOrder: order++ },
+      update: { category, price },
     });
   }
 }

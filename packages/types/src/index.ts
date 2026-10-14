@@ -90,6 +90,20 @@ export const menuItemInput = z.object({
   isActive,
 });
 
+export const brandFeatureSchema = z.object({
+  title: localized,
+  description: localizedOptional,
+  href: z.string().trim().default(""),
+  imageUrl: url.optional().default(""),
+});
+export type BrandFeature = z.infer<typeof brandFeatureSchema>;
+
+export const brandSeriesSchema = z.object({
+  name: z.string().trim().min(1),
+  href: z.string().trim().default(""),
+});
+export type BrandSeries = z.infer<typeof brandSeriesSchema>;
+
 export const brandInput = z.object({
   slug,
   type: z.enum(BRAND_TYPES),
@@ -99,6 +113,8 @@ export const brandInput = z.object({
   tagline: localizedOptional,
   description: localizedOptional,
   highlights: z.array(localized).default([]),
+  features: z.array(brandFeatureSchema).default([]),
+  series: z.array(brandSeriesSchema).default([]),
   logoUrl: url,
   website: url,
   catalogUrl: url,
@@ -112,6 +128,8 @@ export const productInput = z.object({
   name: localized,
   description: localizedOptional,
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+  category: z.string().trim().optional().default(""),
+  series: z.string().trim().optional().default(""),
   price: z.coerce.number().nonnegative(),
   salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),
   badges: z.array(z.string().trim().min(1)).default([]),
@@ -187,6 +205,7 @@ export const pageInput = z.object({
   title: localized,
   /** One paragraph per line; lines starting with "## " become headings */
   body: localizedOptional,
+  isActive,
 });
 
 export const teamMemberInput = z.object({
