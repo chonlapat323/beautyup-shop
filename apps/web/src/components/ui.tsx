@@ -4,23 +4,18 @@ import Link from "@/components/link";
 import type { CSSProperties, ReactNode } from "react";
 import type { Socials } from "@/lib/types";
 import { LoadingImage } from "./loading-image";
+import { MockImagePlaceholder } from "./mock-image-placeholder";
 
-const tones = [
-  "from-[#e9d8cc] via-[#f3e6dd] to-[#d9c2b2]",
-  "from-[#d8d4cc] via-[#ece8e1] to-[#c9c1b5]",
-  "from-[#e6d3d6] via-[#f2e5e7] to-[#d4b9be]",
-  "from-[#d6dccf] via-[#e9ede4] to-[#c3ccb9]",
-];
+export { MockImagePlaceholder };
 
 /**
- * Image slot. Shows the image when `src` is set, otherwise a soft placeholder
- * so layouts can be reviewed before real photos are uploaded.
+ * Image slot. Shows the image when `src` is set, otherwise a clean neutral-gray mock placeholder
+ * so unhandled / pending photos are clearly identified.
  */
 export function Media({
   src,
   alt = "",
   label,
-  tone = 0,
   className,
 }: {
   src?: string;
@@ -32,23 +27,7 @@ export function Media({
   if (src) {
     return <LoadingImage src={src} alt={alt} className={clsx("object-cover", className)} />;
   }
-  return (
-    <div
-      role={alt ? "img" : undefined}
-      aria-label={alt || undefined}
-      className={clsx(
-        "relative grid place-items-center overflow-hidden bg-gradient-to-br",
-        tones[tone % tones.length],
-        className,
-      )}
-    >
-      {label && (
-        <span className="px-4 text-center font-display text-lg text-ink/40 sm:text-xl">
-          {label}
-        </span>
-      )}
-    </div>
-  );
+  return <MockImagePlaceholder label={label || alt} className={className} />;
 }
 
 export function SectionHeading({

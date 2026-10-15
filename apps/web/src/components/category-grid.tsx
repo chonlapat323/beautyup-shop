@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "@/components/link";
 import { useState, useMemo } from "react";
 import clsx from "clsx";
+import { LoadingImage } from "./loading-image";
+import { MockImagePlaceholder } from "./mock-image-placeholder";
 import {
   ArrowUpRight,
   ExternalLink,
@@ -301,15 +302,16 @@ export function CategoryGrid({
                           : "border border-line/60 hover:shadow-2xl hover:shadow-neutral-900/10 hover:-translate-y-1",
                       )}
                     >
-                      {/* Photo with smooth zoom */}
-                      <Image
-                        src={cat.imageUrl}
-                        alt={cat.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                        className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
-                        priority={idx < 5}
-                      />
+                      {/* Photo with smooth zoom or neutral gray mock placeholder */}
+                      {cat.imageUrl ? (
+                        <LoadingImage
+                          src={cat.imageUrl}
+                          alt={cat.name}
+                          className="size-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+                        />
+                      ) : (
+                        <MockImagePlaceholder label={cat.name} subLabel="Category Mock" className="absolute inset-0 size-full" />
+                      )}
 
                       {/* Dark Vignette Overlay on Hover */}
                       <div

@@ -9,12 +9,28 @@ function Cell({ col, row }: { col: Column; row: Row }) {
   const v = row[col.name];
   switch (col.kind) {
     case "image":
-      return v ? (
-        // eslint-disable-next-line @next/next/no-img-element -- arbitrary upload host
-        <img src={String(v)} alt="" className="size-11 rounded-lg border border-line bg-mist object-contain" />
-      ) : (
-        <span className="grid size-11 place-items-center rounded-lg border border-dashed border-line text-muted/60">
-          <ImageOff className="size-4" />
+      return (
+        <span className="relative block size-11">
+          {v ? (
+            // eslint-disable-next-line @next/next/no-img-element -- arbitrary upload host
+            <img
+              src={String(v)}
+              alt=""
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                const ph = e.currentTarget.nextElementSibling as HTMLElement;
+                if (ph) ph.style.display = "grid";
+              }}
+              className="size-11 rounded-lg border border-line bg-mist object-contain"
+            />
+          ) : null}
+          <span
+            style={{ display: v ? "none" : "grid" }}
+            className="size-11 place-items-center rounded-lg border border-dashed border-line bg-mist/60 text-muted"
+            title="ยังไม่มีรูปภาพ (รอจัดการรูป)"
+          >
+            <ImageOff className="size-4 text-muted/60" />
+          </span>
         </span>
       );
     case "localized": {

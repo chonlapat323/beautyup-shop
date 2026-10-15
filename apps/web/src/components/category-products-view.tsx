@@ -1,12 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "@/components/link";
 import { useState, useMemo, useRef } from "react";
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight, ExternalLink, Filter, MessageCircle, X } from "lucide-react";
 import type { Product } from "@/lib/types";
 import type { BrandCategory } from "@/lib/brand-categories";
+import { LoadingImage } from "./loading-image";
+import { MockImagePlaceholder } from "./mock-image-placeholder";
 import { formatPrice } from "./ui";
 import { useDict } from "@/i18n/client";
 
@@ -243,19 +244,15 @@ export function CategoryProductsView({
                     >
                       <div>
                         {/* Product Image Frame */}
-                        <div className="relative aspect-square w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-50 mb-3 sm:mb-4">
+                        <div className="relative aspect-square w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 mb-3 sm:mb-4">
                           {p.imageUrl ? (
-                            <Image
+                            <LoadingImage
                               src={p.imageUrl}
                               alt={p.name}
-                              fill
-                              sizes="(max-width: 640px) 50vw, 33vw"
-                              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              className="size-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                             />
                           ) : (
-                            <div className="flex size-full items-center justify-center bg-sand/30 text-xs text-muted">
-                              {brandName || "Product"}
-                            </div>
+                            <MockImagePlaceholder label={p.name} />
                           )}
 
                           {/* Top Badge (Hot / New / Sale) */}
@@ -402,15 +399,16 @@ export function CategoryProductsView({
               <X className="size-5" />
             </button>
 
-            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-50 mb-6">
+            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-100 mb-6">
               {selectedProduct.imageUrl ? (
-                <Image
+                <LoadingImage
                   src={selectedProduct.imageUrl}
                   alt={selectedProduct.name}
-                  fill
-                  className="object-cover object-center"
+                  className="size-full object-cover object-center"
                 />
-              ) : null}
+              ) : (
+                <MockImagePlaceholder label={selectedProduct.name} />
+              )}
             </div>
 
             <p className="eyebrow text-brand-pink">{brandName || "Brand"}</p>
