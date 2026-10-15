@@ -192,21 +192,6 @@ export default async function BrandPage({
         </div>
       </PageHero>
 
-      {/* Visual Category Grid (Image 1 reference) */}
-      {categories.length > 0 && (
-        <CategoryGrid
-          categories={categories}
-          brandSlug={slug}
-          brandName={brand.name}
-          title={
-            lang === "th"
-              ? "คอลเลกชันและหมวดหมู่ผลิตภัณฑ์"
-              : "Product Collections & Categories"
-          }
-          eyebrow="Collections"
-        />
-      )}
-
       {/* 1. Dynamic Menu Content (Configured directly in Admin > Menu Items) */}
       {hasMenuContent ? (
         <MenuContentRenderer menu={menuItem} />
@@ -228,8 +213,13 @@ export default async function BrandPage({
               <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
                 <p className="eyebrow text-brand-pink font-semibold">Specialized Collections</p>
                 <h2 className="mt-2 font-display text-3xl sm:text-4xl text-ink">
-                  {lang === "th" ? "หมวดหมู่ผลิตภัณฑ์หลัก" : "Main Categories"}
+                  {lang === "th" ? "หมวดหมู่ผลิตภัณฑ์หลัก" : "Specialized Collections"}
                 </h2>
+                <p className="mt-3 text-sm sm:text-base text-muted">
+                  {lang === "th"
+                    ? "4 คอลเลกชันคุณภาพเพื่อช่างผมมืออาชีพและร้านซาลอนชั้นนำ"
+                    : "4 Professional collections for salons and stylists"}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -290,6 +280,21 @@ export default async function BrandPage({
             ))}
           </div>
         </section>
+      )}
+
+      {/* Visual Category Grid (Pinterest Moodboard - Below Specialized Collections) */}
+      {categories.length > 0 && (
+        <CategoryGrid
+          categories={categories}
+          brandSlug={slug}
+          brandName={brand.name}
+          title={
+            lang === "th"
+              ? "คอลเลกชันและหมวดหมู่ผลิตภัณฑ์"
+              : "Product Collections & Categories"
+          }
+          eyebrow="Collections"
+        />
       )}
 
       {/* 3. Product Showcase (if showProducts is enabled) */}
