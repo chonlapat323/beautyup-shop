@@ -225,6 +225,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
             name: "layout",
             label: "รูปแบบการจัดวาง (Layout)",
             options: [
+              { value: "oval-carousel", label: "สไลเดอร์ทรงรีแคปซูล (Oval Carousel - แกลเลอรีผลงานผมซาลอน)" },
               { value: "columns", label: "การ์ดภาพ 4 คอลัมน์ (แบบ Wix: ภาพพื้นหลัง + กล่องข้อความลอย)" },
               { value: "left-image", label: "ภาพด้านซ้าย - ข้อความด้านขวา" },
               { value: "right-image", label: "ข้อความด้านซ้าย - ภาพด้านขวา (สลับข้าง)" },

@@ -2,6 +2,7 @@ import type { Locale } from "@/i18n";
 import Link from "@/components/link";
 import { LoadingImage } from "./loading-image";
 import { MenuSlideCarousel } from "./menu-slide-carousel";
+import { OvalHairCarousel } from "./oval-hair-carousel";
 import { PinkBlackHoleEffect } from "./pink-black-hole";
 import type { MenuItem } from "@/lib/types";
 
@@ -18,6 +19,24 @@ export function MenuContentRenderer({ menu, lang = "th" }: { menu: MenuItem; lan
 
       {/* 2. Sections */}
       {sections.map((sec, idx) => {
+        // Layout: Oval Carousel (Hair showcase capsules with gold title)
+        if (sec.layout === "oval-carousel") {
+          return (
+            <OvalHairCarousel
+              key={idx}
+              title={sec.title || (lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ")}
+              eyebrow={sec.description}
+              cards={sec.cards?.map((c) => ({
+                imageUrl: c.imageUrl,
+                title: c.title,
+                description: c.description,
+                formula: c.description,
+                href: c.href,
+              }))}
+            />
+          );
+        }
+
         // Layout: 4 Columns (Wix Style - Tall photo card with bottom floating card)
         if (sec.layout === "columns" && sec.cards && sec.cards.length > 0) {
           return (

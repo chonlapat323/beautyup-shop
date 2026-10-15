@@ -15,7 +15,7 @@ export interface MenuSectionCardItem {
 }
 
 export interface MenuSectionItem {
-  layout: "columns" | "left-image" | "right-image" | "text-only";
+  layout: "columns" | "left-image" | "right-image" | "text-only" | "oval-carousel";
   title?: string;
   description?: string;
   imageUrl?: string;

@@ -3,6 +3,7 @@ import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { MenuContentRenderer } from "@/components/menu-content-renderer";
 import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
+import { OvalHairCarousel } from "@/components/oval-hair-carousel";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref } from "@/lib/data";
@@ -35,6 +36,8 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
           href: s.href,
         }));
 
+  const hasCustomOval = menuItem?.sections?.some((s) => s.layout === "oval-carousel");
+
   return (
     <>
       <PageHero
@@ -43,14 +46,22 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
         description={d.lead}
       />
 
-      {/* Banner Slides Carousel (Configured in Admin > Menu Items > /products or Hero Slides) */}
+      {/* 1. Banner Slides Carousel (Configured in Admin > Menu Items > /products or Hero Slides) */}
       {slides.length > 0 && (
         <section className="border-b border-line/60 bg-gradient-to-b from-sand/20 via-white to-sand/10">
           <MenuSlideCarousel slides={slides} />
         </section>
       )}
 
-      {/* Custom Menu Content Sections if configured in Admin */}
+      {/* 2. Oval Hair Showcase Carousel (Matching user's reference: Oval capsules with gold title) */}
+      {!hasCustomOval && (
+        <OvalHairCarousel
+          title={lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ"}
+          lang={lang}
+        />
+      )}
+
+      {/* 3. Custom Menu Content Sections if configured in Admin */}
       {menuItem?.sections && menuItem.sections.length > 0 && (
         <MenuContentRenderer menu={menuItem} lang={lang} />
       )}
