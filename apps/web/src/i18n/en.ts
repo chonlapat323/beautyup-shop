@@ -32,6 +32,9 @@ export const en: Dictionary = {
     shops: "salons",
     breadcrumb: "Breadcrumb",
     loading: "Loading",
+    learnMore: "Learn more",
+    viewProducts: "View products",
+    itemsCount: (n: number) => `${n} item${n === 1 ? "" : "s"}`,
   },
   footer: {
     tagline: "Professional salon products and leading counter brands for Lampang and Northern Thailand",
@@ -133,6 +136,11 @@ export const en: Dictionary = {
     allRegions: "All regions",
     found: (n: number) => `${n} province${n === 1 ? "" : "s"} found (find salons on Google Maps)`,
     none: "No salons match your search",
+    searchOnMaps: (q: string) => `Search on Google Maps: "${q}"`,
+    searchNearYou: "Find hair salons near you",
+    openMaps: "Open on Google Maps",
+    mapsFilter: "Google Maps Filter",
+    searchQueryOnMaps: (q: string) => `Search "hair salon near ${q}" on Google Maps ↗`,
   },
   regions: {
     BANGKOK_CENTRAL: "Bangkok & Central",

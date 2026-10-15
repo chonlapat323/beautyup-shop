@@ -47,7 +47,7 @@ export default async function CustomersPage({ params }: PageProps<"/[lang]/custo
                 <div className="overflow-hidden rounded-2xl border border-line bg-sand/20">
                   <Media
                     src="/ambassadors/5.jpg"
-                    alt="YOU ร่วมเป็นส่วนหนึ่งกับเรา"
+                    alt={lang === "th" ? "YOU ร่วมเป็นส่วนหนึ่งกับเรา" : "YOU - Join us"}
                     className="aspect-[3/4] w-full transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                 </div>

@@ -90,7 +90,9 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
                 <p className="mt-4 font-display text-xl font-medium text-ink">{about.founderName}</p>
                 <p className="mt-1 text-sm text-muted">{about.founderRole}</p>
                 <p className="mt-4 text-xs text-brand-pink/70">
-                  (สามารถอัปโหลดรูปผู้ก่อตั้งได้ผ่านระบบ Admin ➔ หน้าเกี่ยวกับเรา)
+                  {lang === "th"
+                    ? "(สามารถอัปโหลดรูปผู้ก่อตั้งได้ผ่านระบบ Admin ➔ หน้าเกี่ยวกับเรา)"
+                    : "(Founder photo can be uploaded via Admin ➔ About Us)"}
                 </p>
               </div>
             )}
@@ -156,7 +158,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
                 rel="noopener noreferrer"
                 className="btn btn-outline hover:border-brand-pink hover:text-brand-pink transition-colors"
               >
-                โปรโมทร้านทำผมฟรี ↗
+                {lang === "th" ? "โปรโมทร้านทำผมฟรี ↗" : "Free Salon Promotion ↗"}
               </a>
             </div>
           </div>

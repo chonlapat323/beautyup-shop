@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/customers/
 
 export default async function SalonsPage({ params }: PageProps<"/[lang]/customers/salons">) {
   const { lang, dict } = await resolveLang(params);
-  const [salons, regions] = await Promise.all([getSalons(), getRegions(lang)]);
+  const [salons, regions] = await Promise.all([getSalons(lang), getRegions(lang)]);
 
   return (
     <>

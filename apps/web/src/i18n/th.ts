@@ -31,6 +31,9 @@ export const th = {
     shops: "ร้าน",
     breadcrumb: "เส้นทาง",
     loading: "กำลังโหลด",
+    learnMore: "ดูเพิ่มเติม",
+    viewProducts: "ดูสินค้า",
+    itemsCount: (n: number) => `${n} รายการ`,
   },
   footer: {
     tagline: "ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ และเคาน์เตอร์แบรนด์ชั้นนำ สำหรับลำปางและภาคเหนือ",
@@ -132,6 +135,11 @@ export const th = {
     allRegions: "ทุกภาค",
     found: (n: number) => `พบ ${n} จังหวัด (ค้นหาซาลอนบน Google Maps)`,
     none: "ไม่พบร้านที่ค้นหา",
+    searchOnMaps: (q: string) => `ค้นหาบน Google Maps: "${q}"`,
+    searchNearYou: "ค้นหาร้านทำผมและซาลอนใกล้คุณ",
+    openMaps: "เปิดดูบน Google Maps",
+    mapsFilter: "Google Maps Filter",
+    searchQueryOnMaps: (q: string) => `ค้นหา "ร้านทำผม near ${q}" บน Google Maps ↗`,
   },
   regions: {
     BANGKOK_CENTRAL: "กรุงเทพฯ และภาคกลาง",

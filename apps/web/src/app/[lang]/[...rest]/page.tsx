@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/[...rest]"
 }
 
 export default async function DynamicCatchAllPage({ params }: PageProps<"/[lang]/[...rest]">) {
-  const { lang } = await resolveLang(params);
+  const { lang, dict } = await resolveLang(params);
   const rest = (await params).rest;
   const slug = rest.join("/");
   const pathHref = "/" + slug;
@@ -54,15 +54,25 @@ export default async function DynamicCatchAllPage({ params }: PageProps<"/[lang]
         <PageHero eyebrow="BeautyUp" title={menuItem.label} />
 
         {/* Dynamic Menu Content (Slides & Left/Right or Wix Column Sections) */}
-        <MenuContentRenderer menu={menuItem} />
+        <MenuContentRenderer menu={menuItem} lang={lang} />
 
         {/* Product Component Showcase (if a brand is assigned to this menu) */}
         {showProducts && products.length > 0 && (
           <section id="products" className="container-page py-12 md:py-20 border-t border-line mt-12">
             <SectionHeading
-              eyebrow={menuItem.brandName || "Products"}
-              title={`ผลิตภัณฑ์ ${menuItem.brandName || menuItem.label}`}
-              description={`${products.length} รายการ`}
+              eyebrow={menuItem.brandName || (lang === "th" ? "ผลิตภัณฑ์" : "Products")}
+              title={
+                lang === "th"
+                  ? `ผลิตภัณฑ์ ${menuItem.brandName || menuItem.label}`
+                  : `Products: ${menuItem.brandName || menuItem.label}`
+              }
+              description={
+                dict.common.itemsCount
+                  ? dict.common.itemsCount(products.length)
+                  : lang === "th"
+                    ? `${products.length} รายการ`
+                    : `${products.length} items`
+              }
             />
             <ProductGrid
               products={products}

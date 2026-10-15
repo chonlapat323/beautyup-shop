@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import Link from "@/components/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDict } from "@/i18n/client";
 import { LoadingImage } from "./loading-image";
 import { PinkBlackHoleEffect } from "./pink-black-hole";
 import type { MenuSlideItem } from "@/lib/types";
@@ -11,6 +12,7 @@ import type { MenuSlideItem } from "@/lib/types";
 const INTERVAL = 7000;
 
 export function MenuSlideCarousel({ slides }: { slides: MenuSlideItem[] }) {
+  const dict = useDict();
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -114,7 +116,7 @@ export function MenuSlideCarousel({ slides }: { slides: MenuSlideItem[] }) {
                         {s.href && s.href !== "#" && (
                           <div className="mt-4 sm:mt-6">
                             <span className="btn btn-primary !px-5 !min-h-9 sm:!min-h-11 text-xs sm:text-sm font-semibold inline-flex items-center gap-2">
-                              ดูเพิ่มเติม →
+                              {dict.common.learnMore || "ดูเพิ่มเติม"} →
                             </span>
                           </div>
                         )}
@@ -183,7 +185,7 @@ export function MenuSlideCarousel({ slides }: { slides: MenuSlideItem[] }) {
                       setIsPaused(true);
                     }
                   }}
-                  aria-label={isPaused ? "เล่นสไลด์อัตโนมัติ" : "หยุดสไลด์ชั่วคราว"}
+                  aria-label={isPaused ? "Play slide" : "Pause slide"}
                   className="rounded-full p-0.5 text-white/80 transition-colors hover:text-white"
                 >
                   {isPaused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}

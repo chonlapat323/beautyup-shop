@@ -8,7 +8,12 @@ import { t, type Localized } from "@beautyup/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDictionary, type Locale } from "@/i18n";
 import { provinces } from "./provinces";
-import { REGION_SALON_COUNTS, THAILAND_SALON_DIRECTORY } from "./thailand-salons";
+import {
+  PROVINCE_EN,
+  REGION_SALON_COUNTS,
+  THAILAND_SALON_DIRECTORY,
+  getThailandSalons,
+} from "./thailand-salons";
 import type {
   Ambassador,
   Brand,
@@ -507,7 +512,7 @@ export async function getAmbassadors(lang: Locale): Promise<Ambassador[]> {
   }));
 }
 
-export async function getSalons(): Promise<Salon[]> {
+export async function getSalons(lang: Locale = "th"): Promise<Salon[]> {
   try {
     const rows = await get<(Salon & { address: string; phone: string; mapUrl: string })[]>("/resources/salons");
     const realSalons = (rows ?? []).filter(
@@ -521,19 +526,28 @@ export async function getSalons(): Promise<Salon[]> {
     );
 
     if (realSalons.length >= 70) {
-      return realSalons.map((r) => ({
-        name: r.name.startsWith("ร้านทำผม") ? r.name : `ร้านทำผม ${r.name}`,
-        region: r.region,
-        province: r.province,
-        address: s(r.address),
-        phone: s(r.phone),
-        mapUrl: s(r.mapUrl),
-      }));
+      return realSalons.map((r) => {
+        const rawProv = r.province.replace(/^จังหวัด\s*/, "").trim();
+        const enProv = PROVINCE_EN[rawProv] || rawProv;
+        return {
+          name:
+            lang === "en"
+              ? `Hair Salon in ${enProv}`
+              : r.name.startsWith("ร้านทำผม")
+                ? r.name
+                : `ร้านทำผม ${r.name}`,
+          region: r.region,
+          province: lang === "en" ? enProv : r.province,
+          address: lang === "en" ? `${enProv}, Thailand` : s(r.address) || `ร้านทำผม จังหวัด${rawProv}`,
+          phone: s(r.phone),
+          mapUrl: s(r.mapUrl),
+        };
+      });
     }
   } catch {
     // fallback to static directory
   }
-  return THAILAND_SALON_DIRECTORY;
+  return getThailandSalons(lang);
 }
 
 export async function getRegions(lang: Locale) {

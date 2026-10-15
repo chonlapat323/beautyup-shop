@@ -1,10 +1,11 @@
+import type { Locale } from "@/i18n";
 import Link from "@/components/link";
-import { LoadingImage } from "@/components/loading-image";
-import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
-import { PinkBlackHoleEffect } from "@/components/pink-black-hole";
+import { LoadingImage } from "./loading-image";
+import { MenuSlideCarousel } from "./menu-slide-carousel";
+import { PinkBlackHoleEffect } from "./pink-black-hole";
 import type { MenuItem } from "@/lib/types";
 
-export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
+export function MenuContentRenderer({ menu, lang = "th" }: { menu: MenuItem; lang?: Locale }) {
   const slides = menu.slides || [];
   const sections = menu.sections || [];
 
@@ -89,7 +90,7 @@ export function MenuContentRenderer({ menu }: { menu: MenuItem }) {
                           href={card.href || "#products"}
                           className="btn-pill !text-xs sm:!text-sm group-hover:border-brand-pink group-hover:text-brand-pink"
                         >
-                          <span>ดูสินค้า</span>
+                          <span>{lang === "en" ? "View products" : "ดูสินค้า"}</span>
                           <span className="transition-transform group-hover:translate-x-1">→</span>
                         </Link>
                       </div>

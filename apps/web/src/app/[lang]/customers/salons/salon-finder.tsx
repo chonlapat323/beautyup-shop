@@ -47,7 +47,9 @@ export function SalonFinder({
         {query ? (
           <a
             href={`https://www.google.com/maps/search/${encodeURIComponent(
-              `ร้านทำผม near ${query.includes("จังหวัด") ? query : `จังหวัด${query}`}`,
+              d.searchNearYou.includes("hair")
+                ? `hair salon near ${query}`
+                : `ร้านทำผม near ${query.includes("จังหวัด") ? query : `จังหวัด${query}`}`,
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -55,7 +57,7 @@ export function SalonFinder({
           >
             <span className="flex items-center gap-2">
               <MapPin className="size-4 shrink-0" />
-              <span>ค้นหาบน Google Maps: &quot;{query}&quot;</span>
+              <span>{d.searchOnMaps(query)}</span>
             </span>
             <ExternalLink className="size-3.5 shrink-0" />
           </a>
@@ -127,19 +129,19 @@ export function SalonFinder({
 
                     <p className="mt-2.5 flex items-center gap-2 text-sm text-muted transition-colors group-hover:text-ink">
                       <MapPin className="size-4 shrink-0 text-brand-pink" />
-                      <span>{s.address || "ค้นหาร้านทำผมและซาลอนใกล้คุณ"}</span>
+                      <span>{s.address || d.searchNearYou}</span>
                     </p>
                   </a>
 
                   <div className="mt-4 flex items-center justify-between border-t border-line/60 pt-3 text-xs">
-                    <span className="text-muted">Google Maps Filter</span>
+                    <span className="text-muted">{d.mapsFilter}</span>
                     <a
                       href={mapUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 font-semibold text-brand-pink transition-colors hover:underline"
                     >
-                      <span>เปิดดูบน Google Maps</span>
+                      <span>{d.openMaps}</span>
                       <ExternalLink className="size-3" />
                     </a>
                   </div>
@@ -153,14 +155,16 @@ export function SalonFinder({
             {query && (
               <a
                 href={`https://www.google.com/maps/search/${encodeURIComponent(
-                  `ร้านทำผม near ${query.includes("จังหวัด") ? query : `จังหวัด${query}`}`,
+                  d.searchNearYou.includes("hair")
+                    ? `hair salon near ${query}`
+                    : `ร้านทำผม near ${query.includes("จังหวัด") ? query : `จังหวัด${query}`}`,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline mt-4 inline-flex items-center gap-2"
               >
                 <MapPin className="size-4 text-brand-pink" />
-                <span>ค้นหา &quot;ร้านทำผม near {query}&quot; บน Google Maps ↗</span>
+                <span>{d.searchQueryOnMaps(query)}</span>
               </a>
             )}
           </div>

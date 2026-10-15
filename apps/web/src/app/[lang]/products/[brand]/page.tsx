@@ -109,7 +109,7 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
               <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
                 <p className="eyebrow text-brand-pink font-semibold">Specialized Collections</p>
                 <h2 className="mt-2 font-display text-3xl sm:text-4xl text-ink">
-                  หมวดหมู่ผลิตภัณฑ์หลัก
+                  {lang === "th" ? "หมวดหมู่ผลิตภัณฑ์หลัก" : "Main Categories"}
                 </h2>
               </div>
 
@@ -141,7 +141,7 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
                         href={feat.href || "#products"}
                         className="btn-pill !text-xs sm:!text-sm group-hover:border-brand-pink group-hover:text-brand-pink"
                       >
-                        <span>ดูสินค้า</span>
+                        <span>{dict.common.viewProducts || (lang === "th" ? "ดูสินค้า" : "View products")}</span>
                         <span className="transition-transform group-hover:translate-x-1">→</span>
                       </Link>
                     </div>
@@ -158,7 +158,7 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
         <section className="border-b border-line bg-white py-6">
           <div className="container-page flex flex-wrap items-center gap-2 sm:gap-3">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted mr-2">
-              ซีรีส์ยอดนิยม:
+              {lang === "th" ? "ซีรีส์ยอดนิยม:" : "Popular Series:"}
             </span>
             {brand.series.map((item, idx) => (
               <Link
@@ -193,7 +193,13 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
                     <SectionHeading
                       eyebrow={brand.name}
                       title={catName}
-                      description={`${catItems.length} รายการ`}
+                      description={
+                        dict.common.itemsCount
+                          ? dict.common.itemsCount(catItems.length)
+                          : lang === "th"
+                            ? `${catItems.length} รายการ`
+                            : `${catItems.length} items`
+                      }
                     />
                     <ProductGrid
                       products={catItems}
@@ -208,8 +214,14 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
                 <div className="scroll-mt-24 pt-8 border-t border-line">
                   <SectionHeading
                     eyebrow={brand.name}
-                    title="ผลิตภัณฑ์เพิ่มเติม"
-                    description={`${uncategorized.length} รายการ`}
+                    title={lang === "th" ? "ผลิตภัณฑ์เพิ่มเติม" : "Additional Products"}
+                    description={
+                      dict.common.itemsCount
+                        ? dict.common.itemsCount(uncategorized.length)
+                        : lang === "th"
+                          ? `${uncategorized.length} รายการ`
+                          : `${uncategorized.length} items`
+                    }
                   />
                   <ProductGrid
                     products={uncategorized}
@@ -224,7 +236,13 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
               <SectionHeading
                 eyebrow={brand.name}
                 title={dict.products.headline}
-                description={`${products.length} รายการ`}
+                description={
+                  dict.common.itemsCount
+                    ? dict.common.itemsCount(products.length)
+                    : lang === "th"
+                      ? `${products.length} รายการ`
+                      : `${products.length} items`
+                }
               />
               <ProductGrid
                 products={products}

@@ -145,7 +145,7 @@ export function AboutSlider({
                 key={i}
                 type="button"
                 onClick={() => setActive(i)}
-                aria-label={`ไปที่สไลด์ ${i + 1}`}
+                aria-label={`Go to slide ${i + 1}`}
                 aria-current={i === active ? "true" : undefined}
                 className={clsx(
                   "h-1.5 rounded-full transition-all duration-300",
