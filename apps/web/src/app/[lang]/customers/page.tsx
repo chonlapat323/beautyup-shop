@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
-import { Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
+import { VipCustomerHero } from "@/components/vip-customer-hero";
+import { Media, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { dateLocale, resolveLang } from "@/i18n";
-import { getAmbassadors, getGrowVision, getRegions } from "@/lib/data";
+import { getAmbassadors, getGrowVision, getRegions, getVipCustomerData } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/customers">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.customers.title };
@@ -12,7 +14,8 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/customers"
 export default async function CustomersPage({ params }: PageProps<"/[lang]/customers">) {
   const { lang, dict } = await resolveLang(params);
   const c = dict.customers;
-  const [ambassadors, regions, growVision] = await Promise.all([
+  const [vipCustomer, ambassadors, regions, growVision] = await Promise.all([
+    getVipCustomerData(lang),
     getAmbassadors(lang),
     getRegions(lang),
     getGrowVision(lang),
@@ -21,11 +24,7 @@ export default async function CustomersPage({ params }: PageProps<"/[lang]/custo
 
   return (
     <>
-      <PageHero
-        eyebrow={c.eyebrow}
-        title={c.headline}
-        description={c.lead}
-      />
+      <VipCustomerHero data={vipCustomer} />
 
       <section className="section">
         <div className="container-page">
@@ -41,17 +40,25 @@ export default async function CustomersPage({ params }: PageProps<"/[lang]/custo
                 <SocialLinks socials={a.socials} className="mt-3 hidden sm:flex" />
               </li>
             ))}
-            <li>
+            <li data-reveal suppressHydrationWarning style={stagger(ambassadors.length)}>
               <Link
                 href="/contact/salon-partner"
-                className="group grid aspect-[3/4] w-full place-items-center rounded-2xl border-2 border-dashed border-line p-4 text-center transition-colors hover:border-accent hover:bg-accent-soft/50"
+                className="group block overflow-hidden rounded-2xl border border-line bg-sand/20 transition-transform duration-700 hover:scale-[1.03]"
               >
-                <span>
-                  <span className="block font-display text-3xl text-accent">YOU</span>
-                  <span className="mt-2 block text-sm text-muted group-hover:text-ink">
-                    {c.joinUs}
-                  </span>
-                </span>
+                <div className="relative aspect-[3/4] w-full overflow-hidden">
+                  <Image
+                    src="/ambassadors/5.jpg"
+                    alt="YOU ร่วมเป็นส่วนหนึ่งกับเรา"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3 text-center">
+                    <span className="inline-block text-xs font-medium text-white/95 group-hover:text-pink-300 transition-colors">
+                      {c.joinUs}
+                    </span>
+                  </div>
+                </div>
               </Link>
               <p className="mt-4 font-display text-xl">YOU</p>
               <p className="text-sm text-muted">{c.yourSalon}</p>

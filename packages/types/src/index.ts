@@ -381,15 +381,22 @@ export const growVisionSetting = z.object({
   badge: localizedOptional,
   items: z.array(growVisionItem).default([]),
 });
-export type GrowVisionSetting = z.infer<typeof growVisionSetting>;
+export const vipCustomerSetting = z.object({
+  eyebrow: localizedOptional,
+  quote: localizedOptional,
+  subtext: localizedOptional,
+  bgImageUrl: z.string().default(""),
+});
+export type VipCustomerSetting = z.infer<typeof vipCustomerSetting>;
 
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "vipCustomer", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
   about: aboutSetting,
   aboutSlides: aboutSlidesSetting,
+  vipCustomer: vipCustomerSetting,
   growVision: growVisionSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
   ppStudio: z.array(z.object({ title: z.string(), text: localized })),

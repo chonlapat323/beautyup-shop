@@ -4,6 +4,7 @@ import clsx from "clsx";
 import {
   Building2,
   Clapperboard,
+  Crown,
   GraduationCap,
   Images,
   Inbox,
@@ -64,6 +65,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     items: [
       { href: "/r/salons", label: "ซาลอนพันธมิตร", icon: Store },
       { href: "/r/ambassadors", label: "แบรนด์แอมบาสเดอร์", icon: Sparkles },
+      { href: "/settings?tab=vipCustomer", label: "แบนเนอร์ VIP Customer", icon: Crown },
       { href: "/r/team", label: "ทีมงาน", icon: Users },
       { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound },
     ],

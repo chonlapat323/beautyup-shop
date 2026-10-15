@@ -446,6 +446,16 @@ export const settingsUi = {
       },
     ] satisfies Field[],
   },
+  vipCustomer: {
+    title: "แบนเนอร์ VIP Customer",
+    description: "จัดการข้อความและภาพพื้นหลังส่วน VIP Customer บนหน้าแบรนด์แอมบาสเดอร์ / ลูกค้าคนสำคัญ",
+    fields: [
+      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)", help: "เช่น Our VIP Customer" },
+      { type: "localizedTextarea", name: "quote", label: "ข้อความคำคมหลัก (Quote / Headline)", help: "เช่น ช่างผมประสบการณ์สูง ความสามารถโดดเด่น... (ขึ้นบรรทัดใหม่ได้อิสระ)" },
+      { type: "localized", name: "subtext", label: "ข้อความเสริมใต้คำคม (ไม่บังคับ)" },
+      { type: "image", name: "bgImageUrl", label: "รูปภาพพื้นหลัง (Background Image)", help: "อัปโหลดภาพบรรยากาศซาลอนหรู/แอมบาสเดอร์ (หากเว้นว่างจะใช้โทนพื้นหลัง Dark Luxury เริ่มต้น)" },
+    ] satisfies Field[],
+  },
   growVision: {
     title: "แถบ Grow Your Vision",
     description: "จัดการรูปภาพ ป้ายข้อความ และลิงก์ในกล่อง Grow Your Vision ที่แสดงอยู่ก่อนถึง Footer ของทุกหน้า",

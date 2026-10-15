@@ -169,13 +169,28 @@ interface GrowVisionRow {
   items?: { title: L; text?: L; href: string }[];
 }
 
+interface VipCustomerRow {
+  eyebrow?: L;
+  quote?: L;
+  subtext?: L;
+  bgImageUrl?: string;
+}
+
 interface SettingsRow {
   company?: CompanyRow;
   about?: AboutRow;
   aboutSlides?: AboutSlideRow[];
+  vipCustomer?: VipCustomerRow;
   growVision?: GrowVisionRow;
   timeline?: { year: string; text: L }[];
   ppStudio?: { title: string; text: L }[];
+}
+
+export interface VipCustomerData {
+  eyebrow: string;
+  quote: string;
+  subtext?: string;
+  bgImageUrl?: string;
 }
 
 export interface AboutData {
@@ -295,6 +310,37 @@ export async function getGrowVision(lang: Locale): Promise<GrowVisionData> {
     : dict.items;
 
   return { imageUrl, badge, items };
+}
+
+export async function getVipCustomerData(lang: Locale): Promise<VipCustomerData> {
+  const dict = getDictionary(lang).customers;
+  let settings: SettingsRow | undefined;
+  try {
+    settings = await get<SettingsRow>("/settings");
+  } catch {
+    // fallback
+  }
+  const v = settings?.vipCustomer;
+
+  const defaultQuoteTh = `ช่างผมประสบการณ์สูง
+ความสามารถโดดเด่น
+วางใจผลิตภัณฑ์ของบิวตี้อัพ
+มาอย่างยาวนาน
+สร้างสรรค์เอกลักษณ์ผลงานเลอค่า
+ให้กับลูกค้าทุกระดับ`;
+
+  const defaultQuoteEn = `Experienced Master Stylists
+Distinctive Artistry & Vision
+Trusted Partners of Beauty Up Across the Years
+Crafting Exceptional & Timeless Hair Perfection
+For Clients of Every Distinction`;
+
+  const eyebrow = (v?.eyebrow && t(v.eyebrow, lang)) || dict.eyebrow || "Our VIP Customer";
+  const quote = (v?.quote && t(v.quote, lang)) || (lang === "en" ? defaultQuoteEn : defaultQuoteTh);
+  const subtext = (v?.subtext && t(v.subtext, lang)) || "";
+  const bgImageUrl = s(v?.bgImageUrl) || "";
+
+  return { eyebrow, quote, subtext, bgImageUrl };
 }
 
 export async function getTimeline(lang: Locale) {
@@ -446,10 +492,16 @@ export async function getVideos(lang: Locale): Promise<Video[]> {
 
 export async function getAmbassadors(lang: Locale): Promise<Ambassador[]> {
   const rows = await get<{ name: string; title: L; photoUrl: string; socials: Ambassador["socials"] }[]>("/resources/ambassadors");
-  return rows.map((a) => ({
+  const fallbackPhotos: Record<string, string> = {
+    CHERRY: "/ambassadors/1.jpg",
+    TEMEE: "/ambassadors/2.jpg",
+    NOK: "/ambassadors/3.jpg",
+    AUM: "/ambassadors/4.jpg",
+  };
+  return rows.map((a, i) => ({
     name: a.name,
     title: t(a.title, lang),
-    photoUrl: s(a.photoUrl),
+    photoUrl: s(a.photoUrl) || fallbackPhotos[a.name.toUpperCase()] || `/ambassadors/${(i % 4) + 1}.jpg`,
     socials: Object.fromEntries(Object.entries(a.socials ?? {}).filter(([, v]) => v)),
   }));
 }
