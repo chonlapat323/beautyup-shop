@@ -475,6 +475,27 @@ export const settingsUi = {
       },
     ] satisfies Field[],
   },
+  salonHairSlides: {
+    title: "สไลด์ผมซาลอน (Oval Carousel)",
+    description: "จัดการภาพสไลด์ทรงผมซาลอนแบบแคปซูลวงรี (Oval Carousel) สำหรับหน้าสินค้าซาลอน (/products) และสามารถนำไปแสดงในหน้าเนื้อหา/เมนูอื่นๆ ได้",
+    fields: [
+      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)", help: "เช่น Salon Hair Showcase" },
+      { type: "localized", name: "title", label: "หัวข้อหลัก (Title)", help: "เช่น ผลิตภัณฑ์ซาลอนมืออาชีพ (Professional Salon Products)" },
+      { type: "localizedTextarea", name: "description", label: "คำอธิบายใต้หัวข้อ (ไม่บังคับ)" },
+      {
+        type: "list",
+        name: "items",
+        label: "รายการสไลด์ทรงผมแคปซูลวงรี (Oval Capsules)",
+        item: [
+          { type: "image", name: "imageUrl", label: "รูปภาพผลงานผม (แนวตั้ง)" },
+          { type: "localized", name: "title", label: "ชื่อทรงผม / ผลงาน (เช่น Balayage Ash Blonde)", required: true },
+          { type: "text", name: "formula", label: "สูตรสี / ผลิตภัณฑ์ที่ใช้ (เช่น BLEACH & 3% (ORO 20G/20G))" },
+          { type: "localized", name: "description", label: "คำบรรยายสั้น (เช่น No Yellow Care Protection)" },
+          { type: "text", name: "href", label: "ลิงก์เมื่อคลิก (เช่น /products/fanola?category=no-yellow-care)" },
+        ],
+      },
+    ] satisfies Field[],
+  },
   vipCustomer: {
     title: "แบนเนอร์ VIP Customer",
     description: "จัดการข้อความและภาพพื้นหลังส่วน VIP Customer บนหน้าแบรนด์แอมบาสเดอร์ / ลูกค้าคนสำคัญ",

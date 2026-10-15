@@ -183,10 +183,26 @@ interface VipCustomerRow {
   bgImageUrl?: string;
 }
 
+interface SalonHairSlideRow {
+  imageUrl?: string;
+  title?: L;
+  formula?: string;
+  description?: L;
+  href?: string;
+}
+
+interface SalonHairSlidesRow {
+  eyebrow?: L;
+  title?: L;
+  description?: L;
+  items?: SalonHairSlideRow[];
+}
+
 interface SettingsRow {
   company?: CompanyRow;
   about?: AboutRow;
   aboutSlides?: AboutSlideRow[];
+  salonHairSlides?: SalonHairSlidesRow;
   vipCustomer?: VipCustomerRow;
   growVision?: GrowVisionRow;
   timeline?: { year: string; text: L }[];
@@ -348,6 +364,47 @@ For Clients of Every Distinction`;
   const bgImageUrl = s(v?.bgImageUrl) || "";
 
   return { eyebrow, quote, subtext, bgImageUrl };
+}
+
+export interface SalonHairSlideItem {
+  imageUrl: string;
+  title: string;
+  formula?: string;
+  description?: string;
+  href?: string;
+}
+
+export interface SalonHairSlidesData {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  items: SalonHairSlideItem[];
+}
+
+export async function getSalonHairSlides(lang: Locale): Promise<SalonHairSlidesData> {
+  let settings: SettingsRow | undefined;
+  try {
+    settings = await get<SettingsRow>("/settings");
+  } catch {
+    // fallback
+  }
+  const s = settings?.salonHairSlides;
+  const items = (s?.items ?? [])
+    .filter((it) => it.imageUrl && it.imageUrl.trim())
+    .map((it) => ({
+      imageUrl: it.imageUrl || "",
+      title: t(it.title, lang) || "",
+      formula: it.formula || "",
+      description: t(it.description, lang) || "",
+      href: it.href || "",
+    }));
+
+  return {
+    eyebrow: (s?.eyebrow && t(s.eyebrow, lang)) || undefined,
+    title: (s?.title && t(s.title, lang)) || undefined,
+    description: (s?.description && t(s.description, lang)) || undefined,
+    items,
+  };
 }
 
 export async function getTimeline(lang: Locale) {

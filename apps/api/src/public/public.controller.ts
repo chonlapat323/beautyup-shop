@@ -82,7 +82,7 @@ export class PublicController {
 
   @Get('settings')
   async settings() {
-    const rows = await this.prisma.setting.findMany({ where: { key: { in: ['company', 'timeline', 'ppStudio', 'about', 'aboutSlides', 'vipCustomer', 'growVision'] } } });
+    const rows = await this.prisma.setting.findMany({ where: { key: { in: ['company', 'timeline', 'ppStudio', 'about', 'aboutSlides', 'salonHairSlides', 'vipCustomer', 'growVision'] } } });
     return Object.fromEntries(rows.map((r) => [r.key, r.value]));
   }
 

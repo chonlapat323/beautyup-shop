@@ -26,7 +26,9 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
       ? `${webUrl}/about`
       : key === "vipCustomer"
         ? `${webUrl}/customers`
-        : undefined;
+        : key === "salonHairSlides"
+          ? `${webUrl}/products`
+          : undefined;
 
   return (
     <>

@@ -6,7 +6,7 @@ import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
 import { OvalHairCarousel } from "@/components/oval-hair-carousel";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref } from "@/lib/data";
+import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref, getSalonHairSlides } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/products">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.products.title };
@@ -15,11 +15,12 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products">
 export default async function ProductsPage({ params }: PageProps<"/[lang]/products">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.products;
-  const [brands, growVision, menuItem, heroSlides] = await Promise.all([
+  const [brands, growVision, menuItem, heroSlides, salonHair] = await Promise.all([
     getBrands(lang, "SALON"),
     getGrowVision(lang),
     getMenuItemByHref(lang, "/products"),
     getHeroSlides(lang),
+    getSalonHairSlides(lang),
   ]);
 
   // Priority: Custom slides configured under Admin > Menu Items (/products),
@@ -56,7 +57,9 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
       {/* 2. Oval Hair Showcase Carousel (Matching user's reference: Oval capsules with gold title) */}
       {!hasCustomOval && (
         <OvalHairCarousel
-          title={lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ"}
+          title={salonHair?.title || (lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ")}
+          eyebrow={salonHair?.eyebrow}
+          cards={salonHair?.items && salonHair.items.length > 0 ? salonHair.items : undefined}
           lang={lang}
         />
       )}

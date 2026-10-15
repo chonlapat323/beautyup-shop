@@ -407,13 +407,30 @@ export const vipCustomerSetting = z.object({
 });
 export type VipCustomerSetting = z.infer<typeof vipCustomerSetting>;
 
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "vipCustomer", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
+export const salonHairSlideItem = z.object({
+  imageUrl: z.string().default(""),
+  title: localizedOptional,
+  formula: z.string().trim().optional().default(""),
+  description: localizedOptional,
+  href: z.string().trim().optional().default(""),
+});
+
+export const salonHairSlidesSetting = z.object({
+  eyebrow: localizedOptional,
+  title: localizedOptional,
+  description: localizedOptional,
+  items: z.array(salonHairSlideItem).default([]),
+});
+export type SalonHairSlidesSetting = z.infer<typeof salonHairSlidesSetting>;
+
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "salonHairSlides", "vipCustomer", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
   about: aboutSetting,
   aboutSlides: aboutSlidesSetting,
+  salonHairSlides: salonHairSlidesSetting,
   vipCustomer: vipCustomerSetting,
   growVision: growVisionSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),

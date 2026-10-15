@@ -165,6 +165,75 @@ async function main() {
     await prisma.heroSlide.create({ data: s });
   }
   console.log(`✓ All ${slidesData.length} hero slides synced successfully!`);
+
+  console.log("Checking salonHairSlides setting in database...");
+  const existingHairSlides = await prisma.setting.findUnique({ where: { key: "salonHairSlides" } });
+  if (!existingHairSlides) {
+    await prisma.setting.create({
+      data: {
+        key: "salonHairSlides",
+        value: {
+          eyebrow: { th: "Salon Hair Showcase", en: "Salon Hair Showcase" },
+          title: { th: "ผลิตภัณฑ์ซาลอนมืออาชีพ", en: "Professional Salon Products" },
+          description: { th: "แรงบันดาลใจและสูตรสีผมระดับซาลอนชั้นนำจากอิตาลีและระดับสากล", en: "Inspiration and hair formula by leading master salons" },
+          items: [
+            {
+              imageUrl: "/cards/fanola-1.jpg",
+              title: { th: "Balayage Ash Blonde", en: "Balayage Ash Blonde" },
+              formula: "BLEACH & 3% (ORO 20G/20G)",
+              description: { th: "No Yellow Care Protection", en: "No Yellow Care Protection" },
+              href: "/products/fanola?category=no-yellow-care",
+            },
+            {
+              imageUrl: "/slides/1.jpg",
+              title: { th: "Pure Ice Blonde", en: "Pure Ice Blonde" },
+              formula: "VIOLET BLEACH 9 TONES",
+              description: { th: "Anti-Yellow Neutralizing", en: "Anti-Yellow Neutralizing" },
+              href: "/products/fanola?category=no-yellow-care",
+            },
+            {
+              imageUrl: "/cards/fanola-2.jpg",
+              title: { th: "Cool Smokey Brunette", en: "Cool Smokey Brunette" },
+              formula: "BLACK 3% + NO RED MASK",
+              description: { th: "Cool Neutralizing Tone", en: "Cool Neutralizing Tone" },
+              href: "/products/fanola?category=no-red",
+            },
+            {
+              imageUrl: "/slides/3.jpg",
+              title: { th: "Platinum Silver Balayage", en: "Platinum Silver Balayage" },
+              formula: "BLEACH & 6% + SHAMPOO",
+              description: { th: "Extra Violet Pigments", en: "Extra Violet Pigments" },
+              href: "/products/fanola?category=no-yellow-care",
+            },
+            {
+              imageUrl: "/cards/fanola-3.jpg",
+              title: { th: "Warm Honey Caramel", en: "Warm Honey Caramel" },
+              formula: "CHESTNUT BLEACH + 3%",
+              description: { th: "Deep Conditioning Care", en: "Deep Conditioning Care" },
+              href: "/products/fanola?category=nutri-care",
+            },
+            {
+              imageUrl: "/cards/fanola-4.jpg",
+              title: { th: "Warm Brown Copper", en: "Warm Brown Copper" },
+              formula: "WARM BROWN + 3%",
+              description: { th: "Color Keratin Protection", en: "Color Keratin Protection" },
+              href: "/products/fanola?category=no-orange",
+            },
+            {
+              imageUrl: "/slides/4.jpg",
+              title: { th: "Luxury Gloss Waves", en: "Luxury Gloss Waves" },
+              formula: "ORO THERAPY 24K",
+              description: { th: "Argan Oil & Keratin Infusion", en: "Argan Oil & Keratin Infusion" },
+              href: "/products/fanola?category=oro-therapy",
+            },
+          ],
+        },
+      },
+    });
+    console.log("✓ Default salonHairSlides setting created in database!");
+  } else {
+    console.log("✓ salonHairSlides setting already exists in database.");
+  }
 }
 
 main()
