@@ -510,36 +510,25 @@ export async function getAmbassadors(lang: Locale): Promise<Ambassador[]> {
 export async function getSalons(): Promise<Salon[]> {
   try {
     const rows = await get<(Salon & { address: string; phone: string; mapUrl: string })[]>("/resources/salons");
-    if (rows && rows.length >= 70) {
-      return rows.map((r) => ({
-        name: r.name,
+    const realSalons = (rows ?? []).filter(
+      (r) =>
+        !r.name.includes("ตัวอย่าง") &&
+        !r.name.includes("sample") &&
+        !r.name.includes("Sample") &&
+        !r.name.includes("Mock") &&
+        !r.name.includes("เดอะแฮร์") &&
+        !r.name.includes("The Hair"),
+    );
+
+    if (realSalons.length >= 70) {
+      return realSalons.map((r) => ({
+        name: r.name.startsWith("ร้านทำผม") ? r.name : `ร้านทำผม ${r.name}`,
         region: r.region,
         province: r.province,
         address: s(r.address),
         phone: s(r.phone),
         mapUrl: s(r.mapUrl),
       }));
-    }
-    if (rows && rows.length > 0) {
-      const dirNames = new Set(THAILAND_SALON_DIRECTORY.map((s) => s.name));
-      const customSalons = rows
-        .filter(
-          (r) =>
-            !dirNames.has(r.name) &&
-            !r.name.includes("The Hair") &&
-            !r.name.includes("เดอะแฮร์") &&
-            !r.name.includes("Salon") &&
-            !r.name.includes("สตูดิโอ"),
-        )
-        .map((r) => ({
-          name: r.name,
-          region: r.region,
-          province: r.province,
-          address: s(r.address),
-          phone: s(r.phone),
-          mapUrl: s(r.mapUrl),
-        }));
-      return [...THAILAND_SALON_DIRECTORY, ...customSalons];
     }
   } catch {
     // fallback to static directory
