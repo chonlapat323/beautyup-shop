@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { ExternalLink, MapPin, Phone, Search } from "lucide-react";
+import { ExternalLink, MapPin, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useDict } from "@/i18n/client";
@@ -100,50 +100,36 @@ export function SalonFinder({
                   key={s.name}
                   className="group relative flex flex-col justify-between rounded-2xl border border-line bg-white p-5 transition-all duration-300 hover:border-brand-pink/60 hover:shadow-lg hover:shadow-brand-pink/5"
                 >
-                  <div>
+                  <a
+                    href={mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
                     <div className="flex items-start justify-between gap-3">
-                      <a
-                        href={mapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-ink transition-colors hover:text-brand-pink flex items-center gap-1.5"
-                      >
-                        <span>{s.name}</span>
-                        <ExternalLink className="size-3.5 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100 text-brand-pink" />
-                      </a>
+                      <p className="font-medium text-ink transition-colors group-hover:text-brand-pink">
+                        {s.name}
+                      </p>
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-sand/60 text-muted transition-all group-hover:bg-brand-pink group-hover:text-white">
+                        <ExternalLink className="size-3.5" />
+                      </span>
                     </div>
 
-                    <a
-                      href={mapUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2.5 flex items-center gap-2 text-sm text-muted transition-colors hover:text-brand-pink"
-                    >
+                    <p className="mt-2.5 flex items-center gap-2 text-sm text-muted transition-colors group-hover:text-ink">
                       <MapPin className="size-4 shrink-0 text-brand-pink" />
                       <span>{s.address || (provinceClean ? `จังหวัด${provinceClean}` : s.province)}</span>
-                    </a>
-                  </div>
+                    </p>
+                  </a>
 
-                  <div className="mt-4 flex items-center justify-between border-t border-line/60 pt-3 text-sm">
-                    {s.phone ? (
-                      <a
-                        href={`tel:${s.phone.replaceAll("-", "")}`}
-                        className="flex items-center gap-1.5 text-muted transition-colors hover:text-brand-pink"
-                      >
-                        <Phone className="size-3.5 shrink-0" />
-                        <span>{s.phone}</span>
-                      </a>
-                    ) : (
-                      <span />
-                    )}
-
+                  <div className="mt-4 flex items-center justify-between border-t border-line/60 pt-3 text-xs">
+                    <span className="text-muted">ดูข้อมูลติดต่อ &amp; แผนที่</span>
                     <a
                       href={mapUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-brand-pink transition-colors hover:underline"
+                      className="inline-flex items-center gap-1 font-semibold text-brand-pink transition-colors hover:underline"
                     >
-                      <span>เปิด Google Maps</span>
+                      <span>ดูบน Google Maps</span>
                       <ExternalLink className="size-3" />
                     </a>
                   </div>
