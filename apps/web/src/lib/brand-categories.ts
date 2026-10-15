@@ -287,7 +287,7 @@ export const FANOLA_CATEGORIES: BrandCategoryData[] = [
   },
 ];
 
-export function getBrandCategories(brandSlug: string, lang: Locale): BrandCategory[] {
+export function getStaticBrandCategories(brandSlug: string, lang: Locale): BrandCategory[] {
   if (brandSlug.toLowerCase() === "fanola") {
     return FANOLA_CATEGORIES.map((c) => ({
       slug: c.slug,
@@ -310,6 +310,8 @@ export function getBrandCategory(
   categorySlug: string,
   lang: Locale,
 ): BrandCategory | undefined {
-  const categories = getBrandCategories(brandSlug, lang);
+  const categories = getStaticBrandCategories(brandSlug, lang);
   return categories.find((c) => c.slug.toLowerCase() === categorySlug.toLowerCase());
 }
+
+export const getBrandCategories = getStaticBrandCategories;

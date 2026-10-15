@@ -61,6 +61,33 @@ export interface ResourceUi {
 }
 
 export const resourceUi: Record<ResourceName, ResourceUi> = {
+  categories: {
+    title: "หมวดหมู่แบรนด์ (Categories)",
+    noun: "หมวดหมู่",
+    description: "หมวดหมู่/ซีรีส์ผลิตภัณฑ์ภายใต้แบรนด์ (เช่น No Yellow Care, Nutri Care, Botugen)",
+    titleField: "name",
+    searchable: true,
+    fields: [
+      { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
+      { type: "localized", name: "name", label: "ชื่อหมวดหมู่ / ซีรีส์", required: true },
+      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      { type: "localized", name: "subtitle", label: "คำโปรยสั้น / คอนเซ็ปต์" },
+      { type: "localizedTextarea", name: "description", label: "คำบรรยายละเอียด (แสดงใน Category Hero)" },
+      { type: "localizedTextarea", name: "highlights", label: "ไฮไลต์เด่น (เช่น 360° Blonde Protection)" },
+      { type: "image", name: "imageUrl", label: "รูปภาพ Moodboard" },
+      { type: "image", name: "bannerUrl", label: "รูปแบนเนอร์ Hero ด้านบน" },
+      { type: "text", name: "accentColor", label: "โค้ดสีประจำซีรีส์ (เช่น #7e22ce)", help: "รหัสสี HEX เช่น #7e22ce หรือ #1d4ed8" },
+      sortOrder,
+      isActive,
+    ],
+    columns: [
+      { name: "imageUrl", label: "", kind: "image" },
+      { name: "name", label: "ชื่อหมวดหมู่", kind: "localized" },
+      { name: "brand", label: "แบรนด์", kind: "brand" },
+      { name: "slug", label: "Slug" },
+      activeCol,
+    ],
+  },
   products: {
     title: "สินค้า",
     noun: "สินค้า",
@@ -70,8 +97,9 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "localized", name: "name", label: "ชื่อสินค้า", required: true },
       { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
       { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
-      { type: "text", name: "category", label: "หมวดหมู่สินค้า (เช่น Fanola Salon, Fanola Hair Care)" },
-      { type: "text", name: "series", label: "ซีรีส์/ไลน์สินค้า (เช่น No yellow Care, After colour)" },
+      { type: "relation", name: "categoryId", label: "หมวดหมู่ / ซีรีส์ (Relation)", resource: "categories", nullable: true },
+      { type: "text", name: "category", label: "หมวดหมู่สินค้าเดิม (เช่น Fanola Salon, Fanola Hair Care)" },
+      { type: "text", name: "series", label: "ซีรีส์/ไลน์สินค้าเดิม (เช่น No yellow Care, After colour)" },
       { type: "number", name: "price", label: "ราคา (บาท)", step: "0.01", required: true },
       { type: "number", name: "salePrice", label: "ราคาลด (บาท)", step: "0.01", help: "เว้นว่างถ้าไม่มีส่วนลด" },
       { type: "tags", name: "badges", label: "ป้าย", suggestions: ["New", "Hot", "Best Seller", "Soft hair"] },

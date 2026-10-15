@@ -7,6 +7,7 @@ import "server-only";
 import { t, type Localized } from "@beautyup/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDictionary, type Locale } from "@/i18n";
+import { getStaticBrandCategories, type BrandCategory } from "./brand-categories";
 import { provinces } from "./provinces";
 import {
   PROVINCE_EN,
@@ -464,6 +465,44 @@ export async function getProducts(lang: Locale, opts?: { brandSlug?: string; bra
   });
   const rows = await get<ProductRow[]>(`/resources/products${qs.size ? `?${qs}` : ""}`);
   return rows.map((p) => toProduct(p, lang));
+}
+
+interface CategoryRow extends Row {
+  slug: string;
+  name: L;
+  subtitle?: L;
+  description?: L;
+  highlights?: L;
+  imageUrl?: string;
+  bannerUrl?: string;
+  accentColor?: string;
+  subCategories?: { th: string; en: string }[];
+  brand: { id: string; slug: string; name: string };
+}
+
+export async function getBrandCategories(lang: Locale, brandSlug: string): Promise<BrandCategory[]> {
+  try {
+    const rows = await get<CategoryRow[]>(`/resources/categories?brand=${encodeURIComponent(brandSlug)}`);
+    if (rows && rows.length > 0) {
+      return rows.map((c) => ({
+        slug: c.slug,
+        brandSlug: c.brand?.slug || brandSlug,
+        name: t(c.name, lang),
+        subtitle: c.subtitle ? t(c.subtitle, lang) : undefined,
+        description: c.description ? t(c.description, lang) : undefined,
+        highlights: c.highlights ? t(c.highlights, lang) : undefined,
+        imageUrl: s(c.imageUrl) || "",
+        bannerUrl: s(c.bannerUrl) || "",
+        accentColor: c.accentColor || "#d6297f",
+        subCategories: c.subCategories
+          ? c.subCategories.map((sc) => (lang === "en" ? sc.en || sc.th : sc.th || sc.en))
+          : undefined,
+      }));
+    }
+  } catch {
+    // API offline during build or unreachable
+  }
+  return getStaticBrandCategories(brandSlug, lang);
 }
 
 /* ----------------------------------------------------------------- home */

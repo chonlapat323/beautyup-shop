@@ -155,11 +155,29 @@ export const brandInput = z.object({
   isActive,
 });
 
+export const categoryInput = z.object({
+  brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+  slug,
+  name: localized,
+  subtitle: localizedOptional,
+  description: localizedOptional,
+  highlights: localizedOptional,
+  imageUrl: url,
+  bannerUrl: url,
+  accentColor: z.string().default("#d6297f"),
+  subCategories: z
+    .array(z.object({ th: z.string().default(""), en: z.string().default("") }))
+    .default([]),
+  sortOrder,
+  isActive,
+});
+
 export const productInput = z.object({
   slug,
   name: localized,
   description: localizedOptional,
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+  categoryId: z.string().nullable().optional().default(null),
   category: z.string().trim().optional().default(""),
   series: z.string().trim().optional().default(""),
   price: z.coerce.number().nonnegative(),
@@ -412,6 +430,7 @@ export const resources = {
   "menu-items": { schema: menuItemInput, label: "เมนู" },
   "hero-slides": { schema: heroSlideInput, label: "สไลด์หน้าแรก" },
   brands: { schema: brandInput, label: "แบรนด์" },
+  categories: { schema: categoryInput, label: "หมวดหมู่ (Categories)" },
   products: { schema: productInput, label: "สินค้า" },
   videos: { schema: videoInput, label: "วิดีโอ" },
   ambassadors: { schema: ambassadorInput, label: "แบรนด์แอมบาสเดอร์" },

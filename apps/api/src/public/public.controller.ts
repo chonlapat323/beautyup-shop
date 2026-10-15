@@ -28,7 +28,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 
 /** Resources the website may read (everything except admin-only data). */
 const PUBLIC: ResourceName[] = [
-  'menu-items', 'hero-slides', 'brands', 'products', 'videos', 'ambassadors',
+  'menu-items', 'hero-slides', 'brands', 'categories', 'products', 'videos', 'ambassadors',
   'salons', 'courses', 'posts', 'pages', 'team',
 ];
 
@@ -45,11 +45,18 @@ export class PublicController {
     @Query('type') type?: string,
     @Query('brand') brand?: string,
     @Query('brandType') brandType?: string,
+    @Query('category') category?: string,
   ) {
     const name = check(resource);
     const where: Record<string, unknown> = {};
     if (name === 'brands' && BRAND_TYPES.includes(type as BrandType)) where.type = type;
     if (name === 'posts' && POST_TYPES.includes(type as PostType)) where.type = type;
+    if (name === 'categories') {
+      where.brand = {
+        isActive: true,
+        ...(brand && { slug: brand }),
+      };
+    }
     if (name === 'products') {
       // Only products whose brand is visible too
       where.brand = {
@@ -57,6 +64,13 @@ export class PublicController {
         ...(brand && { slug: brand }),
         ...(BRAND_TYPES.includes(brandType as BrandType) && { type: brandType }),
       };
+      if (category) {
+        where.OR = [
+          { categoryRel: { slug: category } },
+          { category: category },
+          { series: category },
+        ];
+      }
     }
     return this.resources.list(name, { activeOnly: true, where });
   }

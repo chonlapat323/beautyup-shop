@@ -10,8 +10,7 @@ import { PinkBlackHoleEffect } from "@/components/pink-black-hole";
 import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
-import { getBrandCategories, getBrandCategory } from "@/lib/brand-categories";
-import { getBrand, getBrands, getGrowVision, getMenuItemByHref, getProducts } from "@/lib/data";
+import { getBrand, getBrandCategories, getBrands, getGrowVision, getMenuItemByHref, getProducts } from "@/lib/data";
 
 export async function generateStaticParams({ params }: { params: { lang: string } }) {
   const brands = await getBrands(params.lang as Locale, "SALON");
@@ -39,16 +38,18 @@ export default async function BrandPage({
   const sp = await searchParams;
   const selectedCatSlug = sp?.category || sp?.series;
 
-  const [brand, menuItem, growVision] = await Promise.all([
+  const [brand, menuItem, growVision, categories] = await Promise.all([
     getBrand(lang, slug),
     getMenuItemByHref(lang, `/products/${slug}`),
     getGrowVision(lang),
+    getBrandCategories(lang, slug),
   ]);
 
   if (!brand || brand.type !== "SALON") notFound();
 
-  const categories = getBrandCategories(slug, lang);
-  const currentCategory = selectedCatSlug ? getBrandCategory(slug, selectedCatSlug, lang) : undefined;
+  const currentCategory = selectedCatSlug
+    ? categories.find((c) => c.slug.toLowerCase() === selectedCatSlug.toLowerCase())
+    : undefined;
 
   // If menu specifies a brand or default to current slug
   const targetBrandSlug = menuItem?.brandSlug || slug;

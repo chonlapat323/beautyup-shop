@@ -106,30 +106,58 @@ model Brand {
   socials     Json        @default("{}")
   sortOrder   Int         @default(0)
   isActive    Boolean     @default(true)
+  categories  Category[]
   products    Product[]
   heroSlides  HeroSlide[]
   menuItems   MenuItem[]
 }
 
+model Category {
+  id            String    @id @default(cuid())
+  slug          String
+  name          Json
+  subtitle      Json?
+  description   Json?
+  highlights    Json?
+  imageUrl      String    @default("")
+  bannerUrl     String    @default("")
+  accentColor   String    @default("#d6297f")
+  subCategories Json      @default("[]")
+  sortOrder     Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  brandId       String
+  brand         Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  products      Product[]
+
+  @@unique([brandId, slug])
+  @@index([brandId])
+}
+
 model Product {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String    @id @default(cuid())
+  slug        String    @unique
   name        Json
   description Json
-  category    String   @default("")
-  series      String   @default("")
+  category    String    @default("")
+  categoryId  String?
+  categoryRel Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  series      String    @default("")
   brandId     String
-  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Restrict)
-  price       Decimal  @db.Decimal(12, 2)
-  salePrice   Decimal? @db.Decimal(12, 2)
+  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  price       Decimal   @db.Decimal(12, 2)
+  salePrice   Decimal?  @db.Decimal(12, 2)
   badges      String[]
-  imageUrl    String   @default("")
-  sortOrder   Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  imageUrl    String    @default("")
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([brandId])
+  @@index([categoryId])
   @@index([category])
 }
 
