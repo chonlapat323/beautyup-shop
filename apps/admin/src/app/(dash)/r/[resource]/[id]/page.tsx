@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { DeleteButton } from "@/components/delete-button";
+import { MenuItemVisualEditor } from "@/components/menu-item-visual-editor";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
+import { api } from "@/lib/api";
 import { resourceUi } from "@/lib/fields";
 import { getResource, loadRelations, resolveResource, rowTitle } from "@/lib/resources";
-import { deleteResource, saveResource } from "../../actions";
+import { deleteResource, saveMenuItem, saveResource } from "../../actions";
 
 export const metadata: Metadata = { title: "แก้ไขข้อมูล" };
 
@@ -14,6 +16,54 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
   const ui = resourceUi[name];
   const [row, relations] = await Promise.all([getResource(name, id), loadRelations(ui.fields, id)]);
   const title = rowTitle(name, row);
+
+  if (name === "menu-items") {
+    let mergedRow = { ...row };
+    if (row.href === "/products") {
+      try {
+        const all = await api<Record<string, unknown>>("/admin/settings");
+        const productsPage = (all["productsPage"] as Record<string, unknown>) || {};
+        const salonHairSlides = (all["salonHairSlides"] as Record<string, unknown>) || {};
+
+        mergedRow = {
+          ...row,
+          heroHeadline: row.heroHeadline || productsPage.heroHeadline || salonHairSlides.heroHeadline || {
+            th: "เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ",
+            en: "Delivering the best for your clients",
+          },
+          heroEyebrow: row.heroEyebrow || productsPage.heroEyebrow || salonHairSlides.heroEyebrow || {
+            th: "Professional Salon Products",
+            en: "Professional Salon Products",
+          },
+          heroLead: row.heroLead || productsPage.heroLead || salonHairSlides.heroLead || {
+            th: "ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ",
+            en: "Professional salon-grade products imported from Italy and Brazil...",
+          },
+          slides: (row.slides && (row.slides as any[]).length > 0)
+            ? row.slides
+            : (productsPage.slides && (productsPage.slides as any[]).length > 0)
+              ? productsPage.slides
+              : salonHairSlides.slides,
+          sections: (row.sections && (row.sections as any[]).length > 0)
+            ? row.sections
+            : productsPage.sections,
+        };
+      } catch {
+        // ignore
+      }
+    }
+
+    return (
+      <MenuItemVisualEditor
+        id={id}
+        title={title}
+        initial={mergedRow}
+        relations={relations}
+        onSave={saveMenuItem.bind(null, id)}
+        onDelete={deleteResource.bind(null, name, id)}
+      />
+    );
+  }
 
   return (
     <>

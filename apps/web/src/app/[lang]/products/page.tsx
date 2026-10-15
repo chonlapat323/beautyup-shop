@@ -23,11 +23,11 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
     getProductsPageData(lang),
   ]);
 
-  // Priority: 1) productsPage slides, 2) menuItem slides, 3) fallback to heroSlides
-  const slides = (pageData.slides && pageData.slides.length > 0)
-    ? pageData.slides
-    : (menuItem?.slides && menuItem.slides.length > 0)
-      ? menuItem.slides
+  // Priority: 1) menuItem slides, 2) productsPage slides, 3) fallback to heroSlides
+  const slides = (menuItem?.slides && menuItem.slides.length > 0)
+    ? menuItem.slides
+    : (pageData.slides && pageData.slides.length > 0)
+      ? pageData.slides
       : heroSlides
           .filter((s) => s.href.includes("/products") || s.brandSlug.includes("fanola") || s.brandSlug.includes("nook") || s.brandSlug.includes("sweet") || s.brandSlug.includes("slide"))
           .slice(0, 5)
@@ -38,7 +38,11 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
             href: s.href,
           }));
 
-  const hasCustomOval = menuItem?.sections?.some((s) => s.layout === "oval-carousel");
+  const customSections = (menuItem?.sections && menuItem.sections.length > 0)
+    ? menuItem.sections
+    : pageData.sections;
+
+  const hasCustomOval = customSections?.some((s) => s.layout === "oval-carousel");
 
   return (
     <>
@@ -68,12 +72,16 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
       )}
 
       {/* 3. Custom Menu Content Sections if configured in Admin */}
-      {pageData.sections.length > 0 ? (
-        <MenuContentRenderer menu={{ label: "", href: "/products", sections: pageData.sections }} lang={lang} />
-      ) : (
-        menuItem?.sections && menuItem.sections.length > 0 && (
-          <MenuContentRenderer menu={menuItem} lang={lang} />
-        )
+      {customSections && customSections.length > 0 && (
+        <MenuContentRenderer
+          menu={{
+            label: menuItem?.label || "",
+            href: "/products",
+            sections: customSections,
+            slides: [],
+          }}
+          lang={lang}
+        />
       )}
 
       <div className="container-page">

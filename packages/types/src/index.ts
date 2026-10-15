@@ -98,7 +98,7 @@ export const menuSectionCardSchema = z.object({
 export type MenuSectionCard = z.infer<typeof menuSectionCardSchema>;
 
 export const menuSectionSchema = z.object({
-  layout: z.enum(["columns", "left-image", "right-image", "text-only"]).default("left-image"),
+  layout: z.enum(["columns", "left-image", "right-image", "text-only", "oval-carousel"]).default("left-image"),
   title: localizedOptional,
   description: localizedOptional,
   imageUrl: url.optional().default(""),

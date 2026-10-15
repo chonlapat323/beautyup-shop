@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "ตั้งค่าเว็บไ
 export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
   const { tab } = await searchParams;
   if (tab === "productsPage" || tab === "salonHairSlides") {
-    redirect("/products-page");
+    redirect("/r/menu-items/cmv50zm1w001ppg9icrnd2vsi");
   }
   const key: SettingKey = SETTING_KEYS.includes(tab as SettingKey) ? (tab as SettingKey) : "company";
   const all = await api<Record<string, unknown>>("/admin/settings");
