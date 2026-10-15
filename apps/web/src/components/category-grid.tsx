@@ -136,10 +136,6 @@ export function CategoryGrid({
           <div className="inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-800 shadow-sm backdrop-blur-md">
             <Sparkles className="size-3.5 text-brand-pink animate-pulse" />
             <span>{eyebrow || (isThai ? "Visual Moodboard" : "Moodboard")}</span>
-            <span className="h-3 w-px bg-line" />
-            <span className="font-mono text-[11px] font-bold text-brand-pink">
-              {categories.length} {isThai ? "พินคอลเลกชัน" : "Pins"}
-            </span>
           </div>
 
           {/* Editorial Display Headline */}
@@ -168,8 +164,8 @@ export function CategoryGrid({
             {subtitle
               ? subtitle
               : isThai
-                ? `รวม 20 ซีรีส์ผลิตภัณฑ์ซาลอนระดับพรีเมียมจาก ${brandName || "อิตาลี"} ในรูปแบบ Moodboard แกลเลอรี ให้คุณเลือกชมและสัมผัสความงามอย่างเพลิดเพลิน`
-                : `A curated visual moodboard of 20 salon-grade hair care series by ${brandName || "Italian masters"}, crafted for visual inspiration and professional beauty.`}
+                ? `รวมซีรีส์ผลิตภัณฑ์ซาลอนระดับพรีเมียมจาก ${brandName || "อิตาลี"} ในรูปแบบ Moodboard แกลเลอรี ให้คุณเลือกชมและสัมผัสความงามอย่างเพลิดเพลิน`
+                : `A curated visual moodboard of salon-grade hair care series by ${brandName || "Italian masters"}, crafted for visual inspiration and professional beauty.`}
           </p>
 
           {/* Pinterest Topic Filter Pills & Search Controls */}
@@ -271,9 +267,6 @@ export function CategoryGrid({
               const isActive = activeCategory === cat.slug;
               const isSaved = !!savedPins[cat.slug];
               const targetHref = `/products/${brandSlug}?category=${cat.slug}#category-view`;
-              const globalIndex = categories.findIndex((c) => c.slug === cat.slug);
-              const serialNumber = globalIndex >= 0 ? globalIndex + 1 : idx + 1;
-              const serialStr = serialNumber < 10 ? `0${serialNumber}` : `${serialNumber}`;
               const aspectClass = layoutMode === "masonry" ? getMasonryAspect(idx) : "aspect-square";
 
               return (
@@ -325,17 +318,6 @@ export function CategoryGrid({
                           isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100",
                         )}
                       />
-
-                      {/* Top Left: Pinterest Serial Badge */}
-                      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-medium text-white/90 backdrop-blur-md shadow-sm transition-all group-hover:bg-black/70">
-                          <span
-                            className="size-1.5 rounded-full"
-                            style={{ backgroundColor: cat.accentColor || "#d6297f" }}
-                          />
-                          <span>{serialStr}</span>
-                        </span>
-                      </div>
 
                       {/* Top Right: Pinterest-Style Red/Pink Explore Pill */}
                       <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0">
