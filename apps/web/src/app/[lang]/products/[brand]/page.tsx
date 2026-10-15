@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
+import { CategoryGrid } from "@/components/category-grid";
+import { CategoryHero } from "@/components/category-hero";
+import { CategoryProductsView } from "@/components/category-products-view";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { MenuContentRenderer } from "@/components/menu-content-renderer";
 import { PinkBlackHoleEffect } from "@/components/pink-black-hole";
 import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
+import { getBrandCategories, getBrandCategory } from "@/lib/brand-categories";
 import { getBrand, getBrands, getGrowVision, getMenuItemByHref, getProducts } from "@/lib/data";
 
 export async function generateStaticParams({ params }: { params: { lang: string } }) {
@@ -24,9 +28,17 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products/[
   };
 }
 
-export default async function BrandPage({ params }: PageProps<"/[lang]/products/[brand]">) {
+export default async function BrandPage({
+  params,
+  searchParams,
+}: PageProps<"/[lang]/products/[brand]"> & {
+  searchParams?: Promise<{ category?: string; series?: string }>;
+}) {
   const { lang, dict } = await resolveLang(params);
   const { brand: slug } = await params;
+  const sp = await searchParams;
+  const selectedCatSlug = sp?.category || sp?.series;
+
   const [brand, menuItem, growVision] = await Promise.all([
     getBrand(lang, slug),
     getMenuItemByHref(lang, `/products/${slug}`),
@@ -34,6 +46,9 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
   ]);
 
   if (!brand || brand.type !== "SALON") notFound();
+
+  const categories = getBrandCategories(slug, lang);
+  const currentCategory = selectedCatSlug ? getBrandCategory(slug, selectedCatSlug, lang) : undefined;
 
   // If menu specifies a brand or default to current slug
   const targetBrandSlug = menuItem?.brandSlug || slug;
@@ -62,6 +77,94 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
   const hasCategories = categoryOrder.length > 0;
   const hasMenuContent = menuItem && ((menuItem.sections && menuItem.sections.length > 0) || (menuItem.slides && menuItem.slides.length > 0));
 
+  // Filter products for category if selected
+  const categoryProducts = currentCategory
+    ? products.filter((p) => {
+        const name = p.name.toLowerCase();
+        const pSlug = p.slug.toLowerCase();
+        const cat = (p.category || "").toLowerCase();
+        const ser = (p.series || "").toLowerCase();
+        const target = currentCategory.slug.toLowerCase();
+
+        if (target === "no-yellow-care") {
+          return (
+            pSlug.includes("no-yellow") ||
+            pSlug.includes("shield-protective") ||
+            pSlug.includes("2-phase-potion") ||
+            pSlug.includes("thermo-protective") ||
+            pSlug.includes("incredible-foam") ||
+            name.includes("no yellow") ||
+            name.includes("โนเยลโล")
+          );
+        }
+        if (target === "no-orange") {
+          return (
+            pSlug.includes("no-orange") ||
+            pSlug.includes("blue-foam") ||
+            name.includes("no orange") ||
+            name.includes("โนออเรนจ์")
+          );
+        }
+        if (target === "no-red") {
+          return (
+            pSlug.includes("no-red") ||
+            name.includes("no red") ||
+            name.includes("โนเรด")
+          );
+        }
+        if (target === "nutri-care") {
+          return (
+            pSlug.includes("nutri-care") ||
+            name.includes("nutri") ||
+            name.includes("นูทริ")
+          );
+        }
+        return (
+          pSlug.includes(target) ||
+          name.includes(target) ||
+          cat.includes(target) ||
+          ser.includes(target)
+        );
+      })
+    : [];
+
+  const displayCategoryProducts =
+    categoryProducts.length > 0 ? categoryProducts : products;
+
+  // Render dedicated Category View when a category is selected (Image 2 reference)
+  if (currentCategory) {
+    return (
+      <div id="category-view">
+        <CategoryHero
+          category={currentCategory}
+          brandSlug={slug}
+          brandName={brand.name}
+          lang={lang}
+        />
+        <CategoryProductsView
+          category={currentCategory}
+          products={displayCategoryProducts}
+          brandName={brand.name}
+          brandSlug={slug}
+        />
+        <div className="border-t border-line bg-mist/30">
+          <CategoryGrid
+            categories={categories}
+            brandSlug={slug}
+            activeCategory={currentCategory.slug}
+            title={
+              lang === "th"
+                ? `คอลเลกชันอื่น ๆ ของ ${brand.name}`
+                : `Other ${brand.name} Collections`
+            }
+            eyebrow="Explore Collections"
+          />
+        </div>
+        <GrowYourVision data={growVision} />
+      </div>
+    );
+  }
+
   return (
     <>
       <PageHero
@@ -87,6 +190,20 @@ export default async function BrandPage({ params }: PageProps<"/[lang]/products/
           <SocialLinks socials={brand.socials} />
         </div>
       </PageHero>
+
+      {/* Visual Category Grid (Image 1 reference) */}
+      {categories.length > 0 && (
+        <CategoryGrid
+          categories={categories}
+          brandSlug={slug}
+          title={
+            lang === "th"
+              ? "คอลเลกชันและหมวดหมู่ผลิตภัณฑ์"
+              : "Product Collections & Categories"
+          }
+          eyebrow="Collections"
+        />
+      )}
 
       {/* 1. Dynamic Menu Content (Configured directly in Admin > Menu Items) */}
       {hasMenuContent ? (

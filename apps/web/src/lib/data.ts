@@ -417,6 +417,26 @@ interface ProductRow extends Row {
   brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
 }
 
+const productFallbacks: Record<string, string> = {
+  "shield-protective-mist-100ml": "/products/fanola/shield-protective-mist-100ml.jpg",
+  "2-phase-potion-leave-in-150ml": "/products/fanola/2-phase-potion-leave-in-150ml.jpg",
+  "thermo-protective-cream-150ml": "/products/fanola/thermo-protective-cream-150ml.jpg",
+  "incredible-foam-250ml": "/categories/fanola/no-yellow-care.jpg",
+  "no-yellow-mask-1000ml": "/categories/fanola/no-yellow-care.jpg",
+  "no-yellow-shampoo-1000ml": "/categories/fanola/no-yellow-care.jpg",
+  "no-orange-mask-1000ml": "/categories/fanola/no-orange.jpg",
+  "no-orange-shampoo-1000ml": "/categories/fanola/no-orange.jpg",
+  "blue-foam-no-orange-250ml": "/categories/fanola/no-orange.jpg",
+  "no-orange-mask-350ml": "/categories/fanola/no-orange.jpg",
+  "no-orange-shampoo-350ml": "/categories/fanola/no-orange.jpg",
+  "no-red-mask-1000ml": "/categories/fanola/no-red.jpg",
+  "no-red-shampoo-1000ml": "/categories/fanola/no-red.jpg",
+  "no-red-set-100ml": "/categories/fanola/no-red.jpg",
+  "no-red-mask-350ml": "/categories/fanola/no-red.jpg",
+  "no-red-shampoo-350ml": "/categories/fanola/no-red.jpg",
+  "nutri-care-shampoo-1000ml": "/categories/fanola/nutri-care.jpg",
+};
+
 const toProduct = (p: ProductRow, lang: Locale): Product => ({
   slug: p.slug,
   name: t(p.name, lang),
@@ -428,7 +448,7 @@ const toProduct = (p: ProductRow, lang: Locale): Product => ({
   price: p.price,
   salePrice: p.salePrice ?? undefined,
   badges: p.badges,
-  imageUrl: s(p.imageUrl),
+  imageUrl: s(p.imageUrl) || productFallbacks[p.slug] || "",
   description: s(t(p.description, lang)),
 });
 
