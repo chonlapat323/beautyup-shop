@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
 import { api } from "@/lib/api";
@@ -13,6 +14,9 @@ export const metadata: Metadata = { title: "ตั้งค่าเว็บไ
 
 export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
   const { tab } = await searchParams;
+  if (tab === "productsPage" || tab === "salonHairSlides") {
+    redirect("/products-page");
+  }
   const key: SettingKey = SETTING_KEYS.includes(tab as SettingKey) ? (tab as SettingKey) : "company";
   const all = await api<Record<string, unknown>>("/admin/settings");
   const ui = settingsUi[key];

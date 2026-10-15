@@ -6,7 +6,7 @@ import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
 import { OvalHairCarousel } from "@/components/oval-hair-carousel";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref, getSalonHairSlides } from "@/lib/data";
+import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref, getProductsPageData } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/products">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.products.title };
@@ -15,58 +15,65 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products">
 export default async function ProductsPage({ params }: PageProps<"/[lang]/products">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.products;
-  const [brands, growVision, menuItem, heroSlides, salonHair] = await Promise.all([
+  const [brands, growVision, menuItem, heroSlides, pageData] = await Promise.all([
     getBrands(lang, "SALON"),
     getGrowVision(lang),
     getMenuItemByHref(lang, "/products"),
     getHeroSlides(lang),
-    getSalonHairSlides(lang),
+    getProductsPageData(lang),
   ]);
 
-  // Priority: Custom slides configured under Admin > Menu Items (/products),
-  // fallback to heroSlides linked to salon products or brands
-  const slides = (menuItem?.slides && menuItem.slides.length > 0)
-    ? menuItem.slides
-    : heroSlides
-        .filter((s) => s.href.includes("/products") || s.brandSlug.includes("fanola") || s.brandSlug.includes("nook") || s.brandSlug.includes("sweet") || s.brandSlug.includes("slide"))
-        .slice(0, 5)
-        .map((s) => ({
-          imageUrl: s.imageUrl || "",
-          title: s.product,
-          caption: s.caption,
-          href: s.href,
-        }));
+  // Priority: 1) productsPage slides, 2) menuItem slides, 3) fallback to heroSlides
+  const slides = (pageData.slides && pageData.slides.length > 0)
+    ? pageData.slides
+    : (menuItem?.slides && menuItem.slides.length > 0)
+      ? menuItem.slides
+      : heroSlides
+          .filter((s) => s.href.includes("/products") || s.brandSlug.includes("fanola") || s.brandSlug.includes("nook") || s.brandSlug.includes("sweet") || s.brandSlug.includes("slide"))
+          .slice(0, 5)
+          .map((s) => ({
+            imageUrl: s.imageUrl || "",
+            title: s.product,
+            caption: s.caption,
+            href: s.href,
+          }));
 
   const hasCustomOval = menuItem?.sections?.some((s) => s.layout === "oval-carousel");
 
   return (
     <>
-      <PageHero
-        eyebrow={salonHair?.heroEyebrow || d.eyebrow || "Professional Salon Products"}
-        title={salonHair?.heroHeadline || d.headline}
-        description={salonHair?.heroLead || d.lead}
-      />
+      {pageData.showHero && (
+        <PageHero
+          eyebrow={pageData.heroEyebrow || d.eyebrow || "Professional Salon Products"}
+          title={pageData.heroHeadline || d.headline}
+          description={pageData.heroLead || d.lead}
+        />
+      )}
 
-      {/* 1. Banner Slides Carousel (Configured in Admin > Menu Items > /products or Hero Slides) */}
-      {slides.length > 0 && (
+      {/* 1. Banner Slides Carousel */}
+      {pageData.showBannerSlides && slides.length > 0 && (
         <section className="border-b border-line/60 bg-gradient-to-b from-sand/20 via-white to-sand/10">
           <MenuSlideCarousel slides={slides} />
         </section>
       )}
 
-      {/* 2. Oval Hair Showcase Carousel (Matching user's reference: Oval capsules with gold title) */}
-      {!hasCustomOval && (
+      {/* 2. Oval Hair Showcase Carousel */}
+      {pageData.showOvalCarousel && !hasCustomOval && (
         <OvalHairCarousel
-          title={salonHair?.title || (lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ")}
-          eyebrow={salonHair?.eyebrow}
-          cards={salonHair?.items && salonHair.items.length > 0 ? salonHair.items : undefined}
+          title={pageData.ovalTitle || (lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ")}
+          eyebrow={pageData.ovalDescription}
+          cards={pageData.ovalItems && pageData.ovalItems.length > 0 ? pageData.ovalItems : undefined}
           lang={lang}
         />
       )}
 
       {/* 3. Custom Menu Content Sections if configured in Admin */}
-      {menuItem?.sections && menuItem.sections.length > 0 && (
-        <MenuContentRenderer menu={menuItem} lang={lang} />
+      {pageData.sections.length > 0 ? (
+        <MenuContentRenderer menu={{ label: "", href: "/products", sections: pageData.sections }} lang={lang} />
+      ) : (
+        menuItem?.sections && menuItem.sections.length > 0 && (
+          <MenuContentRenderer menu={menuItem} lang={lang} />
+        )
       )}
 
       <div className="container-page">

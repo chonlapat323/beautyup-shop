@@ -22,6 +22,8 @@ import type {
   Course,
   HeroSlide,
   MenuItem,
+  MenuSectionItem,
+  MenuSlideItem,
   PageContent,
   Post,
   PostType,
@@ -183,6 +185,30 @@ interface VipCustomerRow {
   bgImageUrl?: string;
 }
 
+interface MenuSlideRow {
+  imageUrl?: string;
+  title?: L;
+  caption?: L;
+  href?: string;
+}
+
+interface MenuSectionCardRow {
+  title?: L;
+  description?: L;
+  imageUrl?: string;
+  href?: string;
+}
+
+interface MenuSectionRow {
+  layout?: "columns" | "left-image" | "right-image" | "text-only" | "oval-carousel";
+  title?: L;
+  description?: L;
+  imageUrl?: string;
+  buttonText?: L;
+  buttonHref?: string;
+  cards?: MenuSectionCardRow[];
+}
+
 interface SalonHairSlideRow {
   imageUrl?: string;
   title?: L;
@@ -195,16 +221,35 @@ interface SalonHairSlidesRow {
   heroEyebrow?: L;
   heroHeadline?: L;
   heroLead?: L;
+  slides?: MenuSlideRow[];
   eyebrow?: L;
   title?: L;
   description?: L;
   items?: SalonHairSlideRow[];
 }
 
+interface ProductsPageRow {
+  showHero?: boolean;
+  heroEyebrow?: L;
+  heroHeadline?: L;
+  heroLead?: L;
+
+  showBannerSlides?: boolean;
+  slides?: MenuSlideRow[];
+
+  showOvalCarousel?: boolean;
+  ovalTitle?: L;
+  ovalDescription?: L;
+  ovalItems?: SalonHairSlideRow[];
+
+  sections?: MenuSectionRow[];
+}
+
 interface SettingsRow {
   company?: CompanyRow;
   about?: AboutRow;
   aboutSlides?: AboutSlideRow[];
+  productsPage?: ProductsPageRow;
   salonHairSlides?: SalonHairSlidesRow;
   vipCustomer?: VipCustomerRow;
   growVision?: GrowVisionRow;
@@ -413,6 +458,99 @@ export async function getSalonHairSlides(lang: Locale): Promise<SalonHairSlidesD
     title: (s?.title && t(s.title, lang)) || undefined,
     description: (s?.description && t(s.description, lang)) || undefined,
     items,
+  };
+}
+
+export interface ProductsPageData {
+  showHero: boolean;
+  heroEyebrow?: string;
+  heroHeadline?: string;
+  heroLead?: string;
+
+  showBannerSlides: boolean;
+  slides: MenuSlideItem[];
+
+  showOvalCarousel: boolean;
+  ovalTitle?: string;
+  ovalDescription?: string;
+  ovalItems: SalonHairSlideItem[];
+
+  sections: MenuSectionItem[];
+}
+
+export async function getProductsPageData(lang: Locale): Promise<ProductsPageData> {
+  let settings: SettingsRow | undefined;
+  try {
+    settings = await get<SettingsRow>("/settings");
+  } catch {
+    // fallback
+  }
+
+  const p = settings?.productsPage;
+  const s = settings?.salonHairSlides;
+
+  // Hero
+  const showHero = p?.showHero !== false;
+  const heroEyebrow = (p?.heroEyebrow && t(p.heroEyebrow, lang)) || (s?.heroEyebrow && t(s.heroEyebrow, lang)) || undefined;
+  const heroHeadline = (p?.heroHeadline && t(p.heroHeadline, lang)) || (s?.heroHeadline && t(s.heroHeadline, lang)) || undefined;
+  const heroLead = (p?.heroLead && t(p.heroLead, lang)) || (s?.heroLead && t(s.heroLead, lang)) || undefined;
+
+  // Banner Slides
+  const showBannerSlides = p?.showBannerSlides !== false;
+  const rawSlides = (p?.slides && p.slides.length > 0) ? p.slides : (s?.slides ?? []);
+  const slides: MenuSlideItem[] = rawSlides
+    .filter((sl) => sl.imageUrl && sl.imageUrl.trim())
+    .map((sl) => ({
+      imageUrl: sl.imageUrl || "",
+      title: t(sl.title, lang) || "",
+      caption: t(sl.caption, lang) || "",
+      href: sl.href || "",
+    }));
+
+  // Oval Carousel
+  const showOvalCarousel = p?.showOvalCarousel !== false;
+  const ovalTitle = (p?.ovalTitle && t(p.ovalTitle, lang)) || (s?.title && t(s.title, lang)) || undefined;
+  const ovalDescription = (p?.ovalDescription && t(p.ovalDescription, lang)) || (s?.description && t(s.description, lang)) || undefined;
+  const rawOval = (p?.ovalItems && p.ovalItems.length > 0) ? p.ovalItems : (s?.items ?? []);
+  const ovalItems: SalonHairSlideItem[] = rawOval
+    .filter((it) => it.imageUrl && it.imageUrl.trim())
+    .map((it) => ({
+      imageUrl: it.imageUrl || "",
+      title: t(it.title, lang) || "",
+      formula: it.formula || "",
+      description: t(it.description, lang) || "",
+      href: it.href || "",
+    }));
+
+  // Dynamic Sections
+  const rawSections = p?.sections ?? [];
+  const sections: MenuSectionItem[] = rawSections.map((sec) => ({
+    layout: sec.layout || "left-image",
+    title: t(sec.title, lang) || "",
+    description: t(sec.description, lang) || "",
+    imageUrl: sec.imageUrl || "",
+    buttonText: t(sec.buttonText, lang) || "",
+    buttonHref: sec.buttonHref || "",
+    cards: (sec.cards ?? []).map((c: MenuSectionCardRow) => ({
+      title: t(c.title, lang) || "",
+      description: t(c.description, lang) || "",
+      imageUrl: c.imageUrl || "",
+      href: c.href || "",
+    })),
+  }));
+
+  return {
+    showHero,
+    heroEyebrow,
+    heroHeadline,
+    heroLead,
+    showBannerSlides,
+    slides,
+    showOvalCarousel,
+    ovalTitle,
+    ovalDescription,
+    ovalItems,
+    sections,
   };
 }
 

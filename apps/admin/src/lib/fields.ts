@@ -476,19 +476,29 @@ export const settingsUi = {
     ] satisfies Field[],
   },
   salonHairSlides: {
-    title: "หน้าสินค้าซาลอน & สไลด์ (/products)",
-    description: "จัดการข้อความหัวเรื่องบนสุด (Hero: ข้อความ 'เรามอบสิ่งที่ดีที่สุด...') และภาพสไลด์ทรงผมซาลอนแบบแคปซูลวงรี (Oval Carousel) สำหรับหน้าสินค้าซาลอน (/products)",
+    title: "จัดการหน้าสินค้าซาลอน (/products)",
+    description: "รวมศูนย์จัดการหน้า /products ครบทุกส่วนในที่เดียว: 1) ข้อความหัวเรื่องบนสุด 2) ภาพสไลด์แบนเนอร์ใหญ่ 16:9 3) สไลด์ทรงผมแคปซูลวงรี",
     fields: [
-      { type: "localized", name: "heroEyebrow", label: "ข้อความหัวเรื่องเล็กบนสุดของหน้า (Hero Eyebrow)", help: "ค่าเริ่มต้น: Professional Salon Products" },
-      { type: "localized", name: "heroHeadline", label: "ชื่อหัวเรื่องหลักบนสุดของหน้า (Hero Headline)", help: "ค่าเริ่มต้น: เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ" },
-      { type: "localizedTextarea", name: "heroLead", label: "ข้อความบรรยายบนสุดของหน้า (Hero Lead / Description)", help: "ค่าเริ่มต้น: ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ" },
-      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องสไลด์ทรงผม (Carousel Eyebrow)", help: "เช่น Salon Hair Showcase" },
-      { type: "localized", name: "title", label: "หัวข้อสไลด์ทรงผม (Carousel Title)", help: "เช่น ผลิตภัณฑ์ซาลอนมืออาชีพ (Professional Salon Products)" },
-      { type: "localizedTextarea", name: "description", label: "คำอธิบายใต้หัวข้อสไลด์ (ไม่บังคับ)" },
+      { type: "localized", name: "heroEyebrow", label: "1.1 ข้อความหัวเรื่องเล็กบนสุด (Hero Eyebrow)", help: "ค่าเริ่มต้น: Professional Salon Products" },
+      { type: "localized", name: "heroHeadline", label: "1.2 ชื่อหัวเรื่องหลักบนสุด (Hero Headline)", help: "ค่าเริ่มต้น: เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ" },
+      { type: "localizedTextarea", name: "heroLead", label: "1.3 ข้อความบรรยายบนสุด (Hero Lead)", help: "ค่าเริ่มต้น: ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ" },
+      {
+        type: "list",
+        name: "slides",
+        label: "2. ภาพสไลด์แบนเนอร์ใหญ่ 16:9 (Banner Slide Carousel)",
+        item: [
+          { type: "image", name: "imageUrl", label: "ภาพสไลด์แบนเนอร์ (16:9)" },
+          { type: "localized", name: "title", label: "หัวข้อสไลด์ (เช่น Sweet Professional Hair Treatment)" },
+          { type: "localized", name: "caption", label: "คำบรรยายสไลด์" },
+          { type: "text", name: "href", label: "ลิงก์เมื่อกดสไลด์ (เช่น /products/sweet-professional หรือ https://...)" },
+        ],
+      },
+      { type: "localized", name: "title", label: "3.1 หัวข้อสไลด์ทรงผมวงรี (Oval Carousel Title)", help: "ค่าเริ่มต้น: ผลิตภัณฑ์ซาลอนมืออาชีพ" },
+      { type: "localizedTextarea", name: "description", label: "3.2 คำอธิบายใต้หัวข้อ (ไม่บังคับ)" },
       {
         type: "list",
         name: "items",
-        label: "รายการสไลด์ทรงผมแคปซูลวงรี (Oval Capsules)",
+        label: "3.3 รายการสไลด์ทรงผมแคปซูลวงรี (Oval Capsules)",
         item: [
           { type: "image", name: "imageUrl", label: "รูปภาพผลงานผม (แนวตั้ง)" },
           { type: "localized", name: "title", label: "ชื่อทรงผม / ผลงาน (เช่น Balayage Ash Blonde)", required: true },
@@ -498,6 +508,11 @@ export const settingsUi = {
         ],
       },
     ] satisfies Field[],
+  },
+  productsPage: {
+    title: "จัดการหน้าสินค้าซาลอน (/th/products)",
+    description: "จัดการหน้าสินค้าซาลอน (/th/products) แบบ Realtime Live Editor พร้อมดูตัวอย่างสด",
+    fields: [] as Field[],
   },
   vipCustomer: {
     title: "แบนเนอร์ VIP Customer",

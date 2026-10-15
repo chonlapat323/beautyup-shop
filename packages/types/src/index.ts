@@ -415,10 +415,29 @@ export const salonHairSlideItem = z.object({
   href: z.string().trim().optional().default(""),
 });
 
+export const productsPageSetting = z.object({
+  showHero: z.boolean().default(true),
+  heroEyebrow: localizedOptional,
+  heroHeadline: localizedOptional,
+  heroLead: localizedOptional,
+
+  showBannerSlides: z.boolean().default(true),
+  slides: z.array(menuSlideSchema).default([]),
+
+  showOvalCarousel: z.boolean().default(true),
+  ovalTitle: localizedOptional,
+  ovalDescription: localizedOptional,
+  ovalItems: z.array(salonHairSlideItem).default([]),
+
+  sections: z.array(menuSectionSchema).default([]),
+});
+export type ProductsPageSetting = z.infer<typeof productsPageSetting>;
+
 export const salonHairSlidesSetting = z.object({
   heroEyebrow: localizedOptional,
   heroHeadline: localizedOptional,
   heroLead: localizedOptional,
+  slides: z.array(menuSlideSchema).default([]),
   eyebrow: localizedOptional,
   title: localizedOptional,
   description: localizedOptional,
@@ -426,13 +445,14 @@ export const salonHairSlidesSetting = z.object({
 });
 export type SalonHairSlidesSetting = z.infer<typeof salonHairSlidesSetting>;
 
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "salonHairSlides", "vipCustomer", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "productsPage", "salonHairSlides", "vipCustomer", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
   about: aboutSetting,
   aboutSlides: aboutSlidesSetting,
+  productsPage: productsPageSetting,
   salonHairSlides: salonHairSlidesSetting,
   vipCustomer: vipCustomerSetting,
   growVision: growVisionSetting,

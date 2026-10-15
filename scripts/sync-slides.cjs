@@ -240,6 +240,104 @@ async function main() {
   } else {
     console.log("✓ salonHairSlides setting already exists in database.");
   }
+
+  console.log("Checking productsPage setting in database...");
+  const existingProductsPage = await prisma.setting.findUnique({ where: { key: "productsPage" } });
+  if (!existingProductsPage) {
+    await prisma.setting.create({
+      data: {
+        key: "productsPage",
+        value: {
+          showHero: true,
+          heroEyebrow: { th: "Professional Salon Products", en: "Professional Salon Products" },
+          heroHeadline: { th: "เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ", en: "Delivering the best for your clients" },
+          heroLead: {
+            th: "ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ",
+            en: "Professional salon-grade products imported from Italy and Brazil, tailored for discerning salons and master stylists.",
+          },
+          showBannerSlides: true,
+          slides: [
+            {
+              imageUrl: "/slides/4.jpg",
+              title: { th: "Sweet Professional Hair Treatment", en: "Sweet Professional Hair Treatment" },
+              caption: { th: "นวัตกรรมยืดผมระดับสากลจากบราซิล", en: "Global Hair Transformation from Brazil" },
+              href: "/products/sweet-professional",
+            },
+            {
+              imageUrl: "/slides/1.jpg",
+              title: { th: "BeautyUp Official Salon Partner", en: "BeautyUp Official Salon Partner" },
+              caption: { th: "ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ", en: "Professional Salon & Beauty Products" },
+              href: "/products",
+            },
+            {
+              imageUrl: "/slides/3.jpg",
+              title: { th: "Nook Eco-Conscious Beauty", en: "Nook Eco-Conscious Beauty" },
+              caption: { th: "ผลิตภัณฑ์ดูแลเส้นผมธรรมชาติจากอิตาลี", en: "Nature-inspired salon care from Italy" },
+              href: "/products/nook",
+            },
+          ],
+          showOvalCarousel: true,
+          ovalTitle: { th: "ผลิตภัณฑ์ซาลอนมืออาชีพ", en: "Professional Salon Products" },
+          ovalDescription: { th: "แรงบันดาลใจและสูตรสีผมระดับซาลอนชั้นนำจากอิตาลีและระดับสากล", en: "Inspiration and hair formula by leading master salons" },
+          ovalItems: [
+            {
+              imageUrl: "/cards/fanola-1.jpg",
+              title: { th: "Balayage Ash Blonde", en: "Balayage Ash Blonde" },
+              formula: "BLEACH & 3% (ORO 20G/20G)",
+              description: { th: "No Yellow Care Protection", en: "No Yellow Care Protection" },
+              href: "/products/fanola?category=no-yellow-care",
+            },
+            {
+              imageUrl: "/slides/1.jpg",
+              title: { th: "Pure Ice Blonde", en: "Pure Ice Blonde" },
+              formula: "VIOLET BLEACH 9 TONES",
+              description: { th: "Anti-Yellow Neutralizing", en: "Anti-Yellow Neutralizing" },
+              href: "/products/fanola?category=no-yellow-care",
+            },
+            {
+              imageUrl: "/cards/fanola-2.jpg",
+              title: { th: "Cool Smokey Brunette", en: "Cool Smokey Brunette" },
+              formula: "BLACK 3% + NO RED MASK",
+              description: { th: "Cool Neutralizing Tone", en: "Cool Neutralizing Tone" },
+              href: "/products/fanola?category=no-red",
+            },
+            {
+              imageUrl: "/slides/3.jpg",
+              title: { th: "Platinum Silver Balayage", en: "Platinum Silver Balayage" },
+              formula: "BLEACH & 6% + SHAMPOO",
+              description: { th: "Extra Violet Pigments", en: "Extra Violet Pigments" },
+              href: "/products/fanola?category=no-yellow-care",
+            },
+            {
+              imageUrl: "/cards/fanola-3.jpg",
+              title: { th: "Warm Honey Caramel", en: "Warm Honey Caramel" },
+              formula: "CHESTNUT BLEACH + 3%",
+              description: { th: "Deep Conditioning Care", en: "Deep Conditioning Care" },
+              href: "/products/fanola?category=nutri-care",
+            },
+            {
+              imageUrl: "/cards/fanola-4.jpg",
+              title: { th: "Warm Brown Copper", en: "Warm Brown Copper" },
+              formula: "WARM BROWN + 3%",
+              description: { th: "Color Keratin Protection", en: "Color Keratin Protection" },
+              href: "/products/fanola?category=no-orange",
+            },
+            {
+              imageUrl: "/slides/4.jpg",
+              title: { th: "Luxury Gloss Waves", en: "Luxury Gloss Waves" },
+              formula: "ORO THERAPY 24K",
+              description: { th: "Argan Oil & Keratin Infusion", en: "Argan Oil & Keratin Infusion" },
+              href: "/products/fanola?category=oro-therapy",
+            },
+          ],
+          sections: [],
+        },
+      },
+    });
+    console.log("✓ Default productsPage setting created in database!");
+  } else {
+    console.log("✓ productsPage setting already exists in database.");
+  }
 }
 
 main()

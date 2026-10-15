@@ -54,7 +54,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     items: [
       { href: "/r/hero-slides", label: "สไลด์หน้าแรก", icon: Images },
       { href: "/settings?tab=aboutSlides", label: "สไลด์หน้าเกี่ยวกับเรา", icon: Images },
-      { href: "/settings?tab=salonHairSlides", label: "หน้าสินค้าซาลอน & สไลด์ (/products)", icon: Sparkles },
+      { href: "/products-page", label: "จัดการหน้าสินค้าซาลอน (/th/products)", icon: Sparkles },
       { href: "/settings?tab=about", label: "หน้าเกี่ยวกับเรา (เนื้อหา)", icon: Building2 },
       { href: "/r/menu-items", label: "เมนูและหน้าเว็บ (/products, etc.)", icon: MenuSquare },
       { href: "/r/posts", label: "บทความ / กิจกรรม", icon: Newspaper },
