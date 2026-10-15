@@ -8,7 +8,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { PrismaPg } = require("../apps/api/node_modules/@prisma/adapter-pg");
-const { PrismaClient } = require("../apps/api/dist/generated/prisma/client.js");
+let PrismaClient;
+try {
+  PrismaClient = require("../apps/api/src/generated/prisma/client.js").PrismaClient;
+} catch {
+  PrismaClient = require("../apps/api/dist/generated/prisma/client.js").PrismaClient;
+}
 
 const apiEnv = path.resolve(__dirname, "../apps/api/.env");
 if (fs.existsSync(apiEnv)) {
@@ -315,55 +320,66 @@ async function main() {
     return;
   }
 
-  // 3. Upsert 20 Fanola Categories
+  // 3. Upsert 20 Fanola Categories using direct SQL
   console.log(`Upserting ${FANOLA_CATEGORIES.length} categories for Fanola (ID: ${fanola.id})...`);
   const categoryMap = {}; // slug -> id
 
   for (let i = 0; i < FANOLA_CATEGORIES.length; i++) {
     const c = FANOLA_CATEGORIES[i];
-    const cat = await prisma.category.upsert({
-      where: {
-        brandId_slug: {
-          brandId: fanola.id,
-          slug: c.slug,
-        },
-      },
-      create: {
-        brandId: fanola.id,
-        slug: c.slug,
-        name: c.name,
-        subtitle: c.subtitle || null,
-        description: c.description || null,
-        highlights: c.highlights || null,
-        imageUrl: c.imageUrl,
-        bannerUrl: c.bannerUrl || "",
-        accentColor: c.accentColor,
-        subCategories: c.subCategories || [],
-        sortOrder: i + 1,
-        isActive: true,
-      },
-      update: {
-        name: c.name,
-        subtitle: c.subtitle || null,
-        description: c.description || null,
-        highlights: c.highlights || null,
-        imageUrl: c.imageUrl,
-        bannerUrl: c.bannerUrl || "",
-        accentColor: c.accentColor,
-        subCategories: c.subCategories || [],
-        sortOrder: i + 1,
-      },
-    });
+    const catId = `cat_${c.slug.replace(/[^a-z0-9]/g, "_")}`;
 
-    categoryMap[c.slug] = cat.id;
+    await prisma.$executeRawUnsafe(
+      `
+      INSERT INTO "Category" (
+        "id", "slug", "brandId", "name", "subtitle", "description", "highlights",
+        "imageUrl", "bannerUrl", "accentColor", "subCategories", "sortOrder", "isActive", "createdAt", "updatedAt"
+      ) VALUES (
+        $1, $2, $3, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb,
+        $8, $9, $10, $11::jsonb, $12, true, NOW(), NOW()
+      )
+      ON CONFLICT ("brandId", "slug") DO UPDATE SET
+        "name" = EXCLUDED."name",
+        "subtitle" = EXCLUDED."subtitle",
+        "description" = EXCLUDED."description",
+        "highlights" = EXCLUDED."highlights",
+        "imageUrl" = EXCLUDED."imageUrl",
+        "bannerUrl" = EXCLUDED."bannerUrl",
+        "accentColor" = EXCLUDED."accentColor",
+        "subCategories" = EXCLUDED."subCategories",
+        "sortOrder" = EXCLUDED."sortOrder",
+        "updatedAt" = NOW()
+      `,
+      catId,
+      c.slug,
+      fanola.id,
+      JSON.stringify(c.name),
+      c.subtitle ? JSON.stringify(c.subtitle) : null,
+      c.description ? JSON.stringify(c.description) : null,
+      c.highlights ? JSON.stringify(c.highlights) : null,
+      c.imageUrl,
+      c.bannerUrl || "",
+      c.accentColor,
+      JSON.stringify(c.subCategories || []),
+      i + 1
+    );
+
+    const rows = await prisma.$queryRawUnsafe(
+      `SELECT "id" FROM "Category" WHERE "brandId" = $1 AND "slug" = $2`,
+      fanola.id,
+      c.slug
+    );
+    if (rows && rows[0]) {
+      categoryMap[c.slug] = rows[0].id;
+    }
   }
   console.log("Fanola categories successfully saved to database.");
 
-  // 4. Link Fanola products to their respective categoryId
+  // 4. Link Fanola products to their respective categoryId using direct SQL
   console.log("Linking Fanola products to relational categories...");
-  const fanolaProducts = await prisma.product.findMany({
-    where: { brandId: fanola.id },
-  });
+  const fanolaProducts = await prisma.$queryRawUnsafe(
+    `SELECT "id", "slug", "name", "categoryId" FROM "Product" WHERE "brandId" = $1`,
+    fanola.id
+  );
 
   let linkedCount = 0;
   for (const p of fanolaProducts) {
@@ -388,10 +404,11 @@ async function main() {
     }
 
     if (matchedCatId && p.categoryId !== matchedCatId) {
-      await prisma.product.update({
-        where: { id: p.id },
-        data: { categoryId: matchedCatId },
-      });
+      await prisma.$executeRawUnsafe(
+        `UPDATE "Product" SET "categoryId" = $1 WHERE "id" = $2`,
+        matchedCatId,
+        p.id
+      );
       linkedCount++;
     }
   }
