@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Sparkles, Quote } from "lucide-react";
+import { PinkBlackHoleEffect } from "./pink-black-hole";
 import type { VipCustomerData } from "@/lib/data";
 
 export function VipCustomerHero({ data }: { data: VipCustomerData }) {
@@ -29,6 +30,9 @@ export function VipCustomerHero({ data }: { data: VipCustomerData }) {
         </div>
       ) : null}
 
+      {/* Floating Pink Particle Effect (same as slide) */}
+      <PinkBlackHoleEffect count={55} className="absolute inset-0 size-full pointer-events-none z-0" />
+
       {/* Ambient Lighting & Glow effects */}
       <div
         aria-hidden="true"
@@ -37,20 +41,12 @@ export function VipCustomerHero({ data }: { data: VipCustomerData }) {
         <div className="h-[380px] w-[620px] max-w-[90vw] rounded-full bg-gradient-to-tr from-brand-pink/20 via-fuchsia-600/15 to-purple-600/10 blur-[130px]" />
       </div>
 
-      {/* Floating subtle star/sparkle lights */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute top-[20%] left-[12%] size-1.5 rounded-full bg-pink-400/50 blur-[1px] animate-pulse" />
-        <div className="absolute top-[35%] right-[15%] size-2 rounded-full bg-fuchsia-300/40 blur-[1px] animate-pulse [animation-delay:1.2s]" />
-        <div className="absolute bottom-[25%] left-[22%] size-1 rounded-full bg-white/40 blur-[0.5px] animate-pulse [animation-delay:2.4s]" />
-        <div className="absolute bottom-[30%] right-[20%] size-1.5 rounded-full bg-brand-pink/50 blur-[1px] animate-pulse [animation-delay:3s]" />
-      </div>
-
       <div className="container-page relative z-10 text-center">
         {/* Eyebrow Badge */}
         <div data-reveal suppressHydrationWarning className="inline-flex items-center gap-2.5 rounded-full border border-brand-pink/35 bg-brand-pink/10 px-5 py-2 text-xs sm:text-sm font-semibold tracking-[0.28em] text-pink-200 uppercase backdrop-blur-md shadow-[0_0_25px_rgba(214,41,127,0.22)]">
-          <Sparkles className="size-3.5 text-brand-pink animate-pulse" />
+          <Sparkles className="size-3.5 text-brand-pink" />
           <span>{data.eyebrow || "OUR VIP CUSTOMER"}</span>
-          <Sparkles className="size-3.5 text-brand-pink animate-pulse" />
+          <Sparkles className="size-3.5 text-brand-pink" />
         </div>
 
         {/* Quote Block */}
@@ -59,12 +55,12 @@ export function VipCustomerHero({ data }: { data: VipCustomerData }) {
           suppressHydrationWarning
           className="relative mx-auto mt-10 max-w-4xl px-4 sm:px-8"
         >
-          {/* Decorative Quote Icon */}
+          {/* Decorative Opening Quote Icon */}
           <div
             aria-hidden="true"
-            className="mx-auto mb-6 flex size-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-pink-300/70 backdrop-blur-sm"
+            className="mx-auto mb-6 flex size-12 items-center justify-center rounded-full border border-brand-pink/30 bg-brand-pink/10 text-pink-300 shadow-[0_0_20px_rgba(214,41,127,0.25)] backdrop-blur-sm"
           >
-            <Quote className="size-5 rotate-180" />
+            <Quote className="size-5.5 rotate-180" />
           </div>
 
           {/* Typography */}
@@ -85,14 +81,22 @@ export function VipCustomerHero({ data }: { data: VipCustomerData }) {
             )}
           </blockquote>
 
+          {/* Decorative Closing Quote Icon */}
+          <div
+            aria-hidden="true"
+            className="mx-auto mt-7 flex size-12 items-center justify-center rounded-full border border-brand-pink/30 bg-brand-pink/10 text-pink-300 shadow-[0_0_20px_rgba(214,41,127,0.25)] backdrop-blur-sm"
+          >
+            <Quote className="size-5.5" />
+          </div>
+
           {/* Decorative Divider */}
           <div
             aria-hidden="true"
-            className="mx-auto mt-8 flex items-center justify-center gap-3"
+            className="mx-auto mt-6 flex items-center justify-center gap-3"
           >
-            <span className="h-px w-12 bg-gradient-to-r from-transparent to-brand-pink/60" />
+            <span className="h-px w-14 bg-gradient-to-r from-transparent to-brand-pink/60" />
             <span className="size-1.5 rounded-full bg-brand-pink shadow-[0_0_8px_rgba(214,41,127,0.8)]" />
-            <span className="h-px w-12 bg-gradient-to-l from-transparent to-brand-pink/60" />
+            <span className="h-px w-14 bg-gradient-to-l from-transparent to-brand-pink/60" />
           </div>
 
           {/* Subtext if provided */}
