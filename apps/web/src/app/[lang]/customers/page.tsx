@@ -36,7 +36,7 @@ export default async function CustomersPage({ params }: PageProps<"/[lang]/custo
                 </div>
                 <p className="mt-4 font-display text-xl">{a.name}</p>
                 <p className="text-sm text-muted">{a.title}</p>
-                <SocialLinks socials={a.socials} className="mt-3 hidden sm:flex" />
+                <SocialLinks socials={a.socials} className="mt-3" />
               </li>
             ))}
             <li data-reveal suppressHydrationWarning style={stagger(ambassadors.length)}>
