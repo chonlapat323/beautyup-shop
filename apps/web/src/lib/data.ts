@@ -192,6 +192,9 @@ interface SalonHairSlideRow {
 }
 
 interface SalonHairSlidesRow {
+  heroEyebrow?: L;
+  heroHeadline?: L;
+  heroLead?: L;
   eyebrow?: L;
   title?: L;
   description?: L;
@@ -375,6 +378,9 @@ export interface SalonHairSlideItem {
 }
 
 export interface SalonHairSlidesData {
+  heroEyebrow?: string;
+  heroHeadline?: string;
+  heroLead?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -400,6 +406,9 @@ export async function getSalonHairSlides(lang: Locale): Promise<SalonHairSlidesD
     }));
 
   return {
+    heroEyebrow: (s?.heroEyebrow && t(s.heroEyebrow, lang)) || undefined,
+    heroHeadline: (s?.heroHeadline && t(s.heroHeadline, lang)) || undefined,
+    heroLead: (s?.heroLead && t(s.heroLead, lang)) || undefined,
     eyebrow: (s?.eyebrow && t(s.eyebrow, lang)) || undefined,
     title: (s?.title && t(s.title, lang)) || undefined,
     description: (s?.description && t(s.description, lang)) || undefined,

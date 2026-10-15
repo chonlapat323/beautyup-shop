@@ -476,12 +476,15 @@ export const settingsUi = {
     ] satisfies Field[],
   },
   salonHairSlides: {
-    title: "สไลด์ผมซาลอน (Oval Carousel)",
-    description: "จัดการภาพสไลด์ทรงผมซาลอนแบบแคปซูลวงรี (Oval Carousel) สำหรับหน้าสินค้าซาลอน (/products) และสามารถนำไปแสดงในหน้าเนื้อหา/เมนูอื่นๆ ได้",
+    title: "หน้าสินค้าซาลอน & สไลด์ (/products)",
+    description: "จัดการข้อความหัวเรื่องบนสุด (Hero: ข้อความ 'เรามอบสิ่งที่ดีที่สุด...') และภาพสไลด์ทรงผมซาลอนแบบแคปซูลวงรี (Oval Carousel) สำหรับหน้าสินค้าซาลอน (/products)",
     fields: [
-      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)", help: "เช่น Salon Hair Showcase" },
-      { type: "localized", name: "title", label: "หัวข้อหลัก (Title)", help: "เช่น ผลิตภัณฑ์ซาลอนมืออาชีพ (Professional Salon Products)" },
-      { type: "localizedTextarea", name: "description", label: "คำอธิบายใต้หัวข้อ (ไม่บังคับ)" },
+      { type: "localized", name: "heroEyebrow", label: "ข้อความหัวเรื่องเล็กบนสุดของหน้า (Hero Eyebrow)", help: "ค่าเริ่มต้น: Professional Salon Products" },
+      { type: "localized", name: "heroHeadline", label: "ชื่อหัวเรื่องหลักบนสุดของหน้า (Hero Headline)", help: "ค่าเริ่มต้น: เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ" },
+      { type: "localizedTextarea", name: "heroLead", label: "ข้อความบรรยายบนสุดของหน้า (Hero Lead / Description)", help: "ค่าเริ่มต้น: ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ" },
+      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องสไลด์ทรงผม (Carousel Eyebrow)", help: "เช่น Salon Hair Showcase" },
+      { type: "localized", name: "title", label: "หัวข้อสไลด์ทรงผม (Carousel Title)", help: "เช่น ผลิตภัณฑ์ซาลอนมืออาชีพ (Professional Salon Products)" },
+      { type: "localizedTextarea", name: "description", label: "คำอธิบายใต้หัวข้อสไลด์ (ไม่บังคับ)" },
       {
         type: "list",
         name: "items",

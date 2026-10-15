@@ -42,9 +42,9 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
   return (
     <>
       <PageHero
-        eyebrow="Professional Salon Products"
-        title={d.headline}
-        description={d.lead}
+        eyebrow={salonHair?.heroEyebrow || d.eyebrow || "Professional Salon Products"}
+        title={salonHair?.heroHeadline || d.headline}
+        description={salonHair?.heroLead || d.lead}
       />
 
       {/* 1. Banner Slides Carousel (Configured in Admin > Menu Items > /products or Hero Slides) */}

@@ -173,6 +173,12 @@ async function main() {
       data: {
         key: "salonHairSlides",
         value: {
+          heroEyebrow: { th: "Professional Salon Products", en: "Professional Salon Products" },
+          heroHeadline: { th: "เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ", en: "Delivering the best for your clients" },
+          heroLead: {
+            th: "ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ",
+            en: "Professional salon-grade products imported from Italy and Brazil, tailored for discerning salons and master stylists.",
+          },
           eyebrow: { th: "Salon Hair Showcase", en: "Salon Hair Showcase" },
           title: { th: "ผลิตภัณฑ์ซาลอนมืออาชีพ", en: "Professional Salon Products" },
           description: { th: "แรงบันดาลใจและสูตรสีผมระดับซาลอนชั้นนำจากอิตาลีและระดับสากล", en: "Inspiration and hair formula by leading master salons" },

@@ -102,6 +102,12 @@ async function seedSettings() {
     },
     aboutSlides: [],
     salonHairSlides: {
+      heroEyebrow: L('Professional Salon Products', 'Professional Salon Products'),
+      heroHeadline: L('เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ', 'Delivering the best for your clients'),
+      heroLead: L(
+        'ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ',
+        'Professional salon-grade products imported from Italy and Brazil, tailored for discerning salons and master stylists.',
+      ),
       eyebrow: L('Salon Hair Showcase', 'Salon Hair Showcase'),
       title: L('ผลิตภัณฑ์ซาลอนมืออาชีพ', 'Professional Salon Products'),
       description: L('แรงบันดาลใจและสูตรสีผมระดับซาลอนชั้นนำจากอิตาลีและระดับสากล', 'Inspiration and hair formula by leading master salons'),

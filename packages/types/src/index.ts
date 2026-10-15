@@ -416,6 +416,9 @@ export const salonHairSlideItem = z.object({
 });
 
 export const salonHairSlidesSetting = z.object({
+  heroEyebrow: localizedOptional,
+  heroHeadline: localizedOptional,
+  heroLead: localizedOptional,
   eyebrow: localizedOptional,
   title: localizedOptional,
   description: localizedOptional,
