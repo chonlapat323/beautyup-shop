@@ -371,8 +371,12 @@ async function main() {
     if (rows && rows[0]) {
       categoryMap[c.slug] = rows[0].id;
     }
-  }
   console.log("Fanola categories successfully saved to database.");
+
+  // Update salon brand logos if empty
+  await prisma.$executeRawUnsafe(`UPDATE "Brand" SET "logoUrl" = '/brands/fanola.png' WHERE "slug" = 'fanola' AND ("logoUrl" IS NULL OR "logoUrl" = '')`);
+  await prisma.$executeRawUnsafe(`UPDATE "Brand" SET "logoUrl" = '/brands/nook.jpg' WHERE "slug" = 'nook' AND ("logoUrl" IS NULL OR "logoUrl" = '')`);
+  await prisma.$executeRawUnsafe(`UPDATE "Brand" SET "logoUrl" = '/brands/sweet.jpg' WHERE "slug" = 'sweet-professional' AND ("logoUrl" IS NULL OR "logoUrl" = '')`);
 
   // 4. Link Fanola products to their respective categoryId using direct SQL
   console.log("Linking Fanola products to relational categories...");

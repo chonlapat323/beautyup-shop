@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
+import { MenuContentRenderer } from "@/components/menu-content-renderer";
+import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getGrowVision } from "@/lib/data";
+import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/products">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.products.title };
@@ -12,10 +14,26 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products">
 export default async function ProductsPage({ params }: PageProps<"/[lang]/products">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.products;
-  const [brands, growVision] = await Promise.all([
+  const [brands, growVision, menuItem, heroSlides] = await Promise.all([
     getBrands(lang, "SALON"),
     getGrowVision(lang),
+    getMenuItemByHref(lang, "/products"),
+    getHeroSlides(lang),
   ]);
+
+  // Priority: Custom slides configured under Admin > Menu Items (/products),
+  // fallback to heroSlides linked to salon products or brands
+  const slides = (menuItem?.slides && menuItem.slides.length > 0)
+    ? menuItem.slides
+    : heroSlides
+        .filter((s) => s.href.includes("/products") || s.brandSlug.includes("fanola") || s.brandSlug.includes("nook") || s.brandSlug.includes("sweet") || s.brandSlug.includes("slide"))
+        .slice(0, 5)
+        .map((s) => ({
+          imageUrl: s.imageUrl || "",
+          title: s.product,
+          caption: s.caption,
+          href: s.href,
+        }));
 
   return (
     <>
@@ -24,6 +42,18 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
         title={d.headline}
         description={d.lead}
       />
+
+      {/* Banner Slides Carousel (Configured in Admin > Menu Items > /products or Hero Slides) */}
+      {slides.length > 0 && (
+        <section className="border-b border-line/60 bg-gradient-to-b from-sand/20 via-white to-sand/10">
+          <MenuSlideCarousel slides={slides} />
+        </section>
+      )}
+
+      {/* Custom Menu Content Sections if configured in Admin */}
+      {menuItem?.sections && menuItem.sections.length > 0 && (
+        <MenuContentRenderer menu={menuItem} lang={lang} />
+      )}
 
       <div className="container-page">
         {brands.map((b, i) => (

@@ -179,6 +179,7 @@ async function seedBrands() {
         { name: 'NO MORE', href: '#fanola-salon' },
         { name: 'FIBER FIX', href: '#fanola-salon' },
       ],
+      logoUrl: '/brands/fanola.png',
       website: 'https://www.fanola.it/fa_en/',
       socials: { youtube: 'https://www.youtube.com/@FanolaOfficial' },
     },
@@ -187,6 +188,7 @@ async function seedBrands() {
       tagline: L('Eco-conscious beauty', 'Eco-conscious beauty'),
       description: L('แรงบันดาลใจจากความเรียบง่าย ความสวยงาม ความกลมกลืนและสมดุลของธรรมชาติ', 'Inspired by the simplicity, beauty, harmony and balance of nature'),
       highlights: [L('Eco-conscious', 'Eco-conscious'), L('Natural balance', 'Natural balance'), L('Salon professional', 'Salon professional')],
+      logoUrl: '/brands/nook.jpg',
       website: 'http://nookcosmetics.it/company/?lang=en',
       socials: {},
     },
@@ -195,6 +197,7 @@ async function seedBrands() {
       tagline: L('More than a brand', 'More than a brand'),
       description: L('ไลฟ์สไตล์ใหม่ เป็นมากกว่าแบรนด์ โอกาสไล่ตามความฝันของคุณในจักรวาลแห่งความงาม', 'A new lifestyle and more than a brand: a chance to chase your dreams in the beauty universe'),
       highlights: [L('ทรีตเมนต์ยืดผม', 'Straightening treatments'), L('Brazilian technology', 'Brazilian technology'), L('Lifestyle brand', 'Lifestyle brand')],
+      logoUrl: '/brands/sweet.jpg',
       website: 'https://sweethairprofessional.com/',
       socials: {},
     },
@@ -207,7 +210,7 @@ async function seedBrands() {
     const row = await prisma.brand.upsert({
       where: { slug: b.slug },
       create: { ...b, type: 'SALON', sortOrder: order++ },
-      update: {},
+      update: { logoUrl: b.logoUrl },
     });
     ids[b.slug] = row.id;
   }
