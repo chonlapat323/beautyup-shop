@@ -130,7 +130,7 @@ export const th = {
     searchPlaceholder: "ชื่อร้าน หรือ จังหวัด",
     regions: "ภูมิภาค",
     allRegions: "ทุกภาค",
-    found: (n: number) => `พบ ${n} ร้าน`,
+    found: (n: number) => `พบ ${n} จังหวัด (ค้นหาซาลอนบน Google Maps)`,
     none: "ไม่พบร้านที่ค้นหา",
   },
   regions: {

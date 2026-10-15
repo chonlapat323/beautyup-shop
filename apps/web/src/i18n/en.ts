@@ -131,7 +131,7 @@ export const en: Dictionary = {
     searchPlaceholder: "Salon name or province",
     regions: "Regions",
     allRegions: "All regions",
-    found: (n: number) => `${n} salon${n === 1 ? "" : "s"} found`,
+    found: (n: number) => `${n} province${n === 1 ? "" : "s"} found (find salons on Google Maps)`,
     none: "No salons match your search",
   },
   regions: {

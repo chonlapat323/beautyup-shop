@@ -12,7 +12,7 @@ export function SalonFinder({
   regions,
 }: {
   salons: Salon[];
-  regions: { key: Region; label: string }[];
+  regions: { key: Region; label: string; count?: number }[];
 }) {
   const d = useDict().salons;
   const params = useSearchParams();
@@ -66,16 +66,26 @@ export function SalonFinder({
           aria-label={d.regions}
           className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:flex-col"
         >
-          {[{ key: "ALL" as const, label: d.allRegions }, ...regions].map((r) => (
+          {[
+            {
+              key: "ALL" as const,
+              label: d.allRegions,
+              count: regions.reduce((acc, curr) => acc + (curr.count || 0), 0),
+            },
+            ...regions,
+          ].map((r) => (
             <button
               key={r.key}
               type="button"
               role="tab"
               aria-selected={region === r.key}
               onClick={() => setRegion(r.key)}
-              className="btn-tab text-left lg:rounded-xl"
+              className="btn-tab flex items-center justify-between gap-2 text-left lg:rounded-xl"
             >
-              {r.label}
+              <span>{r.label}</span>
+              {typeof r.count === "number" && r.count > 0 && (
+                <span className="text-xs font-mono opacity-70">({r.count})</span>
+              )}
             </button>
           ))}
         </div>
@@ -117,19 +127,19 @@ export function SalonFinder({
 
                     <p className="mt-2.5 flex items-center gap-2 text-sm text-muted transition-colors group-hover:text-ink">
                       <MapPin className="size-4 shrink-0 text-brand-pink" />
-                      <span>{s.address || (provinceClean ? `จังหวัด${provinceClean}` : s.province)}</span>
+                      <span>{s.address || "ค้นหาร้านทำผมและซาลอนใกล้คุณ"}</span>
                     </p>
                   </a>
 
                   <div className="mt-4 flex items-center justify-between border-t border-line/60 pt-3 text-xs">
-                    <span className="text-muted">ดูข้อมูลติดต่อ &amp; แผนที่</span>
+                    <span className="text-muted">Google Maps Filter</span>
                     <a
                       href={mapUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 font-semibold text-brand-pink transition-colors hover:underline"
                     >
-                      <span>ดูบน Google Maps</span>
+                      <span>เปิดดูบน Google Maps</span>
                       <ExternalLink className="size-3" />
                     </a>
                   </div>

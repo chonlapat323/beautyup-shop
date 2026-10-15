@@ -8,6 +8,7 @@ import { t, type Localized } from "@beautyup/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDictionary, type Locale } from "@/i18n";
 import { provinces } from "./provinces";
+import { REGION_SALON_COUNTS, THAILAND_SALON_DIRECTORY } from "./thailand-salons";
 import type {
   Ambassador,
   Brand,
@@ -507,14 +508,64 @@ export async function getAmbassadors(lang: Locale): Promise<Ambassador[]> {
 }
 
 export async function getSalons(): Promise<Salon[]> {
-  const rows = await get<(Salon & { address: string; phone: string; mapUrl: string })[]>("/resources/salons");
-  return rows.map((r) => ({ name: r.name, region: r.region, province: r.province, address: s(r.address), phone: s(r.phone), mapUrl: s(r.mapUrl) }));
+  try {
+    const rows = await get<(Salon & { address: string; phone: string; mapUrl: string })[]>("/resources/salons");
+    if (rows && rows.length >= 70) {
+      return rows.map((r) => ({
+        name: r.name,
+        region: r.region,
+        province: r.province,
+        address: s(r.address),
+        phone: s(r.phone),
+        mapUrl: s(r.mapUrl),
+      }));
+    }
+    if (rows && rows.length > 0) {
+      const dirNames = new Set(THAILAND_SALON_DIRECTORY.map((s) => s.name));
+      const customSalons = rows
+        .filter(
+          (r) =>
+            !dirNames.has(r.name) &&
+            !r.name.includes("The Hair") &&
+            !r.name.includes("เดอะแฮร์") &&
+            !r.name.includes("Salon") &&
+            !r.name.includes("สตูดิโอ"),
+        )
+        .map((r) => ({
+          name: r.name,
+          region: r.region,
+          province: r.province,
+          address: s(r.address),
+          phone: s(r.phone),
+          mapUrl: s(r.mapUrl),
+        }));
+      return [...THAILAND_SALON_DIRECTORY, ...customSalons];
+    }
+  } catch {
+    // fallback to static directory
+  }
+  return THAILAND_SALON_DIRECTORY;
 }
 
 export async function getRegions(lang: Locale) {
-  const rows = await get<{ key: Region; count: number }[]>("/regions");
   const labels = getDictionary(lang).regions;
-  return rows.map((r) => ({ ...r, label: labels[r.key] }));
+  try {
+    const rows = await get<{ key: Region; count: number }[]>("/regions");
+    if (rows && rows.length > 0) {
+      return rows.map((r) => ({
+        ...r,
+        count: r.count > 0 ? r.count : (REGION_SALON_COUNTS[r.key] ?? 0),
+        label: labels[r.key],
+      }));
+    }
+  } catch {
+    // fallback
+  }
+  return (Object.keys(REGION_SALON_COUNTS) as Region[]).map((key) => ({
+    key,
+    count: REGION_SALON_COUNTS[key],
+    label: labels[key],
+  }));
 }
 
 /* -------------------------------------------------------------- courses */
