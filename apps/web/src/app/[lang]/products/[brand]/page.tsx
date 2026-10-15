@@ -151,6 +151,7 @@ export default async function BrandPage({
           <CategoryGrid
             categories={categories}
             brandSlug={slug}
+            brandName={brand.name}
             activeCategory={currentCategory.slug}
             title={
               lang === "th"
@@ -196,6 +197,7 @@ export default async function BrandPage({
         <CategoryGrid
           categories={categories}
           brandSlug={slug}
+          brandName={brand.name}
           title={
             lang === "th"
               ? "คอลเลกชันและหมวดหมู่ผลิตภัณฑ์"
