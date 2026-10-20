@@ -432,9 +432,13 @@ function ListInput({
           </li>
         ))}
       </ol>
-      <button type="button" className="btn btn-secondary mt-3" onClick={() => onChange([...value, blank()])}>
-        <Plus className="size-4" /> เพิ่ม{field.label}
-      </button>
+      {field.max && value.length >= field.max ? (
+        <p className="mt-3 text-xs text-muted">ใส่ได้สูงสุด {field.max} รายการ</p>
+      ) : (
+        <button type="button" className="btn btn-secondary mt-3" onClick={() => onChange([...value, blank()])}>
+          <Plus className="size-4" /> เพิ่ม{field.label}
+        </button>
+      )}
     </fieldset>
   );
 }

@@ -181,6 +181,7 @@ export const en: Dictionary = {
     atmosphere: "Classes, teaching and study trips",
     fee: "Course fee",
     learn: "What you will learn",
+    gallery: "Course gallery",
     register: "Register interest",
     notFound: "Course not found",
   },

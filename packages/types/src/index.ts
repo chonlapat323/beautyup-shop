@@ -234,6 +234,7 @@ export const courseInput = z.object({
   /** One paragraph / bullet per line */
   content: localizedOptional,
   coverUrl: url,
+  images: z.array(z.string().trim()).max(5).default([]),
   sortOrder,
   isActive,
 });

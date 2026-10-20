@@ -215,6 +215,7 @@ model Course {
   summary   Json
   content   Json
   coverUrl  String  @default("")
+  images    Json    @default("[]")
   sortOrder Int     @default(0)
   isActive  Boolean @default(true)
 }

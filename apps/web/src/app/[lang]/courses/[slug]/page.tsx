@@ -48,6 +48,17 @@ export default async function CoursePage({ params }: PageProps<"/[lang]/courses/
               </li>
             ))}
           </ul>
+
+          {course.images.length > 0 && (
+            <>
+              <h2 className="mt-10 font-display text-2xl">{d.gallery}</h2>
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {course.images.map((src, i) => (
+                  <Media key={src + i} src={src} tone={i} className="aspect-square w-full rounded-2xl" />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Sticky summary on desktop, inline card on mobile */}

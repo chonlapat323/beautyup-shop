@@ -836,7 +836,7 @@ export async function getRegions(lang: Locale) {
 
 /* -------------------------------------------------------------- courses */
 
-interface CourseRow { slug: string; title: L; priceText: L; duration: L; summary: L; content: L; coverUrl: string }
+interface CourseRow { slug: string; title: L; priceText: L; duration: L; summary: L; content: L; coverUrl: string; images?: string[] }
 
 const toCourse = (c: CourseRow, lang: Locale): Course => ({
   slug: c.slug,
@@ -846,6 +846,7 @@ const toCourse = (c: CourseRow, lang: Locale): Course => ({
   summary: t(c.summary, lang),
   content: lines(c.content, lang),
   coverUrl: s(c.coverUrl),
+  images: c.images ?? [],
 });
 
 export async function getCourses(lang: Locale) {

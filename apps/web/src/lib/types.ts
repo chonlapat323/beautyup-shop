@@ -144,6 +144,7 @@ export interface Course {
   summary: string;
   content: string[];
   coverUrl?: string;
+  images: string[];
 }
 
 export type PostType = "ARTICLE" | "ACTIVITY" | "MEDIA";

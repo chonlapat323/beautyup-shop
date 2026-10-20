@@ -14,7 +14,7 @@ export type Field =
   | { type: "image" | "file"; name: string; label: string; help?: string }
   | { type: "tags"; name: string; label: string; help?: string; suggestions?: string[] }
   | { type: "socials"; name: string; label: string; help?: string }
-  | { type: "list"; name: string; label: string; item: Field[]; help?: string };
+  | { type: "list"; name: string; label: string; item: Field[]; help?: string; max?: number };
 
 export type Column = {
   name: string;
@@ -274,6 +274,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "localizedTextarea", name: "summary", label: "สรุปสั้น" },
       { type: "localizedTextarea", name: "content", label: "สิ่งที่จะได้เรียนรู้", help: "หนึ่งข้อต่อหนึ่งบรรทัด" },
       { type: "image", name: "coverUrl", label: "รูปปก" },
+      { type: "list", name: "images", label: "รูปภาพเพิ่มเติม", help: "แสดงเป็นแกลเลอรี่ในหน้าคอร์ส", item: [{ type: "image", name: "", label: "รูป" }], max: 5 },
       sortOrder,
       isActive,
     ],
