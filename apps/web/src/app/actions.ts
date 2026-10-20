@@ -11,7 +11,7 @@ export interface InquiryState {
 }
 
 const API_URL = process.env.API_URL ?? "http://localhost:4000/api";
-const types: InquiryType[] = ["CONTACT", "ORDER", "SALON", "COURSE", "ISSUE", "PP_STUDIO"];
+const types: InquiryType[] = ["CONTACT", "ORDER", "SALON", "COURSE", "ISSUE"];
 /** Columns on the Inquiry table; anything else goes into `data`. */
 const columns = ["name", "phone", "email", "shopName", "province", "message"];
 

@@ -26,10 +26,3 @@ export const issueFields: FormField[] = [
   { name: "orderRef", label: "orderRef" },
   { name: "message", label: "issue", type: "textarea", required: true },
 ];
-
-export const ppStudioFields: FormField[] = [
-  { name: "name", label: "firstName", required: true, half: true, autoComplete: "given-name" },
-  { name: "lastName", label: "lastName", half: true, autoComplete: "family-name" },
-  { name: "email", label: "email", type: "email", required: true, autoComplete: "email" },
-  { name: "message", label: "message", type: "textarea", required: true },
-];

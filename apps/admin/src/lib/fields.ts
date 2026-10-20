@@ -315,7 +315,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     fields: [
       { type: "localized", name: "title", label: "หัวข้อ", required: true },
       { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
-      { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด ขึ้นต้นด้วย ## เพื่อทำหัวข้อย่อย" },
+      { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด · ## หัวข้อใหญ่ · ### หัวข้อย่อย · - รายการแบบจุด" },
       isActive,
     ],
     columns: [
@@ -553,20 +553,6 @@ export const settingsUi = {
         item: [
           { type: "text", name: "year", label: "ปี" },
           { type: "localized", name: "text", label: "รายละเอียด", required: true },
-        ],
-      },
-    ] satisfies Field[],
-  },
-  ppStudio: {
-    title: "บริการ PP STUDIO",
-    fields: [
-      {
-        type: "list",
-        name: "",
-        label: "บริการ",
-        item: [
-          { type: "text", name: "title", label: "ชื่อบริการ" },
-          { type: "localizedTextarea", name: "text", label: "รายละเอียด", required: true },
         ],
       },
     ] satisfies Field[],

@@ -229,11 +229,6 @@ export const en: Dictionary = {
     policyLink: "sales & payment policy",
   },
   policy: { eyebrow: "Policy" },
-  pp: {
-    lead: "Video shooting and editing, product photography and events that add value to your business, by a professional team in Lampang.",
-    send: "Send a message",
-    services: "Our services",
-  },
   members: {
     title: "Members",
     eyebrow: "Members",
@@ -346,8 +341,6 @@ export const en: Dictionary = {
       message: "Message",
       orderRef: "Invoice / order number (optional)",
       issue: "Describe the issue",
-      firstName: "First name",
-      lastName: "Last name",
     },
   },
 };

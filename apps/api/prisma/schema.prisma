@@ -276,7 +276,7 @@ model Inquiry {
   @@index([status, createdAt])
 }
 
-/// company, timeline, ppStudio, regionCounts (see packages/types settingSchemas)
+/// company, timeline, regionCounts, ... (see packages/types settingSchemas)
 model Setting {
   key       String   @id
   value     Json

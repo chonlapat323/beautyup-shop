@@ -446,7 +446,7 @@ export const salonHairSlidesSetting = z.object({
 });
 export type SalonHairSlidesSetting = z.infer<typeof salonHairSlidesSetting>;
 
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "productsPage", "salonHairSlides", "vipCustomer", "growVision", "timeline", "ppStudio", "regionCounts"] as const;
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "productsPage", "salonHairSlides", "vipCustomer", "growVision", "timeline", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
@@ -458,7 +458,6 @@ export const settingSchemas = {
   vipCustomer: vipCustomerSetting,
   growVision: growVisionSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
-  ppStudio: z.array(z.object({ title: z.string(), text: localized })),
   /** Optional override for the salon directory counts until all salons are imported */
   regionCounts: z.record(z.enum(REGIONS), z.coerce.number().int().nonnegative()),
 } satisfies Record<SettingKey, z.ZodType>;

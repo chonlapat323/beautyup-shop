@@ -169,14 +169,6 @@ async function seedSettings() {
       { year: '2558', text: L('นำเข้า Fanola (ฟาโนลา) ผลิตภัณฑ์ซาลอนจากอิตาลี', 'Imported Fanola salon products from Italy (2015)') },
       { year: '2565', text: L('นำเข้า Heona (ฮีโอนา) ผลิตภัณฑ์ซาลอนจากเกาหลี และ Sweet Professional (สวีท โพรเฟสชันนัล) ผลิตภัณฑ์ซาลอนจากบราซิล', 'Imported Heona (Korea) and Sweet Professional (Brazil) (2022)') },
     ],
-    ppStudio: [
-      { title: 'Video Shooting', text: L('ถ่ายวีดิโอ งานพิธี งานประชุมสัมมนา การสัมภาษณ์ กิจกรรม งานเปิดตัว ถ่ายทอดสดและการตัดต่อ', 'Ceremonies, seminars, interviews, events, launches, live streaming and editing') },
-      { title: 'Mood & Tone', text: L('ถ่ายภาพสินค้า ผลิตภัณฑ์ จัดพร็อพ วางคอนเซ็ปท์ให้เข้ากับสินค้า เพื่อเพิ่มมูลค่าให้กับสินค้า', 'Styled product photography with props and concepts that add value to your products') },
-      { title: 'Video Editing', text: L('ตัดต่อวีดิโอ การสัมภาษณ์ โฆษณา การประชาสัมพันธ์ และการรณรงค์ต่าง ๆ', 'Editing for interviews, ads, PR and campaigns') },
-      { title: 'Real estate photo editing', text: L('ตกแต่งภาพ บ้าน อาคาร สถานที่ ในเชิงพาณิชย์', 'Commercial retouching for homes, buildings and venues') },
-      { title: 'Packshot', text: L('ถ่ายภาพสินค้า ผลิตภัณฑ์ งานแคตตาล็อกและงานกราฟิก ด้วยกล้อง DSLR และการจัดแสงในสตูดิโอ', 'Catalogue and graphic packshots with DSLR and studio lighting') },
-      { title: 'Event & Travel', text: L('จัดกิจกรรม งานสัมมนา ทริปท่องเที่ยวทั้งในและต่างประเทศ', 'Events, seminars and trips in Thailand and abroad') },
-    ],
     // Counts from the current site until the full salon list is imported
     regionCounts: { BANGKOK_CENTRAL: 391, EAST: 24, WEST: 16, NORTH: 66, SOUTH: 89, NORTHEAST: 46 },
   };
@@ -452,7 +444,6 @@ async function seedMenu() {
       [L('การชำระเงิน', 'Payment'), '/contact/payment'],
       [L('นโยบายการจำหน่ายและชำระเงิน', 'Sales & payment policy'), '/policy'],
       [L('แจ้งปัญหา', 'Report an issue'), '/contact/report'],
-      [L('PP STUDIO', 'PP STUDIO'), '/pp-studio'],
     ]],
     [L('มุมสมาชิก', 'Members'), '/members', [[L('กิจกรรม', 'Activities'), '/members/activities'], [L('มีเดีย', 'Media'), '/members/media'], [L('บทความ', 'Articles'), '/members/articles']]],
   ];

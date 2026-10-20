@@ -254,7 +254,6 @@ interface SettingsRow {
   vipCustomer?: VipCustomerRow;
   growVision?: GrowVisionRow;
   timeline?: { year: string; text: L }[];
-  ppStudio?: { title: string; text: L }[];
 }
 
 export interface VipCustomerData {
@@ -556,10 +555,6 @@ export async function getProductsPageData(lang: Locale): Promise<ProductsPageDat
 
 export async function getTimeline(lang: Locale) {
   return ((await get<SettingsRow>("/settings")).timeline ?? []).map((x) => ({ year: x.year, text: t(x.text, lang) }));
-}
-
-export async function getPpStudioServices(lang: Locale) {
-  return ((await get<SettingsRow>("/settings")).ppStudio ?? []).map((x) => ({ title: x.title, text: t(x.text, lang) }));
 }
 
 export const getProvinces = async () => provinces;
