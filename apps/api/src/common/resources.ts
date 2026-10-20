@@ -83,7 +83,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     afterSave: (row) => {
       const images = (row.images as string[] | null) ?? [];
       const brands = ((row.brands as { name: string }[] | undefined) ?? []).map((b) => b.name);
-      const base = mediaFileBase(brands, (row.tags as string[] | null) ?? [], (row.publishedAt as Date | null) ?? new Date());
+      const base = mediaFileBase(brands, String(row.slug), (row.tags as string[] | null) ?? [], (row.publishedAt as Date | null) ?? new Date());
       const renamed = renameUploads(images, base);
       return renamed.some((u, i) => u !== images[i]) ? { images: renamed } : undefined;
     },

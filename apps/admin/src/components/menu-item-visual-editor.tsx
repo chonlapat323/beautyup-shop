@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useTransition } from "react";
 import type { Option } from "@/lib/fields";
+import { UploadBox } from "./image-upload";
 
 type L = { th?: string; en?: string };
 
@@ -118,14 +119,6 @@ export function MenuItemVisualEditor({
   const brandOptions = relations.brandId || [];
   const parentOptions = relations.parentId || [];
   const selectedBrand = brandOptions.find((b) => b.value === data.brandId);
-
-  const uploadFile = async (file: File): Promise<string> => {
-    const body = new FormData();
-    body.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body });
-    const json = await res.json();
-    return json.url || "";
-  };
 
   const handleSave = () => {
     setSaveStatus(null);
@@ -522,30 +515,17 @@ export function MenuItemVisualEditor({
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div className="sm:col-span-1">
-                            <div className="relative aspect-[16/9] w-full rounded-lg border border-dashed border-line bg-white overflow-hidden grid place-items-center group">
-                              {s.imageUrl ? (
-                                <img src={s.imageUrl} alt="" className="size-full object-cover" />
-                              ) : (
-                                <div className="text-center p-2 text-muted">
-                                  <ImagePlus className="size-5 mx-auto mb-1 opacity-60" />
-                                  <span className="text-[10px]">เลือกรูป 16:9</span>
-                                </div>
-                              )}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                                onChange={async (e) => {
-                                  const f = e.target.files?.[0];
-                                  if (f) {
-                                    const url = await uploadFile(f);
-                                    const arr = [...(data.slides || [])];
-                                    arr[idx].imageUrl = url;
-                                    setData({ ...data, slides: arr });
-                                  }
-                                }}
-                              />
-                            </div>
+                            <UploadBox
+                              value={s.imageUrl}
+                              fit="cover"
+                              className="aspect-[16/9] w-full"
+                              empty={<span className="p-2 text-center text-[10px]"><ImagePlus className="mx-auto mb-1 size-5 opacity-60" />ลากรูป 16:9 มาวาง หรือคลิก</span>}
+                              onChange={(url) => {
+                                const arr = [...(data.slides || [])];
+                                arr[idx].imageUrl = url;
+                                setData({ ...data, slides: arr });
+                              }}
+                            />
                             <input
                               type="text"
                               placeholder="หรือวางลิงก์รูป..."
@@ -758,30 +738,17 @@ export function MenuItemVisualEditor({
                             <span className="text-[11px] font-bold text-muted">รูปภาพและปุ่มกด</span>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
                               <div>
-                                <div className="relative aspect-[4/3] rounded-lg border border-dashed border-line bg-sand/30 overflow-hidden grid place-items-center">
-                                  {sec.imageUrl ? (
-                                    <img src={sec.imageUrl} alt="" className="size-full object-cover" />
-                                  ) : (
-                                    <div className="text-center p-2 text-muted">
-                                      <ImagePlus className="size-5 mx-auto mb-1 opacity-60" />
-                                      <span className="text-[10px]">เลือกรูปภาพ</span>
-                                    </div>
-                                  )}
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                    onChange={async (e) => {
-                                      const f = e.target.files?.[0];
-                                      if (f) {
-                                        const url = await uploadFile(f);
-                                        const arr = [...(data.sections || [])];
-                                        arr[idx].imageUrl = url;
-                                        setData({ ...data, sections: arr });
-                                      }
-                                    }}
-                                  />
-                                </div>
+                                <UploadBox
+                                  value={sec.imageUrl ?? ""}
+                                  fit="cover"
+                                  className="aspect-[4/3] w-full"
+                                  empty={<span className="p-2 text-center text-[10px]"><ImagePlus className="mx-auto mb-1 size-5 opacity-60" />ลากรูปมาวาง หรือคลิก</span>}
+                                  onChange={(url) => {
+                                    const arr = [...(data.sections || [])];
+                                    arr[idx].imageUrl = url;
+                                    setData({ ...data, sections: arr });
+                                  }}
+                                />
                                 <input
                                   type="text"
                                   placeholder="หรือวาง URL รูป..."
@@ -871,32 +838,19 @@ export function MenuItemVisualEditor({
 
                                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center">
                                   <div className="sm:col-span-1">
-                                    <div className="relative aspect-[3/4] rounded-lg border border-dashed border-line bg-sand/30 overflow-hidden grid place-items-center">
-                                      {card.imageUrl ? (
-                                        <img src={card.imageUrl} alt="" className="size-full object-cover" />
-                                      ) : (
-                                        <div className="text-center p-1 text-muted">
-                                          <ImagePlus className="size-4 mx-auto mb-0.5 opacity-60" />
-                                          <span className="text-[9px]">รูปการ์ด</span>
-                                        </div>
-                                      )}
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="absolute inset-0 opacity-0 cursor-pointer"
-                                        onChange={async (e) => {
-                                          const f = e.target.files?.[0];
-                                          if (f) {
-                                            const url = await uploadFile(f);
-                                            const arr = [...(data.sections || [])];
-                                            if (arr[idx].cards) {
-                                              arr[idx].cards[cIdx].imageUrl = url;
-                                              setData({ ...data, sections: arr });
-                                            }
-                                          }
-                                        }}
-                                      />
-                                    </div>
+                                    <UploadBox
+                                      value={card.imageUrl ?? ""}
+                                      fit="cover"
+                                      className="aspect-[3/4] w-full"
+                                      empty={<span className="p-1 text-center text-[9px]"><ImagePlus className="mx-auto mb-0.5 size-4 opacity-60" />รูปการ์ด</span>}
+                                      onChange={(url) => {
+                                        const arr = [...(data.sections || [])];
+                                        if (arr[idx].cards) {
+                                          arr[idx].cards[cIdx].imageUrl = url;
+                                          setData({ ...data, sections: arr });
+                                        }
+                                      }}
+                                    />
                                     <input
                                       type="text"
                                       placeholder="URL รูป..."

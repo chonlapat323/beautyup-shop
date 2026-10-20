@@ -14,9 +14,11 @@ export type Field =
   /** Pick any number of rows; the value is an array of ids */
   | { type: "relations"; name: string; label: string; resource: ResourceName; help?: string }
   | { type: "image" | "file"; name: string; label: string; help?: string }
+  /** Several images in one drag-and-drop box; the value is an array of URLs */
+  | { type: "images"; name: string; label: string; help?: string; max?: number }
   | { type: "tags"; name: string; label: string; help?: string; suggestions?: string[] }
   | { type: "socials"; name: string; label: string; help?: string }
-  | { type: "list"; name: string; label: string; item: Field[]; help?: string; max?: number };
+  | { type: "list"; name: string; label: string; item: Field[]; help?: string };
 
 export type Column = {
   name: string;
@@ -276,7 +278,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "localizedTextarea", name: "summary", label: "สรุปสั้น" },
       { type: "localizedTextarea", name: "content", label: "สิ่งที่จะได้เรียนรู้", help: "หนึ่งข้อต่อหนึ่งบรรทัด" },
       { type: "image", name: "coverUrl", label: "รูปปก" },
-      { type: "list", name: "images", label: "รูปภาพเพิ่มเติม", help: "แสดงเป็นแกลเลอรี่ในหน้าคอร์ส", item: [{ type: "image", name: "", label: "รูป" }], max: 5 },
+      { type: "images", name: "images", label: "รูปภาพเพิ่มเติม", help: "แสดงเป็นแกลเลอรี่ในหน้าคอร์ส", max: 5 },
       sortOrder,
       isActive,
     ],
@@ -324,11 +326,10 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "localizedTextarea", name: "excerpt", label: "สรุปสั้น", help: "ใช้เป็นคำอธิบายใน Google และตอนแชร์ลิงก์" },
       { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด" },
       {
-        type: "list",
+        type: "images",
         name: "images",
         label: "รูปภาพ",
-        help: "รูปแรกเป็นรูปปก · ตอนบันทึก ระบบตั้งชื่อไฟล์ใหม่เป็น แบรนด์_tag_วันที่_ลำดับ เช่น Fanola_shampoo_20261019_1.jpg",
-        item: [{ type: "image", name: "", label: "รูป" }],
+        help: "ตอนบันทึก ระบบตั้งชื่อไฟล์รูปใหม่ให้บอกว่าเป็นรูปของอะไร (แบรนด์-slug-tag-วันที่-ลำดับ) เช่น fanola-20-years-of-fanola-campaign-20261019-1.jpg ให้ Google และ AI อ่านเข้าใจ",
         max: 20,
       },
       { type: "url", name: "videoUrl", label: "ลิงก์วิดีโอ (YouTube)" },

@@ -251,7 +251,7 @@ model Media {
   title       Json
   excerpt     Json
   body        Json
-  /// Image URLs; uploads are renamed to Brand_tag_YYYYMMDD_n.ext on save
+  /// Image URLs; uploads are renamed to brand-slug-tag-yyyymmdd-n.ext on save
   images      Json           @default("[]")
   videoUrl    String         @default("")
   tags        String[]       @default([])

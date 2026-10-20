@@ -23,6 +23,7 @@ import {
   Sliders,
 } from "lucide-react";
 import React, { useState, useTransition, useRef } from "react";
+import { UploadBox } from "@/components/image-upload";
 
 type L = { th?: string; en?: string };
 
@@ -196,14 +197,6 @@ export function ProductsPageLiveEditor({
         setSaveStatus(res.message || "เกิดข้อผิดพลาดในการบันทึก");
       }
     });
-  };
-
-  const uploadFile = async (file: File): Promise<string> => {
-    const body = new FormData();
-    body.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body });
-    const json = await res.json();
-    return json.url || "";
   };
 
   return (
@@ -480,30 +473,17 @@ export function ProductsPageLiveEditor({
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {/* Image Preview & Upload */}
                         <div className="sm:col-span-1">
-                          <div className="relative aspect-[16/9] w-full rounded-lg border border-dashed border-line bg-white overflow-hidden grid place-items-center group">
-                            {s.imageUrl ? (
-                              <img src={s.imageUrl} alt="" className="size-full object-cover" />
-                            ) : (
-                              <div className="text-center p-2 text-muted">
-                                <ImagePlus className="size-5 mx-auto mb-1 opacity-60" />
-                                <span className="text-[10px]">เลือกรูป 16:9</span>
-                              </div>
-                            )}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                              onChange={async (e) => {
-                                const f = e.target.files?.[0];
-                                if (f) {
-                                  const url = await uploadFile(f);
-                                  const arr = [...data.slides];
-                                  arr[idx].imageUrl = url;
-                                  setData({ ...data, slides: arr });
-                                }
-                              }}
-                            />
-                          </div>
+                          <UploadBox
+                            value={s.imageUrl}
+                            fit="cover"
+                            className="aspect-[16/9] w-full"
+                            empty={<span className="p-2 text-center text-[10px]"><ImagePlus className="mx-auto mb-1 size-5 opacity-60" />ลากรูป 16:9 มาวาง หรือคลิก</span>}
+                            onChange={(url) => {
+                              const arr = [...data.slides];
+                              arr[idx].imageUrl = url;
+                              setData({ ...data, slides: arr });
+                            }}
+                          />
                           <input
                             type="text"
                             placeholder="หรือวางลิงก์รูป..."
@@ -704,30 +684,17 @@ export function ProductsPageLiveEditor({
                       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-start">
                         {/* Vertical Image */}
                         <div className="sm:col-span-1">
-                          <div className="relative aspect-[1/1.5] w-20 sm:w-full mx-auto rounded-[9999px] border border-dashed border-amber-400/60 bg-black/90 overflow-hidden grid place-items-center group">
-                            {item.imageUrl ? (
-                              <img src={item.imageUrl} alt="" className="size-full object-cover" />
-                            ) : (
-                              <div className="text-center p-1 text-amber-200/80">
-                                <ImagePlus className="size-4 mx-auto mb-0.5" />
-                                <span className="text-[9px] block">รูปแนวตั้ง</span>
-                              </div>
-                            )}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="absolute inset-0 opacity-0 cursor-pointer"
-                              onChange={async (e) => {
-                                const f = e.target.files?.[0];
-                                if (f) {
-                                  const url = await uploadFile(f);
-                                  const arr = [...data.ovalItems];
-                                  arr[idx].imageUrl = url;
-                                  setData({ ...data, ovalItems: arr });
-                                }
-                              }}
-                            />
-                          </div>
+                          <UploadBox
+                            value={item.imageUrl}
+                            fit="cover"
+                            className="mx-auto aspect-[1/1.5] w-20 !rounded-[9999px] sm:w-full"
+                            empty={<span className="p-1 text-center text-[9px]"><ImagePlus className="mx-auto mb-0.5 size-4" />รูปแนวตั้ง</span>}
+                            onChange={(url) => {
+                              const arr = [...data.ovalItems];
+                              arr[idx].imageUrl = url;
+                              setData({ ...data, ovalItems: arr });
+                            }}
+                          />
                           <input
                             type="text"
                             placeholder="ลิงก์รูปภาพ..."

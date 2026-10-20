@@ -1,9 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import { ArrowDown, ArrowUp, Check, FileText, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
-import { useId, useRef, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowUp, Check, Plus, Trash2, X } from "lucide-react";
+import { useId, useState, type ReactNode } from "react";
 import type { Field, Option } from "@/lib/fields";
+import { ImageGallery, UploadBox, uploadHint, type UploadKind } from "./image-upload";
 
 export type Locale = "th" | "en";
 export type Errors = Record<string, string[]>;
@@ -22,6 +23,7 @@ export function defaultValue(field: Field): Value {
     case "tags":
     case "list":
     case "relations":
+    case "images":
       return [];
     case "socials":
       return {};
@@ -265,6 +267,20 @@ export function FieldInput({
     case "file":
       return shell(<UploadInput id={id} kind={field.type} value={(value as string) ?? ""} onChange={onChange} />);
 
+    case "images":
+      return (
+        <fieldset>
+          <legend className="mb-2 text-sm font-medium">{field.label}</legend>
+          <ImageGallery value={(value as string[]) ?? []} onChange={onChange} max={field.max} />
+          {field.help && <p className="mt-1 text-xs text-muted">{field.help}</p>}
+          {own?.map((e) => (
+            <p key={e} className="mt-1 text-xs text-red-600">
+              {e}
+            </p>
+          ))}
+        </fieldset>
+      );
+
     case "list":
       return <ListInput field={field} value={(value as Value[]) ?? []} onChange={onChange} locale={locale} errors={errors} path={path} relations={relations} />;
   }
@@ -322,81 +338,19 @@ function TagsInput({ id, value, onChange, suggestions = [] }: { id: string; valu
 
 /* ---------------------------------------------------------------- uploads */
 
-function UploadInput({ id, kind, value, onChange }: { id: string; kind: "image" | "file"; value: string; onChange: (v: string) => void }) {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  const upload = async (file: File) => {
-    setBusy(true);
-    setError("");
-    try {
-      const body = new FormData();
-      body.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "อัปโหลดไม่สำเร็จ");
-      onChange(data.url);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "อัปโหลดไม่สำเร็จ");
-    } finally {
-      setBusy(false);
-      if (fileRef.current) fileRef.current.value = "";
-    }
-  };
-
+function UploadInput({ id, kind, value, onChange }: { id: string; kind: UploadKind; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-      <button
-        type="button"
-        onClick={() => fileRef.current?.click()}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          const f = e.dataTransfer.files[0];
-          if (f) upload(f);
-        }}
-        className="group relative grid size-28 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-line bg-mist text-muted transition-colors hover:border-brand hover:text-brand"
-      >
-        {busy ? (
-          <Loader2 className="size-6 animate-spin" />
-        ) : value && kind === "image" ? (
-          // eslint-disable-next-line @next/next/no-img-element -- arbitrary upload host
-          <img src={value} alt="" className="size-full object-contain" />
-        ) : value ? (
-          <FileText className="size-8" />
-        ) : (
-          <span className="flex flex-col items-center gap-1 text-xs">
-            <ImagePlus className="size-6" />
-            {kind === "image" ? "อัปโหลดรูป" : "อัปโหลด PDF"}
-          </span>
-        )}
-      </button>
+      <UploadBox value={value} onChange={onChange} kind={kind} className="size-28 shrink-0" />
       <div className="min-w-0 flex-1 space-y-2">
         <input id={id} className="input text-sm" value={value} placeholder="หรือวางลิงก์ https://..." onChange={(e) => onChange(e.target.value)} />
-        <div className="flex gap-2">
-          <button type="button" className="btn btn-secondary !min-h-8 !px-3 text-xs" onClick={() => fileRef.current?.click()} disabled={busy}>
-            เลือกไฟล์
+        {value && (
+          <button type="button" className="btn btn-danger !min-h-8 !px-3 text-xs" onClick={() => onChange("")}>
+            ลบ
           </button>
-          {value && (
-            <button type="button" className="btn btn-danger !min-h-8 !px-3 text-xs" onClick={() => onChange("")}>
-              ลบ
-            </button>
-          )}
-        </div>
-        {error && <p className="text-xs text-red-600">{error}</p>}
-        <p className="text-xs text-muted">{kind === "image" ? "JPG, PNG, WebP, AVIF ไม่เกิน 10MB" : "PDF ไม่เกิน 10MB"}</p>
+        )}
+        <p className="text-xs text-muted">คลิกหรือลากไฟล์มาวางที่กรอบ · {uploadHint(kind)}</p>
       </div>
-      <input
-        ref={fileRef}
-        type="file"
-        hidden
-        accept={kind === "image" ? "image/jpeg,image/png,image/webp,image/avif" : "application/pdf"}
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) upload(f);
-        }}
-      />
     </div>
   );
 }
@@ -470,13 +424,9 @@ function ListInput({
           </li>
         ))}
       </ol>
-      {field.max && value.length >= field.max ? (
-        <p className="mt-3 text-xs text-muted">ใส่ได้สูงสุด {field.max} รายการ</p>
-      ) : (
-        <button type="button" className="btn btn-secondary mt-3" onClick={() => onChange([...value, blank()])}>
-          <Plus className="size-4" /> เพิ่ม{field.label}
-        </button>
-      )}
+      <button type="button" className="btn btn-secondary mt-3" onClick={() => onChange([...value, blank()])}>
+        <Plus className="size-4" /> เพิ่ม{field.label}
+      </button>
     </fieldset>
   );
 }
