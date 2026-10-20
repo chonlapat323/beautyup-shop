@@ -239,6 +239,15 @@ export const en: Dictionary = {
     brands: "Related brands",
     tags: "Tags",
   },
+  share: {
+    title: "Share",
+    line: "Share on LINE",
+    copy: "Copy link",
+    copied: "Copied",
+    downloadQr: "Download QR",
+    scan: "Scan to open this page on your phone",
+    qrAlt: "QR code for this page",
+  },
   forum: {
     title: "Forum",
     lead: "Questions, techniques and product reviews from hairdressers and salons across Thailand.",

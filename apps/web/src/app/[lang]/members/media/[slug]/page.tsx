@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import QRCode from "qrcode";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
+import { SharePanel } from "@/components/share-panel";
 import { Media, VideoPlayer, formatDate } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
 import { getMedia, getMediaList } from "@/lib/data";
@@ -15,11 +17,18 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/members/me
   const { lang, dict } = await resolveLang(params);
   const media = await getMedia(lang, (await params).slug);
   if (!media) return { title: dict.members.notFound };
+  // LINE and Facebook build the link preview card from these tags
   return {
     title: media.title,
     description: media.excerpt,
     keywords: media.tags,
-    openGraph: { title: media.title, description: media.excerpt, images: media.images.slice(0, 1).map(absoluteUrl) },
+    openGraph: {
+      type: "article",
+      url: `${SITE_URL}/${lang}/members/media/${media.slug}`,
+      title: media.title,
+      description: media.excerpt,
+      images: media.images.slice(0, 1).map(absoluteUrl),
+    },
   };
 }
 
@@ -57,6 +66,8 @@ export default async function MediaPage({ params }: PageProps<"/[lang]/members/m
   const media = await getMedia(lang, (await params).slug);
   if (!media) notFound();
   const [cover, ...rest] = media.images;
+  const pageUrl = `${SITE_URL}/${lang}/members/media/${media.slug}`;
+  const qr = await QRCode.toDataURL(pageUrl, { width: 480, margin: 1 });
 
   return (
     <>
@@ -128,6 +139,8 @@ export default async function MediaPage({ params }: PageProps<"/[lang]/members/m
             )}
           </footer>
         )}
+
+        <SharePanel url={pageUrl} qr={qr} fileName={`${media.slug}-qr.png`} />
       </article>
     </>
   );
