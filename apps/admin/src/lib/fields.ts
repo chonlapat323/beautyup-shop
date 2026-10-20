@@ -11,6 +11,8 @@ export type Field =
   | { type: "boolean"; name: string; label: string; help?: string }
   | { type: "select"; name: string; label: string; options: Option[]; help?: string; required?: boolean }
   | { type: "relation"; name: string; label: string; resource: ResourceName; nullable?: boolean; help?: string; required?: boolean }
+  /** Pick any number of rows; the value is an array of ids */
+  | { type: "relations"; name: string; label: string; resource: ResourceName; help?: string }
   | { type: "image" | "file"; name: string; label: string; help?: string }
   | { type: "tags"; name: string; label: string; help?: string; suggestions?: string[] }
   | { type: "socials"; name: string; label: string; help?: string }
@@ -31,7 +33,7 @@ export const regionLabels: Record<string, string> = {
   SOUTH: "ภาคใต้",
   NORTHEAST: "ภาคตะวันออกเฉียงเหนือ",
 };
-export const postTypeLabels: Record<string, string> = { ARTICLE: "บทความ", ACTIVITY: "กิจกรรม", MEDIA: "มีเดีย" };
+export const postTypeLabels: Record<string, string> = { ARTICLE: "บทความ", ACTIVITY: "กิจกรรม" };
 export const departmentLabels: Record<string, string> = {
   SALES: "ฝ่ายขาย",
   TECHNICIAN: "เทคนิคเชี่ยน",
@@ -286,7 +288,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     ],
   },
   posts: {
-    title: "บทความ / กิจกรรม / มีเดีย",
+    title: "บทความ / กิจกรรม",
     noun: "โพสต์",
     titleField: "title",
     searchable: true,
@@ -305,6 +307,54 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { name: "title", label: "หัวข้อ", kind: "localized" },
       { name: "type", label: "หมวด", kind: "enum", enumLabels: postTypeLabels },
       { name: "publishedAt", label: "เผยแพร่", kind: "date" },
+    ],
+  },
+  media: {
+    title: "มีเดีย",
+    noun: "มีเดีย",
+    description: "รูปภาพและวิดีโอ แสดงที่มุมสมาชิก → มีเดีย พร้อมข้อมูลให้ Google และ AI ค้นหาเจอ",
+    titleField: "title",
+    searchable: true,
+    fields: [
+      { type: "localized", name: "title", label: "หัวข้อ", required: true },
+      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      { type: "relation", name: "categoryId", label: "หมวดหมู่มีเดีย", resource: "media-categories", nullable: true },
+      { type: "relations", name: "brandIds", label: "แบรนด์ที่เกี่ยวข้อง", resource: "brands", help: "เลือกได้หลายแบรนด์ ใช้ตั้งชื่อไฟล์รูปและบอก Google/AI ว่ามีเดียนี้เกี่ยวกับแบรนด์ไหน" },
+      { type: "tags", name: "tags", label: "Tag / คำค้นหา", help: "พิมพ์แล้วกด Enter เช่น shampoo, ทำสีผม, งานสัมมนา" },
+      { type: "localizedTextarea", name: "excerpt", label: "สรุปสั้น", help: "ใช้เป็นคำอธิบายใน Google และตอนแชร์ลิงก์" },
+      { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด" },
+      {
+        type: "list",
+        name: "images",
+        label: "รูปภาพ",
+        help: "รูปแรกเป็นรูปปก · ตอนบันทึก ระบบตั้งชื่อไฟล์ใหม่เป็น แบรนด์_tag_วันที่_ลำดับ เช่น Fanola_shampoo_20261019_1.jpg",
+        item: [{ type: "image", name: "", label: "รูป" }],
+        max: 20,
+      },
+      { type: "url", name: "videoUrl", label: "ลิงก์วิดีโอ (YouTube)" },
+      { type: "date", name: "publishedAt", label: "วันที่เผยแพร่", help: "เว้นว่าง = ฉบับร่าง (ยังไม่แสดงบนเว็บ)" },
+    ],
+    columns: [
+      { name: "images", label: "", kind: "image" },
+      { name: "title", label: "หัวข้อ", kind: "localized" },
+      { name: "brands", label: "แบรนด์", kind: "brand" },
+      { name: "publishedAt", label: "เผยแพร่", kind: "date" },
+    ],
+  },
+  "media-categories": {
+    title: "หมวดหมู่มีเดีย",
+    noun: "หมวดหมู่",
+    titleField: "name",
+    fields: [
+      { type: "localized", name: "name", label: "ชื่อหมวดหมู่", required: true },
+      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      sortOrder,
+      isActive,
+    ],
+    columns: [
+      { name: "name", label: "ชื่อหมวดหมู่", kind: "localized" },
+      { name: "slug", label: "Slug" },
+      activeCol,
     ],
   },
   pages: {

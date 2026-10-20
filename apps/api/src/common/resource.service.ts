@@ -3,7 +3,7 @@ import { resources, type ResourceName } from '@beautyup/types';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { parseOrThrow } from './zod-validation.pipe.js';
-import { resourceConfig, serialize } from './resources.js';
+import { resourceConfig, serialize, toPrismaData } from './resources.js';
 
 type Row = Record<string, unknown>;
 
@@ -30,7 +30,7 @@ export class ResourceService {
     const cfg = resourceConfig[name];
     const where: Row = { ...opts.where };
     if (opts.activeOnly && cfg.hasActive) where.isActive = true;
-    if (opts.activeOnly && name === 'posts') where.publishedAt = { not: null, lte: new Date() };
+    if (opts.activeOnly && cfg.publishedOnly) where.publishedAt = { not: null, lte: new Date() };
     if (opts.q && cfg.searchFields?.length) {
       where.OR = cfg.searchFields.map((f) => ({ [f]: { contains: opts.q, mode: 'insensitive' } }));
     }
@@ -50,8 +50,8 @@ export class ResourceService {
     if (!cfg.slugField) throw new NotFoundException();
     const where: Row = { [cfg.slugField]: slug };
     if (activeOnly && cfg.hasActive) where.isActive = true;
-    // Drafts and scheduled posts are not public
-    if (activeOnly && name === 'posts') where.publishedAt = { not: null, lte: new Date() };
+    // Drafts and scheduled items are not public
+    if (activeOnly && cfg.publishedOnly) where.publishedAt = { not: null, lte: new Date() };
     // A hidden brand hides its products too (same rule as the public product list)
     if (activeOnly && name === 'products') where.brand = { isActive: true };
     const row = await this.delegate(name).findFirst({ where, include: cfg.include });
@@ -60,15 +60,23 @@ export class ResourceService {
   }
 
   async create(name: ResourceName, body: unknown) {
-    const data = parseOrThrow(resources[name].schema, body);
-    return this.write(name, () => this.delegate(name).create({ data, include: resourceConfig[name].include }));
+    const cfg = resourceConfig[name];
+    const data = toPrismaData(parseOrThrow(resources[name].schema, body), cfg, 'create');
+    return this.write(name, async () => this.afterSave(name, await this.delegate(name).create({ data, include: cfg.include })));
   }
 
   async update(name: ResourceName, id: string, body: unknown) {
-    const data = parseOrThrow(resources[name].schema, body);
-    return this.write(name, () =>
-      this.delegate(name).update({ where: { id }, data, include: resourceConfig[name].include }),
+    const cfg = resourceConfig[name];
+    const data = toPrismaData(parseOrThrow(resources[name].schema, body), cfg, 'update');
+    return this.write(name, async () =>
+      this.afterSave(name, await this.delegate(name).update({ where: { id }, data, include: cfg.include })),
     );
+  }
+
+  private async afterSave(name: ResourceName, row: Row) {
+    const cfg = resourceConfig[name];
+    const patch = cfg.afterSave?.(row);
+    return patch ? this.delegate(name).update({ where: { id: row.id }, data: patch, include: cfg.include }) : row;
   }
 
   async remove(name: ResourceName, id: string) {

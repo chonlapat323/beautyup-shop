@@ -236,6 +236,8 @@ export const en: Dictionary = {
     types: { ARTICLE: "Articles", ACTIVITY: "Activities", MEDIA: "Media" },
     nav: "Member sections",
     notFound: "Content not found",
+    brands: "Related brands",
+    tags: "Tags",
   },
   login: {
     title: "Log in",

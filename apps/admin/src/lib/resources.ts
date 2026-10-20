@@ -18,7 +18,7 @@ export const getResource = (name: ResourceName, id: string) => api<Row>(`/admin/
 
 /** Options for every relation field used by these fields. */
 export async function loadRelations(fields: readonly Field[], excludeId?: string): Promise<Record<string, Option[]>> {
-  const targets = [...new Set(fields.flatMap((f) => (f.type === "relation" ? [f.resource] : [])))];
+  const targets = [...new Set(fields.flatMap((f) => (f.type === "relation" || f.type === "relations" ? [f.resource] : [])))];
   const entries = await Promise.all(
     targets.map(async (r) => {
       let rows = await listResource(r);

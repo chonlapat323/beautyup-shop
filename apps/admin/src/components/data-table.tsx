@@ -9,8 +9,10 @@ type Row = Record<string, unknown> & { id: string };
 function Cell({ col, row }: { col: Column; row: Row }) {
   const v = row[col.name];
   switch (col.kind) {
-    case "image":
-      return <TableImage src={v ? String(v) : undefined} />;
+    case "image": {
+      const src = Array.isArray(v) ? v[0] : v;
+      return <TableImage src={src ? String(src) : undefined} />;
+    }
     case "localized": {
       const l = (v ?? {}) as { th?: string; en?: string };
       return (
@@ -50,8 +52,10 @@ function Cell({ col, row }: { col: Column; row: Row }) {
       );
     case "enum":
       return <span className="whitespace-nowrap">{col.enumLabels?.[String(v)] ?? String(v ?? "")}</span>;
-    case "brand":
-      return <span>{(v as { name?: string } | null)?.name ?? "—"}</span>;
+    case "brand": {
+      const names = (Array.isArray(v) ? v : v ? [v] : []).map((b: { name?: string }) => b.name).filter(Boolean);
+      return <span className="block truncate">{names.length ? names.join(", ") : "—"}</span>;
+    }
     case "color":
       return <span className="inline-block size-6 rounded-full border border-line" style={{ background: String(v) }} />;
     default:

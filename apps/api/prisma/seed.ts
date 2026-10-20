@@ -26,6 +26,19 @@ async function main() {
   await seedMenu();
   for (const c of courses) await prisma.course.upsert({ where: { slug: c.slug }, create: c, update: {} });
   for (const p of posts) await prisma.post.upsert({ where: { slug: p.slug }, create: p, update: {} });
+  await prisma.media.upsert({
+    where: { slug: '20-years-of-fanola' },
+    create: {
+      slug: '20-years-of-fanola',
+      title: L('20 Years of Fanola - Official Campaign', '20 Years of Fanola - Official Campaign'),
+      excerpt: L('ฉลอง 20 ปีของ Fanola กับแคมเปญระดับโลก', "Celebrating Fanola's 20 years with a global campaign"),
+      body: L('เนื้อหาตัวอย่าง (mock) สำหรับมีเดีย', 'Sample content (mock) for media'),
+      tags: ['campaign'],
+      brands: { connect: [{ slug: 'fanola' }] },
+      publishedAt: new Date('2026-01-15'),
+    },
+    update: {},
+  });
   for (const p of pages) await prisma.page.upsert({ where: { slug: p.slug }, create: p, update: {} });
   console.log('Seed complete.');
 }
@@ -405,7 +418,6 @@ const courses = [
 const posts = [
   { slug: 'cosmoprof-bologna', type: 'ACTIVITY', title: L('ทีมบิวตี้อัพร่วมงาน COSMOPROF Bologna', 'BeautyUp at COSMOPROF Bologna'), excerpt: L('อัปเดตเทรนด์ผลิตภัณฑ์ความงามและเทคนิคใหม่จากงานแสดงสินค้าความงามที่ใหญ่ที่สุดในโลก', "Trends and new techniques from the world's largest beauty trade show"), body: L('เนื้อหาตัวอย่าง (mock) สำหรับกิจกรรม', 'Sample content (mock) for this activity'), publishedAt: new Date('2026-03-20') },
   { slug: 'fanola-workshop-lampang', type: 'ACTIVITY', title: L('Fanola Workshop ลำปาง', 'Fanola Workshop Lampang'), excerpt: L('เวิร์กช็อปเทคนิคการใช้ No Yellow สำหรับช่างผมภาคเหนือ', 'No Yellow techniques workshop for hairdressers in the North'), body: L('เนื้อหาตัวอย่าง (mock) สำหรับกิจกรรม', 'Sample content (mock) for this activity'), publishedAt: new Date('2026-05-02') },
-  { slug: '20-years-of-fanola', type: 'MEDIA', title: L('20 Years of Fanola - Official Campaign', '20 Years of Fanola - Official Campaign'), excerpt: L('ฉลอง 20 ปีของ Fanola กับแคมเปญระดับโลก', "Celebrating Fanola's 20 years with a global campaign"), body: L('เนื้อหาตัวอย่าง (mock) สำหรับมีเดีย', 'Sample content (mock) for media'), publishedAt: new Date('2026-01-15') },
   { slug: 'how-to-use-purple-shampoo', type: 'ARTICLE', title: L('แชมพูม่วงใช้อย่างไรให้ผมไม่เหลือง', 'How to use purple shampoo to stop brassy tones'), excerpt: L('เคล็ดลับการใช้ No Yellow Shampoo ให้ได้สีผมเทาหม่นสวยนานขึ้น', 'Tips for longer-lasting ash tones with No Yellow Shampoo'), body: lines(['แชมพูม่วงช่วยลบเม็ดสีเหลืองที่เกิดขึ้นหลังการฟอกผม', 'Purple shampoo neutralises the yellow tones left after bleaching'], ['ควรใช้ 1-2 ครั้งต่อสัปดาห์ และทิ้งไว้ 3-5 นาทีก่อนล้างออก', 'Use it 1-2 times a week and leave it on for 3-5 minutes before rinsing']), publishedAt: new Date('2026-06-10') },
   { slug: 'brazilian-straightening', type: 'ARTICLE', title: L('ยืดผมสไตล์บราซิลต่างจากยืดทั่วไปอย่างไร', 'How Brazilian straightening differs from regular straightening'), excerpt: L('ทำความรู้จักทรีตเมนต์ยืดผมจาก Sweet Professional', 'Meet the straightening treatments from Sweet Professional'), body: L('เนื้อหาตัวอย่าง (mock) สำหรับบทความ', 'Sample content (mock) for this article'), publishedAt: new Date('2026-07-22') },
 ] as const;

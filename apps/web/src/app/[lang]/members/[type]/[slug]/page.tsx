@@ -7,7 +7,8 @@ import { Media, formatDate } from "@/components/ui";
 import { getPost, getPosts } from "@/lib/data";
 
 export async function generateStaticParams({ params }: { params: { lang: string } }) {
-  const posts = await getPosts(params.lang as Locale);
+  // Media has its own route (members/media/[slug])
+  const posts = (await getPosts(params.lang as Locale)).filter((p) => p.type !== "MEDIA");
   return posts.map((p) => ({ type: postTypePath[p.type], slug: p.slug }));
 }
 

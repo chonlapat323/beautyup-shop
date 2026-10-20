@@ -5,6 +5,8 @@ import {
   Building2,
   Clapperboard,
   Crown,
+  Film,
+  FolderTree,
   GraduationCap,
   Images,
   Inbox,
@@ -63,6 +65,13 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     ],
   },
   {
+    title: "มีเดีย",
+    items: [
+      { href: "/r/media", label: "มีเดีย (รูป / วิดีโอ)", icon: Film },
+      { href: "/r/media-categories", label: "หมวดหมู่มีเดีย", icon: FolderTree },
+    ],
+  },
+  {
     title: "ลูกค้าและทีม",
     items: [
       { href: "/r/salons", label: "ซาลอนพันธมิตร", icon: Store },
@@ -84,7 +93,8 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
 export function Sidebar({ user, newInquiries }: { user: { name: string; email: string; role: string }; newInquiries: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  // Whole-segment match, so /r/media does not also light up on /r/media-categories
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
 
   const nav = (
     <nav aria-label="เมนูหลังบ้าน" className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin]" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>

@@ -147,7 +147,21 @@ export interface Course {
   images: string[];
 }
 
+/** MEDIA items come from the separate Media resource but list alongside posts. */
 export type PostType = "ARTICLE" | "ACTIVITY" | "MEDIA";
+
+export interface MediaItem {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string[];
+  images: string[];
+  videoUrl?: string;
+  tags: string[];
+  brands: { slug: string; name: string; type: BrandType }[];
+  category?: { slug: string; name: string };
+  publishedAt: string;
+}
 
 export interface Post {
   slug: string;

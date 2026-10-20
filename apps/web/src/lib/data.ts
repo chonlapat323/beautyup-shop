@@ -21,6 +21,7 @@ import type {
   CompanyInfo,
   Course,
   HeroSlide,
+  MediaItem,
   MenuItem,
   MenuSectionItem,
   MenuSlideItem,
@@ -868,14 +869,63 @@ const toPost = (p: PostRow, lang: Locale): Post => ({
   publishedAt: p.publishedAt ?? "",
 });
 
-export async function getPosts(lang: Locale, type?: PostType) {
-  return (await get<PostRow[]>(`/resources/posts${type ? `?type=${type}` : ""}`)).map((p) => toPost(p, lang));
+/** Articles and activities, plus media (as post-shaped cards) so lists and search cover everything. */
+export async function getPosts(lang: Locale, type?: PostType): Promise<Post[]> {
+  const mediaPosts = async () => (await getMediaList(lang)).map(mediaAsPost);
+  if (type === "MEDIA") return mediaPosts();
+  const posts = (await get<PostRow[]>(`/resources/posts${type ? `?type=${type}` : ""}`)).map((p) => toPost(p, lang));
+  if (type) return posts;
+  return [...posts, ...(await mediaPosts())].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
 export async function getPost(lang: Locale, slug: string) {
   // The API only returns published posts
   const row = await get<PostRow | null>(`/resources/posts/${encodeURIComponent(slug)}`);
   return row ? toPost(row, lang) : undefined;
+}
+
+/* ---------------------------------------------------------------- media */
+
+interface MediaRow {
+  slug: string; title: L; excerpt: L; body: L; images: string[] | null; videoUrl: string; tags: string[];
+  brands: { slug: string; name: string; type: Brand["type"] }[];
+  category: { slug: string; name: L } | null;
+  publishedAt: string | null;
+}
+
+const toMedia = (m: MediaRow, lang: Locale): MediaItem => ({
+  slug: m.slug,
+  title: t(m.title, lang),
+  excerpt: t(m.excerpt, lang),
+  body: lines(m.body, lang),
+  images: m.images ?? [],
+  videoUrl: s(m.videoUrl),
+  tags: m.tags ?? [],
+  brands: m.brands ?? [],
+  category: m.category ? { slug: m.category.slug, name: t(m.category.name, lang) } : undefined,
+  publishedAt: m.publishedAt ?? "",
+});
+
+const mediaAsPost = (m: MediaItem): Post => ({
+  slug: m.slug,
+  type: "MEDIA",
+  title: m.title,
+  excerpt: m.excerpt,
+  body: m.body,
+  coverUrl: m.images[0],
+  videoUrl: m.videoUrl,
+  publishedAt: m.publishedAt,
+});
+
+export async function getMediaList(lang: Locale, filter: { category?: string; brand?: string } = {}) {
+  const q = new URLSearchParams(Object.entries(filter).filter((e): e is [string, string] => !!e[1])).toString();
+  return (await get<MediaRow[]>(`/resources/media${q ? `?${q}` : ""}`)).map((m) => toMedia(m, lang));
+}
+
+export async function getMedia(lang: Locale, slug: string) {
+  // The API only returns published media
+  const row = await get<MediaRow | null>(`/resources/media/${encodeURIComponent(slug)}`);
+  return row ? toMedia(row, lang) : undefined;
 }
 
 /* ---------------------------------------------------------------- pages */

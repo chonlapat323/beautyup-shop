@@ -1,4 +1,7 @@
 import { resources, type ResourceName } from '@beautyup/types';
+import { mediaFileBase, renameUploads } from './media-files.js';
+
+type Row = Record<string, unknown>;
 
 /**
  * How each admin resource maps onto Prisma. Drives the generic admin CRUD
@@ -16,6 +19,12 @@ export interface ResourceConfig {
   include?: Record<string, unknown>;
   /** Fields matched by the admin search box */
   searchFields?: string[];
+  /** Only rows with publishedAt in the past are public (drafts and scheduled items are hidden) */
+  publishedOnly?: boolean;
+  /** Input id-array field -> many-to-many relation, e.g. brandIds -> brands */
+  manyToMany?: Record<string, string>;
+  /** Runs after a successful create/update; returns fields to write back, if any */
+  afterSave?: (row: Row) => Row | undefined;
 }
 
 const byOrder = [{ sortOrder: 'asc' as const }];
@@ -58,7 +67,28 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
   ambassadors: { model: 'ambassador', orderBy: byOrder, hasActive: true, searchFields: ['name'] },
   salons: { model: 'salon', orderBy: [{ region: 'asc' }, { province: 'asc' }, { name: 'asc' }], hasActive: true, searchFields: ['name', 'province'] },
   courses: { model: 'course', orderBy: byOrder, slugField: 'slug', hasActive: true, searchFields: ['slug'] },
-  posts: { model: 'post', orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }], slugField: 'slug', hasActive: false, searchFields: ['slug'] },
+  posts: { model: 'post', orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }], slugField: 'slug', hasActive: false, publishedOnly: true, searchFields: ['slug'] },
+  media: {
+    model: 'media',
+    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+    slugField: 'slug',
+    hasActive: false,
+    publishedOnly: true,
+    include: {
+      brands: { select: { id: true, slug: true, name: true, type: true }, orderBy: { sortOrder: 'asc' } },
+      category: { select: { id: true, slug: true, name: true } },
+    },
+    searchFields: ['slug'],
+    manyToMany: { brandIds: 'brands' },
+    afterSave: (row) => {
+      const images = (row.images as string[] | null) ?? [];
+      const brands = ((row.brands as { name: string }[] | undefined) ?? []).map((b) => b.name);
+      const base = mediaFileBase(brands, (row.tags as string[] | null) ?? [], (row.publishedAt as Date | null) ?? new Date());
+      const renamed = renameUploads(images, base);
+      return renamed.some((u, i) => u !== images[i]) ? { images: renamed } : undefined;
+    },
+  },
+  'media-categories': { model: 'mediaCategory', orderBy: byOrder, slugField: 'slug', hasActive: true, searchFields: ['slug'] },
   pages: { model: 'page', orderBy: [{ slug: 'asc' }], slugField: 'slug', hasActive: true },
   team: { model: 'teamMember', orderBy: [{ department: 'asc' }, ...byOrder], hasActive: true },
 };
@@ -67,12 +97,27 @@ export function isResource(name: string): name is ResourceName {
   return Object.hasOwn(resources, name);
 }
 
-/** Prisma Decimal -> number for the given fields. */
-export function serialize<T extends Record<string, unknown>>(row: T, cfg: ResourceConfig): T {
-  if (!cfg.decimals) return row;
-  const out: Record<string, unknown> = { ...row };
-  for (const f of cfg.decimals) {
+/** Prisma Decimal -> number, and many-to-many relations -> id arrays the admin form can edit. */
+export function serialize<T extends Row>(row: T, cfg: ResourceConfig): T {
+  if (!cfg.decimals && !cfg.manyToMany) return row;
+  const out: Row = { ...row };
+  for (const f of cfg.decimals ?? []) {
     if (out[f] != null) out[f] = Number(out[f]);
   }
+  for (const [key, rel] of Object.entries(cfg.manyToMany ?? {})) {
+    if (Array.isArray(out[rel])) out[key] = (out[rel] as { id: string }[]).map((r) => r.id);
+  }
   return out as T;
+}
+
+/** Turns id-array input fields into Prisma connect/set writes. */
+export function toPrismaData(data: Row, cfg: ResourceConfig, mode: 'create' | 'update'): Row {
+  if (!cfg.manyToMany) return data;
+  const out: Row = { ...data };
+  for (const [key, rel] of Object.entries(cfg.manyToMany)) {
+    const ids = (out[key] as string[] | undefined) ?? [];
+    delete out[key];
+    out[rel] = { [mode === 'create' ? 'connect' : 'set']: ids.map((id) => ({ id })) };
+  }
+  return out;
 }

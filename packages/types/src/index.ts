@@ -63,7 +63,7 @@ export type Socials = z.infer<typeof socials>;
 export const ROLES = ["ADMIN", "STAFF"] as const;
 export const BRAND_TYPES = ["SALON", "COUNTER"] as const;
 export const REGIONS = ["BANGKOK_CENTRAL", "EAST", "WEST", "NORTH", "SOUTH", "NORTHEAST"] as const;
-export const POST_TYPES = ["ARTICLE", "ACTIVITY", "MEDIA"] as const;
+export const POST_TYPES = ["ARTICLE", "ACTIVITY"] as const;
 export const DEPARTMENTS = ["SALES", "TECHNICIAN", "FINANCE", "LEGAL"] as const;
 export const MENU_LOCATIONS = ["header", "footer"] as const;
 export const INQUIRY_TYPES = ["CONTACT", "ORDER", "SALON", "COURSE", "ISSUE", "PP_STUDIO"] as const;
@@ -248,6 +248,27 @@ export const postInput = z.object({
   body: localizedOptional,
   coverUrl: url,
   videoUrl: url,
+  publishedAt: z.coerce.date().nullable().optional().default(null),
+});
+
+export const mediaCategoryInput = z.object({
+  slug,
+  name: localized,
+  sortOrder,
+  isActive,
+});
+
+export const mediaInput = z.object({
+  slug,
+  title: localized,
+  excerpt: localizedOptional,
+  /** One paragraph per line */
+  body: localizedOptional,
+  images: z.array(z.string().trim().min(1)).max(20).default([]),
+  videoUrl: url,
+  tags: z.array(z.string().trim().min(1)).default([]),
+  categoryId: z.string().nullable().optional().default(null),
+  brandIds: z.array(z.string()).default([]),
   publishedAt: z.coerce.date().nullable().optional().default(null),
 });
 
@@ -476,7 +497,9 @@ export const resources = {
   ambassadors: { schema: ambassadorInput, label: "แบรนด์แอมบาสเดอร์" },
   salons: { schema: salonInput, label: "ซาลอน" },
   courses: { schema: courseInput, label: "คอร์สเรียน" },
-  posts: { schema: postInput, label: "บทความ / กิจกรรม / มีเดีย" },
+  posts: { schema: postInput, label: "บทความ / กิจกรรม" },
+  media: { schema: mediaInput, label: "มีเดีย" },
+  "media-categories": { schema: mediaCategoryInput, label: "หมวดหมู่มีเดีย" },
   pages: { schema: pageInput, label: "หน้าเนื้อหา" },
   team: { schema: teamMemberInput, label: "ทีมงาน" },
 } as const;

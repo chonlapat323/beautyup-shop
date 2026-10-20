@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { ArrowDown, ArrowUp, FileText, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, FileText, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useId, useRef, useState, type ReactNode } from "react";
 import type { Field, Option } from "@/lib/fields";
 
@@ -21,6 +21,7 @@ export function defaultValue(field: Field): Value {
       return true;
     case "tags":
     case "list":
+    case "relations":
       return [];
     case "socials":
       return {};
@@ -173,6 +174,43 @@ export function FieldInput({
             </option>
           ))}
         </select>,
+      );
+    }
+
+    case "relations": {
+      const selected = (value as string[]) ?? [];
+      const options = relations[field.resource] ?? [];
+      const toggle = (v: string) => onChange(selected.includes(v) ? selected.filter((x) => x !== v) : [...selected, v]);
+      return (
+        <fieldset>
+          <legend className="mb-2 text-sm font-medium">{field.label}</legend>
+          <div className="flex flex-wrap gap-2">
+            {options.map((o) => {
+              const on = selected.includes(o.value);
+              return (
+                <button
+                  key={o.value}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => toggle(o.value)}
+                  className={clsx(
+                    "inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors",
+                    on ? "border-brand bg-brand-soft font-medium text-brand" : "border-line bg-white hover:border-muted",
+                  )}
+                >
+                  {on && <Check className="size-3.5" />}
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
+          {field.help && !own?.length && <p className="mt-1 text-xs text-muted">{field.help}</p>}
+          {own?.map((e) => (
+            <p key={e} className="mt-1 text-xs text-red-600">
+              {e}
+            </p>
+          ))}
+        </fieldset>
       );
     }
 

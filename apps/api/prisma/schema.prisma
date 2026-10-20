@@ -33,7 +33,6 @@ enum Region {
 enum PostType {
   ARTICLE
   ACTIVITY
-  MEDIA
 }
 
 enum Department {
@@ -110,6 +109,7 @@ model Brand {
   products    Product[]
   heroSlides  HeroSlide[]
   menuItems   MenuItem[]
+  media       Media[]
 }
 
 model Category {
@@ -234,6 +234,36 @@ model Post {
   updatedAt   DateTime  @updatedAt
 
   @@index([type, publishedAt])
+}
+
+model MediaCategory {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  name      Json
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+  media     Media[]
+}
+
+model Media {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       Json
+  excerpt     Json
+  body        Json
+  /// Image URLs; uploads are renamed to Brand_tag_YYYYMMDD_n.ext on save
+  images      Json           @default("[]")
+  videoUrl    String         @default("")
+  tags        String[]       @default([])
+  categoryId  String?
+  category    MediaCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brands      Brand[]
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([publishedAt])
+  @@index([categoryId])
 }
 
 /// Static content pages: policy, payment, about ...

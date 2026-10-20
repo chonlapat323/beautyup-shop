@@ -235,6 +235,8 @@ export const th = {
     types: { ARTICLE: "บทความ", ACTIVITY: "กิจกรรม", MEDIA: "มีเดีย" },
     nav: "หมวดมุมสมาชิก",
     notFound: "ไม่พบเนื้อหา",
+    brands: "แบรนด์ที่เกี่ยวข้อง",
+    tags: "แท็ก",
   },
   login: {
     title: "เข้าสู่ระบบ",

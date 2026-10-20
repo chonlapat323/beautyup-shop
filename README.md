@@ -141,8 +141,8 @@ another project or a port is taken, and names the process holding it.
 |---|---|
 | `.env` (root) | from `.env.server.example`: ports, `HOST=127.0.0.1`, `DB_PASSWORD` |
 | `apps/api/.env` | `DATABASE_URL=postgresql://beautyup:<DB_PASSWORD>@127.0.0.1:5435/beautyup_shop`, `JWT_SECRET`, `API_PUBLIC_URL=https://api.<domain>`, `CORS_ORIGINS=https://<domain>,https://admin.<domain>` |
-| `apps/web/.env.local` | `API_URL=http://127.0.0.1:4200/api`, `REVALIDATE_SECRET` |
-| `apps/admin/.env.local` | `API_URL=http://127.0.0.1:4200/api`, `WEB_URL=http://127.0.0.1:3200`, same `REVALIDATE_SECRET` |
+| `apps/web/.env.local` | `API_URL=http://127.0.0.1:4200/api`, `REVALIDATE_SECRET`, `SITE_URL=https://<domain>` |
+| `apps/admin/.env.local` | `API_URL=http://127.0.0.1:4200/api`, `WEB_URL=http://127.0.0.1:3200`, same `REVALIDATE_SECRET`, `SITE_URL=https://<domain>` |
 
 ### First deploy
 
