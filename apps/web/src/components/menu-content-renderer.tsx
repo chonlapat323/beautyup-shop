@@ -67,8 +67,8 @@ export function MenuContentRenderer({ menu, lang = "th" }: { menu: MenuItem; lan
                 )}
 
                 <div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
-                  style={{ gap: "1.75rem" }}
+                  className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))] lg:gap-8"
+                  style={{ gap: "1.75rem", "--cols": Math.min(sec.cards.length, 6) } as React.CSSProperties}
                 >
                 {sec.cards.map((card, cIdx) => (
                   <div

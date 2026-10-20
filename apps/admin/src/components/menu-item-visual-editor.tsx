@@ -1220,7 +1220,10 @@ export function MenuItemVisualEditor({
                               <p className="text-xs text-muted mt-0.5">{sec.description[previewLang]}</p>
                             )}
                           </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                          <div
+                            className="grid grid-cols-2 gap-2.5 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
+                            style={{ "--cols": Math.min((sec.cards || []).length || 1, 6) } as React.CSSProperties}
+                          >
                             {(sec.cards || []).map((c, cIdx) => (
                               <div
                                 key={cIdx}
