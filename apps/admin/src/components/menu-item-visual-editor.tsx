@@ -116,8 +116,9 @@ export function MenuItemVisualEditor({
   // Active slide index for preview
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
 
-  const brandOptions = relations.brandId || [];
-  const parentOptions = relations.parentId || [];
+  // loadRelations keys options by resource name, not by field name
+  const brandOptions = relations.brands || [];
+  const parentOptions = relations["menu-items"] || [];
   const selectedBrand = brandOptions.find((b) => b.value === data.brandId);
 
   const handleSave = () => {
