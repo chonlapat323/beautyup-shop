@@ -10,6 +10,9 @@ import { getMember } from "@/lib/member";
 import { SITE_URL } from "@/lib/site";
 import type { ForumTopic } from "@/lib/types";
 
+// Topics are created by visitors after deploy, so there is no list to prerender; render on request
+export const instant = false;
+
 export async function generateMetadata({ params }: PageProps<"/[lang]/forum/[id]">): Promise<Metadata> {
   const { lang, dict } = await resolveLang(params);
   const topic = await getForumTopic(lang, (await params).id);
