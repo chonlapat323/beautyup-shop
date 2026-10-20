@@ -19,13 +19,15 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     getGrowVision(lang),
   ]);
   const salonBrands = brands.filter((b) => b.type === "SALON");
+  const counterBrands = brands.filter((b) => b.type === "COUNTER");
   const brandNames = Object.fromEntries(brands.map((b) => [b.slug, b.name]));
   const salonCount = regions.reduce((sum, r) => sum + r.count, 0);
 
   return (
     <>
       <HomeHero slides={slides} salonCount={salonCount} />
-      <BrandMarquee brands={brands} label={h.ourBrands} />
+      <BrandMarquee brands={salonBrands} label={h.ourSalonBrands} marquee={false} />
+      <BrandMarquee brands={counterBrands} label={h.ourBrands} />
 
       {/* Featured Video */}
       <section className="section border-b border-line bg-mist/50">
@@ -83,6 +85,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <SectionHeading
             eyebrow={h.brandsEyebrow}
             title={h.brandsTitle}
+            description={h.brandsLead}
             action={<ArrowLink href="/products">{h.allProducts}</ArrowLink>}
           />
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -92,11 +95,12 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
                   href={`/products/${b.slug}`}
                   className="card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white"
                 >
-                  <div className="overflow-hidden">
+                  <div className="flex items-center justify-center overflow-hidden bg-white p-6 sm:p-8">
                     <Media
                       src={b.logoUrl}
                       label={b.name}
                       tone={i}
+                      fit="contain"
                       className="card-img aspect-[16/10] w-full"
                     />
                   </div>
@@ -119,6 +123,60 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
+      {/* Counter Brands */}
+      <section className="section">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow={h.counterBrandsEyebrow}
+            title={h.counterBrandsTitle}
+            description={h.counterBrandsLead}
+            action={<ArrowLink href="/shop">{h.allProducts}</ArrowLink>}
+          />
+          <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {counterBrands.slice(0, 3).map((b, i) => {
+              const cardClassName = "card-lift group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white";
+              const cardBody = (
+                <>
+                  <div className="flex items-center justify-center overflow-hidden bg-white p-6 sm:p-8">
+                    <Media
+                      src={b.logoUrl}
+                      label={b.name}
+                      tone={i}
+                      fit="contain"
+                      className="card-img aspect-[16/10] w-full"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <p className="text-xs tracking-wide text-muted uppercase">
+                      {b.country && dict.common.importedFrom(b.country)}
+                    </p>
+                    <p className="mt-2 font-display text-2xl">
+                      {b.nameTh} <span className="text-muted">({b.name})</span>
+                    </p>
+                    <p className="mt-3 flex-1 text-muted">{b.description}</p>
+                    <span className="mt-6 inline-flex items-center gap-2 font-medium group-hover:text-accent">
+                      {b.website ? h.visitWebsite : h.viewProducts} <span className="transition-transform group-hover:translate-x-1">→</span>
+                    </span>
+                  </div>
+                </>
+              );
+              return (
+                <li key={b.slug} data-reveal suppressHydrationWarning style={stagger(i)}>
+                  {b.website ? (
+                    <a href={b.website} target="_blank" rel="noopener noreferrer" className={cardClassName}>
+                      {cardBody}
+                    </a>
+                  ) : (
+                    <Link href="/shop" className={cardClassName}>
+                      {cardBody}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
 
       {/* Products */}
       <section className="section">

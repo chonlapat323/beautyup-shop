@@ -44,26 +44,40 @@ export function HomeHero({
   const current = slides[active];
 
   return (
-    <section className="relative overflow-hidden bg-sand/30">
-      <div className="container-page grid grid-cols-1 items-center gap-10 pt-8 pb-14 sm:pt-12 lg:grid-cols-12 lg:gap-12 lg:pt-10 lg:pb-16">
+    <section className="relative overflow-hidden bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)]">
+      <div className="container-page grid grid-cols-1 items-center gap-10 pt-8 pb-10 sm:pt-12 lg:grid-cols-12 lg:gap-12 lg:pt-10 lg:pb-12">
         {/* Copy: Left column */}
         <div className="text-center lg:col-span-6 lg:text-left">
-          <p className="eyebrow animate-fade-up !text-brand-pink">{h.eyebrow}</p>
-          <h1 className="mt-4 font-display text-[2.75rem] leading-[1.08] tracking-tight text-balance sm:text-6xl lg:text-7xl">
-            <span className="block animate-fade-up [animation-delay:80ms]">{h.headline1}</span>
-            <span className="block animate-fade-up [animation-delay:160ms]">
-              {h.headline2Before}
-              <span className="text-brand-pink">{h.headline2Accent}</span>
-              {h.headline2After}
-            </span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-md animate-fade-up text-lg text-pretty text-muted [animation-delay:240ms] lg:mx-0">
-            {h.lead}
+          <p className="eyebrow flex animate-fade-up items-center justify-center gap-2 lg:justify-start">
+            <span aria-hidden className="h-px w-6 bg-brand-pink" />
+            {h.eyebrow}
+          </p>
+          <div className="relative mt-4 inline-block">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10 sm:-inset-x-10 sm:-inset-y-10"
+            >
+              <div className="absolute top-1/2 left-1/2 size-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.25),transparent_70%)] blur-2xl sm:size-64" />
+              <div className="absolute top-0 left-0 size-24 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.2),transparent_70%)] blur-2xl sm:size-32" />
+              <div className="absolute right-0 bottom-0 size-28 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.18),transparent_70%)] blur-2xl sm:size-36" />
+            </div>
+            <h1 className="animate-fade-up font-display text-[3.25rem] leading-[1.05] tracking-tight text-balance sm:text-7xl lg:text-8xl [animation-delay:80ms]">
+              <span className="text-ink">Beauty </span>
+              <span className="text-brand-pink italic">Up</span>
+            </h1>
+          </div>
+          <p className="mt-4 animate-fade-up text-lg text-pretty text-muted [animation-delay:200ms]">
+            {h.subheadline}
           </p>
           <div className="mt-8 flex animate-fade-up flex-col items-center gap-3 [animation-delay:320ms] sm:flex-row sm:justify-center lg:items-stretch lg:justify-start">
-            <Link href="/products" className="btn btn-primary group/btn !px-7">
+            <Link
+              href="/products"
+              className="group/btn relative inline-flex min-h-12 items-center rounded-full bg-ink py-1 pr-1 pl-7 text-sm font-medium text-white transition-colors hover:bg-ink/90"
+            >
               {h.ctaProducts}
-              <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-1" />
+              <span className="ml-5 grid size-10 shrink-0 place-items-center rounded-full bg-brand-pink text-white transition-transform group-hover/btn:translate-x-0.5">
+                <ArrowRight className="size-4" />
+              </span>
             </Link>
             <Link href="/contact/salon-partner" className="btn btn-outline !px-7">
               {h.ctaSalon}

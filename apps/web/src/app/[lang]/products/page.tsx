@@ -91,12 +91,9 @@ export default async function ProductsPage({ params }: PageProps<"/[lang]/produc
             aria-labelledby={`brand-${b.slug}`}
             className="grid grid-cols-1 items-center gap-8 border-b border-line py-14 last:border-b-0 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20"
           >
-            <Media
-              src={b.logoUrl}
-              label={b.name}
-              tone={i}
-              className={`aspect-[4/3] w-full rounded-3xl ${i % 2 ? "md:order-2" : ""}`}
-            />
+            <div className={`flex items-center justify-center overflow-hidden rounded-3xl bg-white p-8 sm:p-12 ${i % 2 ? "md:order-2" : ""}`}>
+              <Media src={b.logoUrl} label={b.name} tone={i} fit="contain" className="aspect-[4/3] w-full" />
+            </div>
             <div>
               <p className="eyebrow">{b.country && dict.common.importedFrom(b.country)}</p>
               <h2 id={`brand-${b.slug}`} className="mt-3 font-display text-4xl sm:text-5xl">

@@ -22,16 +22,14 @@ export async function SiteFooter({
           <p className="mt-5 max-w-sm text-sm text-muted">
             {dict.tagline}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {["Fanola", "Nook", "Sweet"].map((b) => (
-              <span
-                key={b}
-                className="rounded-full border border-line bg-white px-3 py-1 text-xs text-muted transition-colors hover:border-ink hover:text-ink"
-              >
-                {b}
+          <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-display text-base tracking-wide text-muted">
+            {["Fanola", "Nook", "Sweet"].map((b, i) => (
+              <span key={b} className="inline-flex items-center gap-3">
+                {i > 0 && <span aria-hidden className="text-brand-pink/40">•</span>}
+                <span className="transition-colors hover:text-brand-pink">{b}</span>
               </span>
             ))}
-          </div>
+          </p>
         </div>
 
         <nav aria-label={dict.menu} className="lg:col-span-3">

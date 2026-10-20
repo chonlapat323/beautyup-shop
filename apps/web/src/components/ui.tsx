@@ -17,15 +17,18 @@ export function Media({
   alt = "",
   label,
   className,
+  fit = "cover",
 }: {
   src?: string;
   alt?: string;
   label?: string;
   tone?: number;
   className?: string;
+  /** "cover" (default) fills the frame and crops; "contain" fits the whole image, for logos/wordmarks that must not be cropped. */
+  fit?: "cover" | "contain";
 }) {
   if (src) {
-    return <LoadingImage src={src} alt={alt} className={clsx("object-cover", className)} />;
+    return <LoadingImage src={src} alt={alt} className={clsx(fit === "contain" ? "object-contain" : "object-cover", className)} />;
   }
   return <MockImagePlaceholder label={label || alt} className={className} />;
 }
@@ -77,9 +80,18 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="border-b border-line">
-      <div className="container-page animate-fade-up py-12 sm:py-16 lg:py-24">
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+    <section className="relative overflow-hidden border-b border-line/60 bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.15),transparent_70%)] blur-3xl"
+      />
+      <div className="container-page relative animate-fade-up py-12 sm:py-16 lg:py-24">
+        {eyebrow && (
+          <p className="eyebrow flex items-center gap-2">
+            <span aria-hidden className="h-px w-6 bg-brand-pink" />
+            {eyebrow}
+          </p>
+        )}
         <h1 className="mt-3 max-w-4xl font-display text-4xl leading-[1.15] text-balance sm:text-5xl lg:text-6xl">
           {title}
         </h1>
