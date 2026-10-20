@@ -11,6 +11,7 @@ import { ResourceService } from './common/resource.service.js';
 import { AdminMembersController, MemberGuard, MembersController } from './members/members.controller.js';
 import { MembersService } from './members/members.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { ForumController } from './public/forum.controller.js';
 import { PublicController } from './public/public.controller.js';
 
 @Module({
@@ -18,6 +19,7 @@ import { PublicController } from './public/public.controller.js';
   controllers: [
     AppController,
     PublicController,
+    ForumController,
     AdminResourcesController,
     AdminInquiriesController,
     AdminSettingsController,

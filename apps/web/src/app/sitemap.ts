@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { postTypePath } from "@/components/post-card";
-import { getBrands, getCourses, getMenu, getPosts, getProducts } from "@/lib/data";
+import { getBrands, getCourses, getForumSitemap, getMenu, getPosts, getProducts } from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
 import type { MenuItem } from "@/lib/types";
 
@@ -17,6 +17,7 @@ const STATIC_PATHS = [
   "/members/activities",
   "/members/articles",
   "/members/media",
+  "/forum",
   "/contact",
   "/contact/team",
   "/contact/salon-partner",
@@ -37,12 +38,13 @@ function entries(path: string, lastModified?: string): MetadataRoute.Sitemap {
 
 /** Built from live data, so anything published in the admin appears here after saving. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [menu, brands, products, courses, posts] = await Promise.all([
+  const [menu, brands, products, courses, posts, topics] = await Promise.all([
     getMenu("th"),
     getBrands("th", "SALON"),
     getProducts("th"),
     getCourses("th"),
     getPosts("th"),
+    getForumSitemap(),
   ]);
 
   const paths = new Map<string, string | undefined>(STATIC_PATHS.map((p) => [p, undefined]));
@@ -52,6 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const p of products) add(`/product/${p.slug}`);
   for (const c of courses) add(`/courses/${c.slug}`);
   for (const p of posts) add(`/members/${postTypePath[p.type]}/${p.slug}`, p.publishedAt || undefined);
+  for (const t of topics) add(`/forum/${t.id}`, t.lastActivityAt);
 
   // Custom pages created in the admin under "เมนูและหน้าเว็บ"
   const menuPaths = (items: MenuItem[]): string[] => items.flatMap((i) => [i.href, ...menuPaths(i.children ?? [])]);

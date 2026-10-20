@@ -89,6 +89,21 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     },
   },
   'media-categories': { model: 'mediaCategory', orderBy: byOrder, slugField: 'slug', hasActive: true, searchFields: ['slug'] },
+  'forum-categories': { model: 'forumCategory', orderBy: byOrder, slugField: 'slug', hasActive: true, searchFields: ['slug'] },
+  'forum-topics': {
+    model: 'forumTopic',
+    orderBy: [{ createdAt: 'desc' }],
+    hasActive: true,
+    include: { category: { select: { id: true, slug: true, name: true } } },
+    searchFields: ['title', 'authorName', 'body'],
+  },
+  'forum-replies': {
+    model: 'forumReply',
+    orderBy: [{ createdAt: 'desc' }],
+    hasActive: true,
+    include: { topic: { select: { id: true, title: true } } },
+    searchFields: ['body', 'authorName'],
+  },
   pages: { model: 'page', orderBy: [{ slug: 'asc' }], slugField: 'slug', hasActive: true },
   team: { model: 'teamMember', orderBy: [{ department: 'asc' }, ...byOrder], hasActive: true },
 };

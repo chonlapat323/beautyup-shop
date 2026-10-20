@@ -20,6 +20,9 @@ import type {
   Brand,
   CompanyInfo,
   Course,
+  ForumCategory,
+  ForumTopic,
+  ForumTopicSummary,
   HeroSlide,
   MediaItem,
   MenuItem,
@@ -927,6 +930,59 @@ export async function getMedia(lang: Locale, slug: string) {
   const row = await get<MediaRow | null>(`/resources/media/${encodeURIComponent(slug)}`);
   return row ? toMedia(row, lang) : undefined;
 }
+
+/* ---------------------------------------------------------------- forum */
+
+/** Visitors post often, so forum data has its own tag (refreshed after each post) and a short life. */
+export const FORUM_TAG = "forum";
+
+async function getForum<T>(path: string): Promise<T> {
+  "use cache";
+  cacheTag(CONTENT_TAG, FORUM_TAG);
+  cacheLife("minutes");
+  const res = await fetchApi(`${API_URL}/public/forum${path}`);
+  if (res.status === 404) return null as T;
+  if (!res.ok) throw new Error(`API /forum${path} responded ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
+interface ForumCategoryRow { slug: string; name: L; description: L; _count: { topics: number } }
+type ForumCategoryRef = { slug: string; name: L };
+interface ForumTopicRow {
+  id: string; title: string; excerpt: string; authorName: string; images: string[]; isPinned: boolean; isLocked: boolean;
+  replyCount: number; createdAt: string; lastActivityAt: string; category: ForumCategoryRef;
+}
+interface ForumTopicDetailRow extends Omit<ForumTopicRow, "excerpt" | "replyCount"> {
+  body: string;
+  replies: { id: string; body: string; authorName: string; images: string[]; createdAt: string }[];
+}
+
+const forumCategoryRef = (c: ForumCategoryRef, lang: Locale) => ({ slug: c.slug, name: t(c.name, lang) });
+
+export async function getForumCategories(lang: Locale): Promise<ForumCategory[]> {
+  return (await getForum<ForumCategoryRow[]>("/categories")).map((c) => ({
+    slug: c.slug,
+    name: t(c.name, lang),
+    description: t(c.description, lang),
+    topicCount: c._count.topics,
+  }));
+}
+
+export async function getForumTopics(lang: Locale, opts: { category?: string; page?: number } = {}) {
+  const q = new URLSearchParams();
+  if (opts.category) q.set("category", opts.category);
+  if (opts.page && opts.page > 1) q.set("page", String(opts.page));
+  const res = await getForum<{ items: ForumTopicRow[]; total: number; page: number; pageSize: number }>(`/topics${q.size ? `?${q}` : ""}`);
+  const items: ForumTopicSummary[] = res.items.map(({ images, category, ...t }) => ({ ...t, image: images[0], category: forumCategoryRef(category, lang) }));
+  return { items, total: res.total, page: res.page, pages: Math.max(1, Math.ceil(res.total / res.pageSize)) };
+}
+
+export async function getForumTopic(lang: Locale, id: string): Promise<ForumTopic | undefined> {
+  const row = await getForum<ForumTopicDetailRow | null>(`/topics/${encodeURIComponent(id)}`);
+  return row ? { ...row, category: forumCategoryRef(row.category, lang) } : undefined;
+}
+
+export const getForumSitemap = () => getForum<{ id: string; lastActivityAt: string }[]>("/sitemap");
 
 /* ---------------------------------------------------------------- pages */
 

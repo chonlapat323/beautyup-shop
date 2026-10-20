@@ -328,3 +328,48 @@ model Member {
   createdAt    DateTime  @default(now())
   lastLoginAt  DateTime?
 }
+
+model ForumCategory {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        Json
+  description Json
+  sortOrder   Int          @default(0)
+  isActive    Boolean      @default(true)
+  topics      ForumTopic[]
+}
+
+/// Anyone may post (name only); posts show at once and staff hide them with isActive=false.
+model ForumTopic {
+  id             String        @id @default(cuid())
+  categoryId     String
+  category       ForumCategory @relation(fields: [categoryId], references: [id])
+  title          String
+  body           String
+  authorName     String
+  images         String[]      @default([])
+  isPinned       Boolean       @default(false)
+  isLocked       Boolean       @default(false)
+  isActive       Boolean       @default(true)
+  /// Bumped by new replies; topics are listed by latest activity
+  lastActivityAt DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  replies        ForumReply[]
+
+  @@index([categoryId, isActive])
+  @@index([isPinned, lastActivityAt])
+}
+
+model ForumReply {
+  id         String     @id @default(cuid())
+  topicId    String
+  topic      ForumTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  body       String
+  authorName String
+  images     String[]   @default([])
+  isActive   Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+
+  @@index([topicId, createdAt])
+}

@@ -26,6 +26,15 @@ async function main() {
   await seedMenu();
   for (const c of courses) await prisma.course.upsert({ where: { slug: c.slug }, create: c, update: {} });
   for (const p of posts) await prisma.post.upsert({ where: { slug: p.slug }, create: p, update: {} });
+  const forumCategories = [
+    ['hair-problems', 'ถาม-ตอบ ปัญหาเส้นผม', 'Hair problems Q&A'],
+    ['color-techniques', 'เทคนิคทำสี ฟอก ยืด ดัด', 'Color, bleach and perm techniques'],
+    ['product-reviews', 'รีวิวผลิตภัณฑ์', 'Product reviews'],
+    ['general', 'พูดคุยทั่วไป', 'General discussion'],
+  ];
+  for (const [i, [slug, th, en]] of forumCategories.entries()) {
+    await prisma.forumCategory.upsert({ where: { slug }, create: { slug, name: L(th, en), description: L('', ''), sortOrder: i }, update: {} });
+  }
   await prisma.media.upsert({
     where: { slug: '20-years-of-fanola' },
     create: {

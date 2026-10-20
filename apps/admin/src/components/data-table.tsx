@@ -53,7 +53,10 @@ function Cell({ col, row }: { col: Column; row: Row }) {
     case "enum":
       return <span className="whitespace-nowrap">{col.enumLabels?.[String(v)] ?? String(v ?? "")}</span>;
     case "brand": {
-      const names = (Array.isArray(v) ? v : v ? [v] : []).map((b: { name?: string }) => b.name).filter(Boolean);
+      // A related row's display name: brand name, localized category name, or topic title
+      type Ref = { name?: string | { th?: string; en?: string }; title?: string };
+      const label = (r: Ref) => (typeof r.name === "object" ? r.name?.th || r.name?.en : r.name) || r.title;
+      const names = (Array.isArray(v) ? v : v ? [v] : []).map((r: Ref) => label(r)).filter(Boolean);
       return <span className="block truncate">{names.length ? names.join(", ") : "—"}</span>;
     }
     case "color":

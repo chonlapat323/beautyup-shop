@@ -174,6 +174,41 @@ export interface Post {
   publishedAt: string;
 }
 
+export interface ForumCategory {
+  slug: string;
+  name: string;
+  description: string;
+  topicCount: number;
+}
+
+export interface ForumTopicSummary {
+  id: string;
+  title: string;
+  excerpt: string;
+  authorName: string;
+  image?: string;
+  isPinned: boolean;
+  isLocked: boolean;
+  replyCount: number;
+  createdAt: string;
+  lastActivityAt: string;
+  category: { slug: string; name: string };
+}
+
+export interface ForumReply {
+  id: string;
+  body: string;
+  authorName: string;
+  images: string[];
+  createdAt: string;
+}
+
+export interface ForumTopic extends Omit<ForumTopicSummary, "excerpt" | "image" | "replyCount"> {
+  body: string;
+  images: string[];
+  replies: ForumReply[];
+}
+
 export interface TeamMember {
   name: string;
   position: string;

@@ -272,6 +272,49 @@ export const mediaInput = z.object({
   publishedAt: z.coerce.date().nullable().optional().default(null),
 });
 
+/* ----------------------------------------------------------------------------
+ * Forum: anyone may post with just a name
+ * ------------------------------------------------------------------------- */
+
+export const FORUM_LIMITS = { title: 150, body: 5000, name: 60, images: 4, imageBytes: 5 * 1024 * 1024 } as const;
+
+const forumTitle = z.string().trim().min(3, "หัวข้อสั้นเกินไป").max(FORUM_LIMITS.title, `หัวข้อยาวได้ไม่เกิน ${FORUM_LIMITS.title} ตัวอักษร`);
+const forumBody = z.string().trim().min(2, "กรุณาพิมพ์ข้อความ").max(FORUM_LIMITS.body, `ข้อความยาวได้ไม่เกิน ${FORUM_LIMITS.body} ตัวอักษร`);
+const forumName = z.string().trim().min(1, "กรุณาใส่ชื่อ").max(FORUM_LIMITS.name, `ชื่อยาวได้ไม่เกิน ${FORUM_LIMITS.name} ตัวอักษร`);
+const forumImages = z.array(z.string().trim().min(1)).max(FORUM_LIMITS.images).default([]);
+
+export const forumCategoryInput = z.object({
+  slug,
+  name: localized,
+  description: localizedOptional,
+  sortOrder,
+  isActive,
+});
+
+/** Admin edits (moderation) */
+export const forumTopicInput = z.object({
+  categoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่"),
+  title: forumTitle,
+  body: forumBody,
+  authorName: forumName,
+  images: forumImages,
+  isPinned: z.boolean().default(false),
+  isLocked: z.boolean().default(false),
+  isActive,
+});
+
+export const forumReplyInput = z.object({
+  topicId: z.string().min(1, "กรุณาเลือกกระทู้"),
+  body: forumBody,
+  authorName: forumName,
+  images: forumImages,
+  isActive,
+});
+
+/** Visitors posting on the website (images arrive as files) */
+export const forumNewTopic = z.object({ category: slug, title: forumTitle, body: forumBody, authorName: forumName });
+export const forumNewReply = z.object({ body: forumBody, authorName: forumName });
+
 export const pageInput = z.object({
   slug,
   title: localized,
@@ -500,6 +543,9 @@ export const resources = {
   posts: { schema: postInput, label: "บทความ / กิจกรรม" },
   media: { schema: mediaInput, label: "มีเดีย" },
   "media-categories": { schema: mediaCategoryInput, label: "หมวดหมู่มีเดีย" },
+  "forum-categories": { schema: forumCategoryInput, label: "หมวดหมู่ฟอรั่ม" },
+  "forum-topics": { schema: forumTopicInput, label: "กระทู้" },
+  "forum-replies": { schema: forumReplyInput, label: "ความคิดเห็น" },
   pages: { schema: pageInput, label: "หน้าเนื้อหา" },
   team: { schema: teamMemberInput, label: "ทีมงาน" },
 } as const;

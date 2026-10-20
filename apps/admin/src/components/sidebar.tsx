@@ -15,6 +15,8 @@ import {
   LogOut,
   Menu,
   MenuSquare,
+  MessageCircle,
+  MessagesSquare,
   Newspaper,
   Package,
   Settings,
@@ -69,6 +71,14 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     items: [
       { href: "/r/media", label: "มีเดีย (รูป / วิดีโอ)", icon: Film },
       { href: "/r/media-categories", label: "หมวดหมู่มีเดีย", icon: FolderTree },
+    ],
+  },
+  {
+    title: "ฟอรั่ม",
+    items: [
+      { href: "/r/forum-topics", label: "กระทู้", icon: MessagesSquare },
+      { href: "/r/forum-replies", label: "ความคิดเห็น", icon: MessageCircle },
+      { href: "/r/forum-categories", label: "หมวดหมู่ฟอรั่ม", icon: FolderTree },
     ],
   },
   {
