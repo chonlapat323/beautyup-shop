@@ -7,7 +7,7 @@ import "server-only";
 import { t, type Localized } from "@beautyup/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDictionary, type Locale } from "@/i18n";
-import { getStaticBrandCategories, type BrandCategory } from "./brand-categories";
+import type { BrandCategory } from "./brand-categories";
 import { provinces } from "./provinces";
 import {
   PROVINCE_EN,
@@ -574,7 +574,6 @@ export async function getCurrentYear() {
 interface BrandRow extends Row {
   slug: string; type: "SALON" | "COUNTER"; name: string; localName: L; country: L; tagline: L; description: L;
   highlights: L[]; features?: { title: L; description?: L; href?: string; imageUrl?: string }[];
-  series?: { name: string; href?: string }[];
   logoUrl: string; website: string; catalogUrl: string; socials: Brand["socials"];
 }
 
@@ -592,10 +591,6 @@ const toBrand = (b: BrandRow, lang: Locale): Brand => ({
     description: s(t(f.description, lang)),
     href: f.href || "",
     imageUrl: s(f.imageUrl),
-  })),
-  series: (b.series ?? []).map((sr) => ({
-    name: sr.name,
-    href: sr.href || "",
   })),
   logoUrl: s(b.logoUrl),
   website: s(b.website),
@@ -617,7 +612,7 @@ export async function getBrand(lang: Locale, slug: string) {
 
 interface ProductRow extends Row {
   slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; imageUrl: string;
-  category?: string; series?: string;
+  categoryRel?: { slug: string; name: L } | null;
   brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
 }
 
@@ -647,8 +642,7 @@ const toProduct = (p: ProductRow, lang: Locale): Product => ({
   brandSlug: p.brand.slug,
   brandName: p.brand.name,
   brandType: p.brand.type,
-  category: p.category || undefined,
-  series: p.series || undefined,
+  collection: p.categoryRel ? { slug: p.categoryRel.slug, name: t(p.categoryRel.name, lang) } : undefined,
   price: p.price,
   salePrice: p.salePrice ?? undefined,
   badges: p.badges,
@@ -684,28 +678,21 @@ interface CategoryRow extends Row {
 }
 
 export async function getBrandCategories(lang: Locale, brandSlug: string): Promise<BrandCategory[]> {
-  try {
-    const rows = await get<CategoryRow[]>(`/resources/categories?brand=${encodeURIComponent(brandSlug)}`);
-    if (rows && rows.length > 0) {
-      return rows.map((c) => ({
-        slug: c.slug,
-        brandSlug: c.brand?.slug || brandSlug,
-        name: t(c.name, lang),
-        subtitle: c.subtitle ? t(c.subtitle, lang) : undefined,
-        description: c.description ? t(c.description, lang) : undefined,
-        highlights: c.highlights ? t(c.highlights, lang) : undefined,
-        imageUrl: s(c.imageUrl) || "",
-        bannerUrl: s(c.bannerUrl) || "",
-        accentColor: c.accentColor || "#d6297f",
-        subCategories: c.subCategories
-          ? c.subCategories.map((sc) => (lang === "en" ? sc.en || sc.th : sc.th || sc.en))
-          : undefined,
-      }));
-    }
-  } catch {
-    // API offline during build or unreachable
-  }
-  return getStaticBrandCategories(brandSlug, lang);
+  const rows = await get<CategoryRow[]>(`/resources/categories?brand=${encodeURIComponent(brandSlug)}`);
+  return rows.map((c) => ({
+    slug: c.slug,
+    brandSlug: c.brand?.slug || brandSlug,
+    name: t(c.name, lang),
+    subtitle: c.subtitle ? t(c.subtitle, lang) : undefined,
+    description: c.description ? t(c.description, lang) : undefined,
+    highlights: c.highlights ? t(c.highlights, lang) : undefined,
+    imageUrl: s(c.imageUrl) || "",
+    bannerUrl: s(c.bannerUrl) || "",
+    accentColor: c.accentColor || "#d6297f",
+    subCategories: c.subCategories
+      ? c.subCategories.map((sc) => (lang === "en" ? sc.en || sc.th : sc.th || sc.en))
+      : undefined,
+  }));
 }
 
 /* ----------------------------------------------------------------- home */

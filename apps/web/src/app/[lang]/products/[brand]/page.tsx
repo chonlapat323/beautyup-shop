@@ -31,12 +31,12 @@ export default async function BrandPage({
   params,
   searchParams,
 }: PageProps<"/[lang]/products/[brand]"> & {
-  searchParams?: Promise<{ category?: string; series?: string }>;
+  searchParams?: Promise<{ category?: string }>;
 }) {
   const { lang, dict } = await resolveLang(params);
   const { brand: slug } = await params;
   const sp = await searchParams;
-  const selectedCatSlug = sp?.category || sp?.series;
+  const selectedCatSlug = sp?.category;
 
   const [brand, menuItem, growVision, categories] = await Promise.all([
     getBrand(lang, slug),
@@ -57,80 +57,12 @@ export default async function BrandPage({
 
   const products = showProducts ? await getProducts(lang, { brandSlug: targetBrandSlug }) : [];
 
-  // Group products by category (e.g. "Fanola Salon", "Fanola Hair Care")
-  const categoryOrder: string[] = [];
-  const categorized: Record<string, typeof products> = {};
-  const uncategorized: typeof products = [];
-
-  for (const p of products) {
-    const cat = p.category?.trim();
-    if (cat) {
-      if (!categorized[cat]) {
-        categorized[cat] = [];
-        categoryOrder.push(cat);
-      }
-      categorized[cat].push(p);
-    } else {
-      uncategorized.push(p);
-    }
-  }
-
-  const hasCategories = categoryOrder.length > 0;
+  // List products under their collection headings, in the collections' order
+  const groups = categories
+    .map((c) => ({ title: c.name, items: products.filter((p) => p.collection?.slug === c.slug) }))
+    .filter((g) => g.items.length > 0);
+  const ungrouped = products.filter((p) => !groups.some((g) => g.items.includes(p)));
   const hasMenuContent = menuItem && ((menuItem.sections && menuItem.sections.length > 0) || (menuItem.slides && menuItem.slides.length > 0));
-
-  // Filter products for category if selected
-  const categoryProducts = currentCategory
-    ? products.filter((p) => {
-        const name = p.name.toLowerCase();
-        const pSlug = p.slug.toLowerCase();
-        const cat = (p.category || "").toLowerCase();
-        const ser = (p.series || "").toLowerCase();
-        const target = currentCategory.slug.toLowerCase();
-
-        if (target === "no-yellow-care") {
-          return (
-            pSlug.includes("no-yellow") ||
-            pSlug.includes("shield-protective") ||
-            pSlug.includes("2-phase-potion") ||
-            pSlug.includes("thermo-protective") ||
-            pSlug.includes("incredible-foam") ||
-            name.includes("no yellow") ||
-            name.includes("โนเยลโล")
-          );
-        }
-        if (target === "no-orange") {
-          return (
-            pSlug.includes("no-orange") ||
-            pSlug.includes("blue-foam") ||
-            name.includes("no orange") ||
-            name.includes("โนออเรนจ์")
-          );
-        }
-        if (target === "no-red") {
-          return (
-            pSlug.includes("no-red") ||
-            name.includes("no red") ||
-            name.includes("โนเรด")
-          );
-        }
-        if (target === "nutri-care") {
-          return (
-            pSlug.includes("nutri-care") ||
-            name.includes("nutri") ||
-            name.includes("นูทริ")
-          );
-        }
-        return (
-          pSlug.includes(target) ||
-          name.includes(target) ||
-          cat.includes(target) ||
-          ser.includes(target)
-        );
-      })
-    : [];
-
-  const displayCategoryProducts =
-    categoryProducts.length > 0 ? categoryProducts : products;
 
   // Render dedicated Category View when a category is selected (Image 2 reference)
   if (currentCategory) {
@@ -144,7 +76,7 @@ export default async function BrandPage({
         />
         <CategoryProductsView
           category={currentCategory}
-          products={displayCategoryProducts}
+          products={products.filter((p) => p.collection?.slug === currentCategory.slug)}
           brandName={brand.name}
           brandSlug={slug}
         />
@@ -263,26 +195,6 @@ export default async function BrandPage({
         )
       )}
 
-      {/* 2. Series Quick Links / Pills */}
-      {brand.series && brand.series.length > 0 && (
-        <section className="border-b border-line bg-white py-6">
-          <div className="container-page flex flex-wrap items-center gap-2 sm:gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted mr-2">
-              {lang === "th" ? "ซีรีส์ยอดนิยม:" : "Popular Series:"}
-            </span>
-            {brand.series.map((item, idx) => (
-              <Link
-                key={idx}
-                href={item.href || "#products"}
-                className="btn-pill relative hover:z-10 !text-xs sm:!text-sm"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Visual Category Grid (Pinterest Moodboard - Below Specialized Collections) */}
       {categories.length > 0 && (
         <CategoryGrid
@@ -291,8 +203,8 @@ export default async function BrandPage({
           brandName={brand.name}
           title={
             lang === "th"
-              ? "คอลเลกชันและหมวดหมู่ผลิตภัณฑ์"
-              : "Product Collections & Categories"
+              ? "คอลเลกชันผลิตภัณฑ์"
+              : "Product Collections"
           }
           eyebrow="Collections"
         />
@@ -309,52 +221,14 @@ export default async function BrandPage({
                 {dict.common.contactToOrder}
               </Link>
             </div>
-          ) : hasCategories ? (
+          ) : groups.length > 0 ? (
             <div className="space-y-16 md:space-y-24">
-              {categoryOrder.map((catName) => {
-                const catItems = categorized[catName] || [];
-                return (
-                  <div key={catName} className="scroll-mt-24">
-                    <SectionHeading
-                      eyebrow={brand.name}
-                      title={catName}
-                      description={
-                        dict.common.itemsCount
-                          ? dict.common.itemsCount(catItems.length)
-                          : lang === "th"
-                            ? `${catItems.length} รายการ`
-                            : `${catItems.length} items`
-                      }
-                    />
-                    <ProductGrid
-                      products={catItems}
-                      brandNames={{ [brand.slug]: brand.name }}
-                      showFilter={false}
-                    />
-                  </div>
-                );
-              })}
-
-              {uncategorized.length > 0 && (
-                <div className="scroll-mt-24 pt-8 border-t border-line">
-                  <SectionHeading
-                    eyebrow={brand.name}
-                    title={lang === "th" ? "ผลิตภัณฑ์เพิ่มเติม" : "Additional Products"}
-                    description={
-                      dict.common.itemsCount
-                        ? dict.common.itemsCount(uncategorized.length)
-                        : lang === "th"
-                          ? `${uncategorized.length} รายการ`
-                          : `${uncategorized.length} items`
-                    }
-                  />
-                  <ProductGrid
-                    products={uncategorized}
-                    brandNames={{ [brand.slug]: brand.name }}
-                    showFilter={false}
-                  />
+              {[...groups, ...(ungrouped.length ? [{ title: lang === "th" ? "ผลิตภัณฑ์เพิ่มเติม" : "Additional Products", items: ungrouped }] : [])].map((g) => (
+                <div key={g.title} className="scroll-mt-24">
+                  <SectionHeading eyebrow={brand.name} title={g.title} description={dict.common.itemsCount(g.items.length)} />
+                  <ProductGrid products={g.items} brandNames={{ [brand.slug]: brand.name }} showFilter={false} />
                 </div>
-              )}
+              ))}
             </div>
           ) : (
             <div>

@@ -47,7 +47,7 @@ export function CategoryProductsView({
   const [showAll, setShowAll] = useState<boolean>(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // Filter products by selected subcategory keyword in name or category
+  // Filter products by the selected subcategory keyword in their name
   const filteredProducts = useMemo(() => {
     if (activeSub === "ทั้งหมด" || activeSub === "All") {
       return products;
@@ -55,13 +55,11 @@ export function CategoryProductsView({
     const q = activeSub.toLowerCase();
     return products.filter((p) => {
       const name = p.name.toLowerCase();
-      const cat = (p.category || "").toLowerCase();
-      const series = (p.series || "").toLowerCase();
       if (q.includes("แชมพู") || q.includes("shampoo")) {
-        return name.includes("shampoo") || name.includes("แชมพู") || cat.includes("shampoo");
+        return name.includes("shampoo") || name.includes("แชมพู");
       }
       if (q.includes("มาส์ค") || q.includes("mask") || q.includes("ทรีทเมนท์") || q.includes("treatment")) {
-        return name.includes("mask") || name.includes("มาส์ค") || name.includes("treatment") || cat.includes("mask");
+        return name.includes("mask") || name.includes("มาส์ค") || name.includes("treatment");
       }
       if (q.includes("ลีฟอิน") || q.includes("leave in")) {
         return name.includes("leave in") || name.includes("ลีฟอิน") || name.includes("potion");
@@ -72,7 +70,7 @@ export function CategoryProductsView({
       if (q.includes("สเปรย์") || q.includes("spray") || q.includes("mist")) {
         return name.includes("mist") || name.includes("สเปรย์") || name.includes("cream");
       }
-      return name.includes(q) || cat.includes(q) || series.includes(q);
+      return name.includes(q);
     });
   }, [products, activeSub]);
 

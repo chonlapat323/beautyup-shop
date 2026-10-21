@@ -48,9 +48,9 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
     title: "แบรนด์และสินค้า",
     items: [
-      { href: "/r/brands", label: "แบรนด์ (Brands)", icon: Tags },
-      { href: "/r/categories", label: "หมวดหมู่ (Categories)", icon: Layers },
-      { href: "/r/products", label: "สินค้า (Products)", icon: Package },
+      { href: "/r/brands", label: "แบรนด์", icon: Tags },
+      { href: "/r/categories", label: "คอลเลกชัน", icon: Layers },
+      { href: "/r/products", label: "สินค้า", icon: Package },
     ],
   },
   {

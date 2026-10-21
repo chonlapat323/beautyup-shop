@@ -246,15 +246,6 @@ async function seedBrands() {
           imageUrl: '',
         },
       ],
-      series: [
-        { name: 'No yellow Care', href: '#fanola-salon' },
-        { name: 'After colour', href: '#fanola-salon' },
-        { name: 'Frequent', href: '#fanola-salon' },
-        { name: 'Scrub Gel', href: '#fanola-salon' },
-        { name: 'Rebalance Purity', href: '#fanola-salon' },
-        { name: 'NO MORE', href: '#fanola-salon' },
-        { name: 'FIBER FIX', href: '#fanola-salon' },
-      ],
       logoUrl: '/brands/fanola.png',
       website: 'https://www.fanola.it/fa_en/',
       socials: { youtube: 'https://www.youtube.com/@FanolaOfficial' },
@@ -306,29 +297,29 @@ async function seedBrands() {
 /* ------------------------------------------------------------- products */
 
 async function seedProducts(brand: Record<string, string>) {
-  const items: [string, string, string, string, number, number | null, string[]][] = [
-    ['skin-caviar-harmony-lextrait', "Skin Caviar Harmony L'Extrait", 'la-prairie', '', 30500, 21350, ['New']],
-    ['la-prairie-caviar-set', 'La Prairie Caviar Set', 'la-prairie', '', 78000, 54600, []],
-    ['no-red-set-100ml', 'No Red Set 100ml (Shampoo & Mask)', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1080, null, ['New']],
-    ['no-red-mask-350ml', 'No Red Mask 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1390, null, ['New']],
-    ['no-red-mask-1000ml', 'No Red Mask 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 2590, null, ['New']],
-    ['no-red-shampoo-350ml', 'No Red Shampoo 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1168, null, ['New']],
-    ['blue-foam-no-orange-250ml', 'Blue Foam No Orange 250ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 2250, null, ['New']],
-    ['no-orange-mask-350ml', 'No Orange Mask 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1390, null, ['Hot']],
-    ['no-orange-mask-1000ml', 'No Orange Mask 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 2590, null, ['Hot']],
-    ['no-orange-shampoo-350ml', 'No Orange Shampoo 350ml', 'fanola', 'Fanola Hair Care (ผลิตภัณฑ์การดูแลผม)', 1168, null, ['Hot']],
-    ['no-orange-shampoo-1000ml', 'No Orange Shampoo 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1950, null, ['Hot']],
-    ['nutri-care-shampoo-1000ml', 'Nutri Care Shampoo 1,000ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1850, null, ['Soft hair']],
-    ['shield-protective-mist-100ml', 'Shield Protective Mist 100ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1590, null, []],
-    ['2-phase-potion-leave-in-150ml', '2-Phase Potion Leave In Conditioner 150ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1290, null, []],
-    ['thermo-protective-cream-150ml', 'Thermo-Protective Cream 150ml', 'fanola', 'Fanola Salon (ผลิตภัณฑ์บริการในซาลอน)', 1650, null, []],
+  const items: [string, string, string, number, number | null, string[]][] = [
+    ['skin-caviar-harmony-lextrait', "Skin Caviar Harmony L'Extrait", 'la-prairie', 30500, 21350, ['New']],
+    ['la-prairie-caviar-set', 'La Prairie Caviar Set', 'la-prairie', 78000, 54600, []],
+    ['no-red-set-100ml', 'No Red Set 100ml (Shampoo & Mask)', 'fanola', 1080, null, ['New']],
+    ['no-red-mask-350ml', 'No Red Mask 350ml', 'fanola', 1390, null, ['New']],
+    ['no-red-mask-1000ml', 'No Red Mask 1,000ml', 'fanola', 2590, null, ['New']],
+    ['no-red-shampoo-350ml', 'No Red Shampoo 350ml', 'fanola', 1168, null, ['New']],
+    ['blue-foam-no-orange-250ml', 'Blue Foam No Orange 250ml', 'fanola', 2250, null, ['New']],
+    ['no-orange-mask-350ml', 'No Orange Mask 350ml', 'fanola', 1390, null, ['Hot']],
+    ['no-orange-mask-1000ml', 'No Orange Mask 1,000ml', 'fanola', 2590, null, ['Hot']],
+    ['no-orange-shampoo-350ml', 'No Orange Shampoo 350ml', 'fanola', 1168, null, ['Hot']],
+    ['no-orange-shampoo-1000ml', 'No Orange Shampoo 1,000ml', 'fanola', 1950, null, ['Hot']],
+    ['nutri-care-shampoo-1000ml', 'Nutri Care Shampoo 1,000ml', 'fanola', 1850, null, ['Soft hair']],
+    ['shield-protective-mist-100ml', 'Shield Protective Mist 100ml', 'fanola', 1590, null, []],
+    ['2-phase-potion-leave-in-150ml', '2-Phase Potion Leave In Conditioner 150ml', 'fanola', 1290, null, []],
+    ['thermo-protective-cream-150ml', 'Thermo-Protective Cream 150ml', 'fanola', 1650, null, []],
   ];
   let order = 0;
-  for (const [slug, name, b, category, price, salePrice, badges] of items) {
+  for (const [slug, name, b, price, salePrice, badges] of items) {
     await prisma.product.upsert({
       where: { slug },
-      create: { slug, name: L(name, name), description: L('', ''), brandId: brand[b], category, price, salePrice, badges, sortOrder: order++ },
-      update: { category, price },
+      create: { slug, name: L(name, name), description: L('', ''), brandId: brand[b], price, salePrice, badges, sortOrder: order++ },
+      update: { price },
     });
   }
 }

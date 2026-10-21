@@ -24,7 +24,9 @@ export async function loadRelations(fields: readonly Field[], excludeId?: string
       let rows = await listResource(r);
       // Menus only nest one level: offer top-level items as parents, never itself
       if (r === "menu-items") rows = rows.filter((x) => !x.parentId && x.id !== excludeId);
-      return [r, rows.map((x) => ({ value: x.id, label: rowTitle(r, x) }))] as const;
+      // Collections of every brand share one list, so name the brand too
+      const label = (x: Row) => (r === "categories" && x.brand ? `${(x.brand as { name: string }).name} · ${rowTitle(r, x)}` : rowTitle(r, x));
+      return [r, rows.map((x) => ({ value: x.id, label: label(x) }))] as const;
     }),
   );
   return Object.fromEntries(entries);

@@ -56,11 +56,6 @@ export interface BrandFeatureItem {
   imageUrl?: string;
 }
 
-export interface BrandSeriesItem {
-  name: string;
-  href?: string;
-}
-
 export interface Brand {
   slug: string;
   type: BrandType;
@@ -71,7 +66,6 @@ export interface Brand {
   description?: string;
   highlights?: string[];
   features?: BrandFeatureItem[];
-  series?: BrandSeriesItem[];
   logoUrl?: string;
   website?: string;
   catalogUrl?: string;
@@ -84,8 +78,8 @@ export interface Product {
   brandSlug: string;
   brandName?: string;
   brandType?: BrandType;
-  category?: string;
-  series?: string;
+  /** The collection the product belongs to (Admin → คอลเลกชัน) */
+  collection?: { slug: string; name: string };
   price: number;
   salePrice?: number;
   badges?: string[];

@@ -68,13 +68,7 @@ export class PublicController {
         ...(brand && { slug: brand }),
         ...(BRAND_TYPES.includes(brandType as BrandType) && { type: brandType }),
       };
-      if (category) {
-        where.OR = [
-          { categoryRel: { slug: category } },
-          { category: category },
-          { series: category },
-        ];
-      }
+      if (category) where.categoryRel = { slug: category };
     }
     return this.resources.list(name, { activeOnly: true, where });
   }

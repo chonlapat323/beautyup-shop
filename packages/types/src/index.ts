@@ -130,12 +130,6 @@ export const brandFeatureSchema = z.object({
 });
 export type BrandFeature = z.infer<typeof brandFeatureSchema>;
 
-export const brandSeriesSchema = z.object({
-  name: z.string().trim().min(1),
-  href: z.string().trim().default(""),
-});
-export type BrandSeries = z.infer<typeof brandSeriesSchema>;
-
 export const brandInput = z.object({
   slug,
   type: z.enum(BRAND_TYPES),
@@ -147,7 +141,6 @@ export const brandInput = z.object({
   highlights: z.array(localized).default([]),
   /** Hidden in the admin (cards are edited per menu); left untouched when not sent */
   features: z.array(brandFeatureSchema).optional(),
-  series: z.array(brandSeriesSchema).default([]),
   logoUrl: url,
   website: url,
   catalogUrl: url,
@@ -178,9 +171,8 @@ export const productInput = z.object({
   name: localized,
   description: localizedOptional,
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+  /** The product's collection (e.g. No Yellow Care); the only grouping a product has */
   categoryId: z.string().nullable().optional().default(null),
-  category: z.string().trim().optional().default(""),
-  series: z.string().trim().optional().default(""),
   price: z.coerce.number().nonnegative(),
   salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),
   badges: z.array(z.string().trim().min(1)).default([]),
