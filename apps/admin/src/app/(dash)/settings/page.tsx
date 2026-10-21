@@ -1,5 +1,4 @@
-import { SETTING_KEYS, type SettingKey } from "@beautyup/types";
-import { ExternalLink } from "lucide-react";
+import type { SettingKey } from "@beautyup/types";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -7,53 +6,27 @@ import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
 import { api } from "@/lib/api";
-import { settingsUi } from "@/lib/fields";
+import { PAGE_SETTINGS, SITE_SETTING_KEYS, settingsUi } from "@/lib/fields";
 import { saveSetting } from "./actions";
 
 export const metadata: Metadata = { title: "ตั้งค่าเว็บไซต์" };
 
+type SiteKey = (typeof SITE_SETTING_KEYS)[number];
+
 export default async function SettingsPage({ searchParams }: PageProps<"/settings">) {
   const { tab } = await searchParams;
-  if (tab === "productsPage" || tab === "salonHairSlides") {
-    redirect("/r/menu-items/cmv50zm1w001ppg9icrnd2vsi");
-  }
-  const key: SettingKey = SETTING_KEYS.includes(tab as SettingKey) ? (tab as SettingKey) : "company";
+  // Page content has its own menu entries now; keep old links working
+  if (typeof tab === "string" && Object.hasOwn(PAGE_SETTINGS, tab)) redirect(`/content/${tab}`);
+  const key: SiteKey = (SITE_SETTING_KEYS as readonly string[]).includes(tab as string) ? (tab as SiteKey) : "company";
   const all = await api<Record<string, unknown>>("/admin/settings");
   const ui = settingsUi[key];
-  const value = all[key];
-  const rootList = ui.fields[0]?.name === "";
-  const initial = rootList ? { "": value ?? [] } : ((value as Record<string, unknown>) ?? {});
-
-  const webUrl = process.env.WEB_URL || "http://localhost:3000";
-  const previewHref =
-    key === "about" || key === "aboutSlides"
-      ? `${webUrl}/about`
-      : key === "vipCustomer"
-        ? `${webUrl}/customers`
-        : key === "salonHairSlides"
-          ? `${webUrl}/products`
-          : undefined;
+  const initial = (all[key] as Record<string, unknown>) ?? {};
 
   return (
     <>
-      <PageHeader
-        title={ui.title}
-        description={"description" in ui ? ui.description : "ข้อมูลที่แสดงหลายจุดบนเว็บ"}
-        actions={
-          previewHref ? (
-            <a
-              href={previewHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary inline-flex items-center gap-1.5"
-            >
-              <ExternalLink className="size-4" /> ดูหน้าเว็บจริง (Preview)
-            </a>
-          ) : undefined
-        }
-      />
+      <PageHeader title="ตั้งค่าเว็บไซต์" description="ข้อมูลที่ใช้หลายหน้าบนเว็บ เนื้อหาของแต่ละหน้าแก้ได้ที่เมนูของหน้านั้น" />
       <nav aria-label="หมวดการตั้งค่า" className="-mx-4 mb-6 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0">
-        {SETTING_KEYS.map((k) => (
+        {SITE_SETTING_KEYS.map((k) => (
           <Link
             key={k}
             href={`/settings?tab=${k}`}
@@ -68,7 +41,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
         ))}
       </nav>
       {"description" in ui && <p className="mb-4 text-sm text-muted">{ui.description}</p>}
-      <ResourceForm key={key} fields={ui.fields} initial={initial} onSave={saveSetting.bind(null, key)} />
+      <ResourceForm key={key} fields={ui.fields} initial={initial} onSave={saveSetting.bind(null, key satisfies SettingKey)} />
     </>
   );
 }

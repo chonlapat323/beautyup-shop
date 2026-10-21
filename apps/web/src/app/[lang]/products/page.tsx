@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Link from "@/components/link";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { MenuContentRenderer } from "@/components/menu-content-renderer";
-import { MenuSlideCarousel } from "@/components/menu-slide-carousel";
-import { OvalHairCarousel } from "@/components/oval-hair-carousel";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getGrowVision, getHeroSlides, getMenuItemByHref, getProductsPageData } from "@/lib/data";
+import { getBrands, getGrowVision, getMenuItemByHref } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/products">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.products.title };
@@ -15,74 +13,19 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/products">
 export default async function ProductsPage({ params }: PageProps<"/[lang]/products">) {
   const { lang, dict } = await resolveLang(params);
   const d = dict.products;
-  const [brands, growVision, menuItem, heroSlides, pageData] = await Promise.all([
+  // Everything above the brand list is edited on the "/products" menu item (Admin → เมนูและหน้าเว็บ)
+  const [brands, growVision, menuItem] = await Promise.all([
     getBrands(lang, "SALON"),
     getGrowVision(lang),
     getMenuItemByHref(lang, "/products"),
-    getHeroSlides(lang),
-    getProductsPageData(lang),
   ]);
-
-  // Priority: 1) menuItem slides, 2) productsPage slides, 3) fallback to heroSlides
-  const slides = (menuItem?.slides && menuItem.slides.length > 0)
-    ? menuItem.slides
-    : (pageData.slides && pageData.slides.length > 0)
-      ? pageData.slides
-      : heroSlides
-          .filter((s) => s.href.includes("/products") || s.brandSlug.includes("fanola") || s.brandSlug.includes("nook") || s.brandSlug.includes("sweet") || s.brandSlug.includes("slide"))
-          .slice(0, 5)
-          .map((s) => ({
-            imageUrl: s.imageUrl || "",
-            title: s.product,
-            caption: s.caption,
-            href: s.href,
-          }));
-
-  const customSections = (menuItem?.sections && menuItem.sections.length > 0)
-    ? menuItem.sections
-    : pageData.sections;
-
-  const hasCustomOval = customSections?.some((s) => s.layout === "oval-carousel");
+  const hero = menuItem?.hero;
 
   return (
     <>
-      {pageData.showHero && (
-        <PageHero
-          eyebrow={pageData.heroEyebrow || d.eyebrow || "Professional Salon Products"}
-          title={pageData.heroHeadline || d.headline}
-          description={pageData.heroLead || d.lead}
-        />
-      )}
+      <PageHero eyebrow={hero?.eyebrow || d.eyebrow} title={hero?.headline || d.headline} description={hero?.lead || d.lead} />
 
-      {/* 1. Banner Slides Carousel */}
-      {pageData.showBannerSlides && slides.length > 0 && (
-        <section className="border-b border-line/60 bg-gradient-to-b from-sand/20 via-white to-sand/10">
-          <MenuSlideCarousel slides={slides} />
-        </section>
-      )}
-
-      {/* 2. Oval Hair Showcase Carousel */}
-      {pageData.showOvalCarousel && !hasCustomOval && (
-        <OvalHairCarousel
-          title={pageData.ovalTitle || (lang === "en" ? "Professional Salon Products" : "ผลิตภัณฑ์ซาลอนมืออาชีพ")}
-          eyebrow={pageData.ovalDescription}
-          cards={pageData.ovalItems && pageData.ovalItems.length > 0 ? pageData.ovalItems : undefined}
-          lang={lang}
-        />
-      )}
-
-      {/* 3. Custom Menu Content Sections if configured in Admin */}
-      {customSections && customSections.length > 0 && (
-        <MenuContentRenderer
-          menu={{
-            label: menuItem?.label || "",
-            href: "/products",
-            sections: customSections,
-            slides: [],
-          }}
-          lang={lang}
-        />
-      )}
+      {menuItem && <MenuContentRenderer menu={menuItem} lang={lang} />}
 
       <div className="container-page">
         {brands.map((b, i) => (

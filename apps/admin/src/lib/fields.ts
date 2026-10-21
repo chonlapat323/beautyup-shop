@@ -1,4 +1,4 @@
-import { DEPARTMENTS, MENU_LOCATIONS, POST_TYPES, REGIONS, type ResourceName } from "@beautyup/types";
+import { DEPARTMENTS, MENU_LOCATIONS, POST_TYPES, REGIONS, type ResourceName, type SettingKey } from "@beautyup/types";
 
 /* Field definitions drive the generic admin form and list for every resource. */
 
@@ -530,7 +530,7 @@ export const settingsUi = {
   },
   about: {
     title: "หน้าเกี่ยวกับเรา",
-    description: "จัดการข้อความ รูปภาพผู้ก่อตั้ง และข้อมูลในหน้าเกี่ยวกับเรา (สไลด์จัดการแยกที่เมนู สไลด์หน้าเกี่ยวกับเรา)",
+    description: "ข้อความ รูปผู้ก่อตั้ง และปุ่มลิงก์ในหน้าเกี่ยวกับเรา",
     fields: [
       { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)" },
       { type: "localized", name: "headline", label: "ชื่อหัวเรื่องหลัก (Headline)", required: true },
@@ -554,7 +554,7 @@ export const settingsUi = {
   },
   aboutSlides: {
     title: "สไลด์หน้าเกี่ยวกับเรา",
-    description: "จัดการภาพสไลด์สำหรับแสดงในหน้าเกี่ยวกับเราโดยเฉพาะ (แยกต่างหากจากสไลด์หน้าแรก ไม่ปนกัน)",
+    description: "ภาพสไลด์ในหน้าเกี่ยวกับเรา (แยกจากสไลด์หน้าแรก)",
     fields: [
       {
         type: "list",
@@ -567,45 +567,6 @@ export const settingsUi = {
         ],
       },
     ] satisfies Field[],
-  },
-  salonHairSlides: {
-    title: "จัดการหน้าสินค้าซาลอน (/products)",
-    description: "รวมศูนย์จัดการหน้า /products ครบทุกส่วนในที่เดียว: 1) ข้อความหัวเรื่องบนสุด 2) ภาพสไลด์แบนเนอร์ใหญ่ 16:9 3) สไลด์ทรงผมแคปซูลวงรี",
-    fields: [
-      { type: "localized", name: "heroEyebrow", label: "1.1 ข้อความหัวเรื่องเล็กบนสุด (Hero Eyebrow)", help: "ค่าเริ่มต้น: Professional Salon Products" },
-      { type: "localized", name: "heroHeadline", label: "1.2 ชื่อหัวเรื่องหลักบนสุด (Hero Headline)", help: "ค่าเริ่มต้น: เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ" },
-      { type: "localizedTextarea", name: "heroLead", label: "1.3 ข้อความบรรยายบนสุด (Hero Lead)", help: "ค่าเริ่มต้น: ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ" },
-      {
-        type: "list",
-        name: "slides",
-        label: "2. ภาพสไลด์แบนเนอร์ใหญ่ 16:9 (Banner Slide Carousel)",
-        item: [
-          { type: "image", name: "imageUrl", label: "ภาพสไลด์แบนเนอร์ (16:9)" },
-          { type: "localized", name: "title", label: "หัวข้อสไลด์ (เช่น Sweet Professional Hair Treatment)" },
-          { type: "localized", name: "caption", label: "คำบรรยายสไลด์" },
-          { type: "text", name: "href", label: "ลิงก์เมื่อกดสไลด์ (เช่น /products/sweet-professional หรือ https://...)" },
-        ],
-      },
-      { type: "localized", name: "title", label: "3.1 หัวข้อสไลด์ทรงผมวงรี (Oval Carousel Title)", help: "ค่าเริ่มต้น: ผลิตภัณฑ์ซาลอนมืออาชีพ" },
-      { type: "localizedTextarea", name: "description", label: "3.2 คำอธิบายใต้หัวข้อ (ไม่บังคับ)" },
-      {
-        type: "list",
-        name: "items",
-        label: "3.3 รายการสไลด์ทรงผมแคปซูลวงรี (Oval Capsules)",
-        item: [
-          { type: "image", name: "imageUrl", label: "รูปภาพผลงานผม (แนวตั้ง)" },
-          { type: "localized", name: "title", label: "ชื่อทรงผม / ผลงาน (เช่น Balayage Ash Blonde)", required: true },
-          { type: "text", name: "formula", label: "สูตรสี / ผลิตภัณฑ์ที่ใช้ (เช่น BLEACH & 3% (ORO 20G/20G))" },
-          { type: "localized", name: "description", label: "คำบรรยายสั้น (เช่น No Yellow Care Protection)" },
-          { type: "text", name: "href", label: "ลิงก์เมื่อคลิก (เช่น /products/fanola?category=no-yellow-care)" },
-        ],
-      },
-    ] satisfies Field[],
-  },
-  productsPage: {
-    title: "จัดการหน้าสินค้าซาลอน (/th/products)",
-    description: "จัดการหน้าสินค้าซาลอน (/th/products) แบบ Realtime Live Editor พร้อมดูตัวอย่างสด",
-    fields: [] as Field[],
   },
   vipCustomer: {
     title: "แบนเนอร์ VIP Customer",
@@ -636,7 +597,8 @@ export const settingsUi = {
     ] satisfies Field[],
   },
   timeline: {
-    title: "เส้นทางของบิวตี้อัพ (หน้าเกี่ยวกับเรา)",
+    title: "เส้นทางของบิวตี้อัพ",
+    description: "ไทม์ไลน์ประวัติบริษัทในหน้าเกี่ยวกับเรา",
     fields: [
       {
         type: "list",
@@ -655,3 +617,15 @@ export const settingsUi = {
     fields: REGIONS.map((r) => ({ type: "number" as const, name: r, label: regionLabels[r] })),
   },
 } as const;
+
+/** Site-wide settings, edited on the "ตั้งค่าเว็บไซต์" page */
+export const SITE_SETTING_KEYS = ["company", "growVision", "regionCounts"] as const satisfies readonly SettingKey[];
+
+/** Settings that belong to one page; each has its own sidebar entry at /content/<key> */
+export const PAGE_SETTINGS = {
+  about: { path: "/about" },
+  aboutSlides: { path: "/about" },
+  timeline: { path: "/about" },
+  vipCustomer: { path: "/customers" },
+} as const satisfies Partial<Record<SettingKey, { path: string }>>;
+export type PageSettingKey = keyof typeof PAGE_SETTINGS;

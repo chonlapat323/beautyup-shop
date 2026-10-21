@@ -61,16 +61,48 @@ export class ResourceService {
 
   async create(name: ResourceName, body: unknown) {
     const cfg = resourceConfig[name];
-    const data = toPrismaData(parseOrThrow(resources[name].schema, body), cfg, 'create');
+    const input = parseOrThrow(resources[name].schema, body) as Row;
+    await this.assertFreeUrl(name, input);
+    const data = toPrismaData(input, cfg, 'create');
     return this.write(name, async () => this.afterSave(name, await this.delegate(name).create({ data, include: cfg.include })));
   }
 
   async update(name: ResourceName, id: string, body: unknown) {
     const cfg = resourceConfig[name];
-    const data = toPrismaData(parseOrThrow(resources[name].schema, body), cfg, 'update');
+    const input = parseOrThrow(resources[name].schema, body) as Row;
+    await this.assertFreeUrl(name, input);
+    const data = toPrismaData(input, cfg, 'update');
     return this.write(name, async () =>
       this.afterSave(name, await this.delegate(name).update({ where: { id }, data, include: cfg.include })),
     );
+  }
+
+  /**
+   * A menu item with its own content (slides, sections or a brand's products) and a content page ("pages") must not share a URL:
+   * the website would show only the menu. Plain menu links to a page are fine.
+   */
+  private async assertFreeUrl(name: ResourceName, input: Row) {
+    const hasContent = (m: { slides: unknown; sections: unknown; brandId: unknown }) =>
+      !!m.brandId || (Array.isArray(m.slides) && m.slides.length > 0) || (Array.isArray(m.sections) && m.sections.length > 0);
+    const conflict = (field: string, message: string) => new ConflictException({ statusCode: 409, message, errors: { [field]: [message] } });
+
+    if (name === 'menu-items' && hasContent(input as { slides: unknown; sections: unknown; brandId: unknown })) {
+      const slug = String(input.href).replace(/^\/+|\/+$/g, '');
+      const page = await this.prisma.page.findFirst({ where: { slug }, select: { title: true } });
+      if (page) {
+        const title = (page.title as { th?: string }).th ?? slug;
+        throw conflict('href', `URL นี้เป็นของหน้าเนื้อหา "${title}" อยู่แล้ว ให้แก้เนื้อหาที่เมนู หน้าเนื้อหา หรือเปลี่ยน URL`);
+      }
+    }
+    if (name === 'pages') {
+      const href = `/${String(input.slug)}`;
+      const menus = await this.prisma.menuItem.findMany({ where: { href: { in: [href, `${href}/`] } }, select: { label: true, slides: true, sections: true, brandId: true } });
+      const menu = menus.find(hasContent);
+      if (menu) {
+        const label = (menu.label as { th?: string }).th ?? href;
+        throw conflict('slug', `URL นี้เป็นของเมนู "${label}" ที่มีเนื้อหาของตัวเองอยู่แล้ว ให้แก้เนื้อหาที่ เมนูและหน้าเว็บ หรือเปลี่ยน slug`);
+      }
+    }
   }
 
   private async afterSave(name: ResourceName, row: Row) {

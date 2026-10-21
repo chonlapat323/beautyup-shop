@@ -21,6 +21,7 @@ export async function saveSetting(key: string, payload: Record<string, unknown>)
     throw e;
   }
   revalidatePath("/settings");
+  revalidatePath(`/content/${key}`);
   await revalidateWeb();
   return { ok: true, message: "บันทึกการตั้งค่าแล้ว" };
 }

@@ -83,6 +83,7 @@ model MenuItem {
   brand        Brand?     @relation(fields: [brandId], references: [id], onDelete: SetNull)
   brandSlug    String?    @default("")
   showProducts Boolean    @default(true)
+  hero         Json       @default("{}")
   slides       Json       @default("[]")
   sections     Json       @default("[]")
 }

@@ -6,8 +6,11 @@ import { ProductGrid } from "@/components/product-grid";
 import { PageHero, SectionHeading } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getGrowVision, getMenuItemByHref, getPage, getProducts } from "@/lib/data";
+import type { MenuItem } from "@/lib/types";
 
 export const instant = false;
+
+const ownsPage = (m: MenuItem) => !!(m.slides?.length || m.sections?.length || m.brandSlug);
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/[...rest]">): Promise<Metadata> {
   const { lang } = await resolveLang(params);
@@ -20,8 +23,8 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/[...rest]"
     getPage(lang, slug),
   ]);
 
-  if (menuItem) {
-    return { title: menuItem.label };
+  if (menuItem && (!page || ownsPage(menuItem))) {
+    return { title: menuItem.hero?.headline || menuItem.label };
   }
   if (page) {
     return { title: page.title };
@@ -43,15 +46,15 @@ export default async function DynamicCatchAllPage({ params }: PageProps<"/[lang]
 
   if (!menuItem && !page) notFound();
 
-  // If matched to a Menu Item with custom content / layout
-  if (menuItem) {
+  // A menu item with its own content owns the URL; a plain menu link to a content page shows the page
+  if (menuItem && (!page || ownsPage(menuItem))) {
     const brandSlug = menuItem.brandSlug;
     const showProducts = menuItem.showProducts ?? true;
     const products = brandSlug && showProducts ? await getProducts(lang, { brandSlug }) : [];
 
     return (
       <>
-        <PageHero eyebrow="BeautyUp" title={menuItem.label} />
+        <PageHero eyebrow={menuItem.hero?.eyebrow || "BeautyUp"} title={menuItem.hero?.headline || menuItem.label} description={menuItem.hero?.lead} />
 
         {/* Dynamic Menu Content (Slides & Left/Right or Wix Column Sections) */}
         <MenuContentRenderer menu={menuItem} lang={lang} />

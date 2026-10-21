@@ -108,6 +108,11 @@ export const menuSectionSchema = z.object({
 });
 export type MenuSection = z.infer<typeof menuSectionSchema>;
 
+export const menuHeroSchema = z
+  .object({ eyebrow: localizedOptional, headline: localizedOptional, lead: localizedOptional })
+  .default({ eyebrow: { th: "", en: "" }, headline: { th: "", en: "" }, lead: { th: "", en: "" } });
+export type MenuHero = z.infer<typeof menuHeroSchema>;
+
 export const menuItemInput = z.object({
   label: localized,
   href: z.string().trim().min(1),
@@ -116,6 +121,8 @@ export const menuItemInput = z.object({
   brandId: z.string().nullable().optional().default(null),
   brandSlug: z.string().trim().optional().default(""),
   showProducts: z.boolean().default(true),
+  /** Page header text; empty fields fall back to the menu label. Brand pages use the brand's own details. */
+  hero: menuHeroSchema,
   slides: z.array(menuSlideSchema).default([]),
   sections: z.array(menuSectionSchema).default([]),
   sortOrder,
@@ -465,53 +472,13 @@ export const vipCustomerSetting = z.object({
 });
 export type VipCustomerSetting = z.infer<typeof vipCustomerSetting>;
 
-export const salonHairSlideItem = z.object({
-  imageUrl: z.string().default(""),
-  title: localizedOptional,
-  formula: z.string().trim().optional().default(""),
-  description: localizedOptional,
-  href: z.string().trim().optional().default(""),
-});
-
-export const productsPageSetting = z.object({
-  showHero: z.boolean().default(true),
-  heroEyebrow: localizedOptional,
-  heroHeadline: localizedOptional,
-  heroLead: localizedOptional,
-
-  showBannerSlides: z.boolean().default(true),
-  slides: z.array(menuSlideSchema).default([]),
-
-  showOvalCarousel: z.boolean().default(true),
-  ovalTitle: localizedOptional,
-  ovalDescription: localizedOptional,
-  ovalItems: z.array(salonHairSlideItem).default([]),
-
-  sections: z.array(menuSectionSchema).default([]),
-});
-export type ProductsPageSetting = z.infer<typeof productsPageSetting>;
-
-export const salonHairSlidesSetting = z.object({
-  heroEyebrow: localizedOptional,
-  heroHeadline: localizedOptional,
-  heroLead: localizedOptional,
-  slides: z.array(menuSlideSchema).default([]),
-  eyebrow: localizedOptional,
-  title: localizedOptional,
-  description: localizedOptional,
-  items: z.array(salonHairSlideItem).default([]),
-});
-export type SalonHairSlidesSetting = z.infer<typeof salonHairSlidesSetting>;
-
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "productsPage", "salonHairSlides", "vipCustomer", "growVision", "timeline", "regionCounts"] as const;
+export const SETTING_KEYS = ["company", "about", "aboutSlides", "vipCustomer", "growVision", "timeline", "regionCounts"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
   company: companySetting,
   about: aboutSetting,
   aboutSlides: aboutSlidesSetting,
-  productsPage: productsPageSetting,
-  salonHairSlides: salonHairSlidesSetting,
   vipCustomer: vipCustomerSetting,
   growVision: growVisionSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
@@ -527,7 +494,7 @@ export const resources = {
   "menu-items": { schema: menuItemInput, label: "เมนู" },
   "hero-slides": { schema: heroSlideInput, label: "สไลด์หน้าแรก" },
   brands: { schema: brandInput, label: "แบรนด์" },
-  categories: { schema: categoryInput, label: "หมวดหมู่ (Categories)" },
+  categories: { schema: categoryInput, label: "คอลเลกชัน" },
   products: { schema: productInput, label: "สินค้า" },
   videos: { schema: videoInput, label: "วิดีโอ" },
   ambassadors: { schema: ambassadorInput, label: "แบรนด์แอมบาสเดอร์" },

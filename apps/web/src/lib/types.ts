@@ -34,6 +34,8 @@ export interface MenuItem {
   brandSlug?: string | null;
   brandName?: string | null;
   showProducts?: boolean;
+  /** Page header text set on the menu item (Admin → เมนูและหน้าเว็บ) */
+  hero?: { eyebrow?: string; headline?: string; lead?: string };
   slides?: MenuSlideItem[];
   sections?: MenuSectionItem[];
   children?: MenuItem[];

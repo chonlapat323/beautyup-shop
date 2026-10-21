@@ -90,6 +90,7 @@ export function MenuItemVisualEditor({
 }) {
   const router = useRouter();
 
+  const hero = (initial.hero ?? {}) as { eyebrow?: L; headline?: L; lead?: L };
   const [data, setData] = useState<MenuItemData>(() => ({
     label: (initial.label as L) || { th: "", en: "" },
     href: (initial.href as string) || "/new-page",
@@ -99,9 +100,9 @@ export function MenuItemVisualEditor({
     showProducts: (initial.showProducts as boolean) ?? true,
     slides: (initial.slides as MenuVisualSlide[]) || [],
     sections: (initial.sections as MenuVisualSection[]) || [],
-    heroHeadline: (initial.heroHeadline as L) || undefined,
-    heroEyebrow: (initial.heroEyebrow as L) || undefined,
-    heroLead: (initial.heroLead as L) || undefined,
+    heroHeadline: hero.headline,
+    heroEyebrow: hero.eyebrow,
+    heroLead: hero.lead,
     isActive: (initial.isActive as boolean) ?? true,
     sortOrder: (initial.sortOrder as number) ?? 0,
   }));
@@ -124,7 +125,9 @@ export function MenuItemVisualEditor({
   const handleSave = () => {
     setSaveStatus(null);
     startTransition(async () => {
-      const res = await onSave(data as Record<string, unknown>);
+      // The API stores the header text as one "hero" object
+      const { heroEyebrow, heroHeadline, heroLead, ...rest } = data;
+      const res = await onSave({ ...rest, hero: { eyebrow: heroEyebrow, headline: heroHeadline, lead: heroLead } });
       if (res.ok) {
         setSaveStatus("บันทึกข้อมูลเรียบร้อยแล้ว!");
         setTimeout(() => setSaveStatus(null), 3000);
@@ -372,7 +375,12 @@ export function MenuItemVisualEditor({
                     )}
                   </div>
 
-                  {/* Page Hero Header Inputs */}
+                  {/* Page Hero Header Inputs (brand pages show the brand's own name and description) */}
+                  {data.brandId ? (
+                    <p className="mt-3 rounded-xl border border-line bg-mist/30 p-3.5 text-xs text-muted">
+                      หัวเรื่องของหน้าแบรนด์ใช้ชื่อและคำอธิบายจากเมนู แบรนด์ แก้ได้ที่นั่น
+                    </p>
+                  ) : (
                   <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
                     <div className="flex items-center gap-2">
                       <Sparkles className="size-4 text-brand" />
@@ -436,6 +444,7 @@ export function MenuItemVisualEditor({
                       />
                     </div>
                   </div>
+                  )}
                 </div>
               </div>
             )}
