@@ -137,17 +137,6 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "list", name: "highlights", label: "จุดเด่น", item: [{ type: "localized", name: "", label: "จุดเด่น", required: true }] },
       {
         type: "list",
-        name: "features",
-        label: "หมวดหมู่หลักประจำแบรนด์ (เช่น 4 หมวดของ Fanola: ดูแลผม, ทำสี, ฟอกสี, ยืดดัด)",
-        item: [
-          { type: "localized", name: "title", label: "ชื่อหมวด", required: true },
-          { type: "localizedTextarea", name: "description", label: "คำบรรยายละเอียด" },
-          { type: "text", name: "href", label: "ลิงก์ปุ่มดูสินค้า (เช่น #salon หรือ /products/fanola)" },
-          { type: "image", name: "imageUrl", label: "รูปประกอบ" },
-        ],
-      },
-      {
-        type: "list",
         name: "series",
         label: "แถบซีรีส์/ไลน์สินค้า (เช่น No yellow Care, After colour)",
         item: [

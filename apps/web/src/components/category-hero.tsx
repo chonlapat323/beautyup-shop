@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "@/components/link";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { BrandCategory } from "@/lib/brand-categories";
 import type { Locale } from "@/i18n";
 
@@ -11,106 +11,56 @@ interface CategoryHeroProps {
   lang: Locale;
 }
 
-export function CategoryHero({
-  category,
-  brandSlug,
-  brandName,
-  lang,
-}: CategoryHeroProps) {
+/** Same look as the home hero (soft pink-to-white, pink-line eyebrow); the category's accent colour marks the title. */
+export function CategoryHero({ category, brandSlug, brandName, lang }: CategoryHeroProps) {
   const isThai = lang === "th";
-  const accent = category.accentColor || "#7e22ce";
+  const accent = category.accentColor || "#d6297f";
 
   return (
-    <section className="relative overflow-hidden py-10 sm:py-16 md:py-24 border-b border-line bg-gradient-to-b from-[#180b22] via-[#100717] to-sand/20 text-white">
-      {/* Background Banner image if available */}
-      {category.bannerUrl ? (
-        <div className="absolute inset-0 z-0 opacity-40">
-          <Image
-            src={category.bannerUrl}
-            alt={category.name}
-            fill
-            sizes="100vw"
-            priority
-            className="object-cover object-top filter blur-[2px] scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#100717]/80 to-[#100717]" />
-        </div>
-      ) : (
-        /* Ambient dynamic radial glow */
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
-        >
-          <div
-            style={{ backgroundColor: accent }}
-            className="h-[420px] w-[680px] max-w-[90vw] rounded-full opacity-25 blur-[140px]"
-          />
+    <section className="relative overflow-hidden border-b border-line/60 bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)] py-10 sm:py-14 lg:py-20">
+      {category.bannerUrl && (
+        <div aria-hidden className="absolute inset-0">
+          <Image src={category.bannerUrl} alt="" fill priority sizes="100vw" className="object-cover object-top opacity-15" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#fdf2f8]/70 via-[#fdfcfb]/80 to-[#fdfcfb]" />
         </div>
       )}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-3xl"
+        style={{ background: `radial-gradient(circle, ${accent}26, transparent 70%)` }}
+      />
 
-      <div className="container-page relative z-10">
-        {/* Back navigation button */}
-        <div className="mb-6">
-          <Link
-            href={`/products/${brandSlug}`}
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs sm:text-sm font-medium text-white/90 backdrop-blur-md transition-all hover:bg-white hover:text-ink hover:scale-[1.02]"
-          >
-            <ArrowLeft className="size-3.5" />
-            <span>
-              {isThai
-                ? `ดูหมวดหมู่ทั้งหมดของ ${brandName || "แบรนด์"}`
-                : `All ${brandName || "Brand"} Categories`}
-            </span>
-          </Link>
-        </div>
+      <div className="container-page relative animate-fade-up">
+        <Link
+          href={`/products/${brandSlug}`}
+          className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft className="size-4" />
+          {isThai ? `ดูหมวดหมู่ทั้งหมดของ ${brandName || "แบรนด์"}` : `All ${brandName || "brand"} categories`}
+        </Link>
 
-        {/* Floating Centered White Card (matches Image 2) */}
-        <div className="mx-auto max-w-3xl rounded-3xl border border-white/20 bg-white p-6 sm:p-10 md:p-12 text-ink shadow-2xl backdrop-blur-xl">
-          {/* Eyebrow / Tag */}
-          <div className="text-center">
-            <span
-              style={{ color: accent }}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold uppercase tracking-[0.25em]"
-            >
-              <Sparkles className="size-3.5" />
-              <span>{brandName || "BRAND COLLECTION"}</span>
-              <Sparkles className="size-3.5" />
-            </span>
-
-            {/* Category Main Headline */}
-            <h1 className="mt-3 font-display text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight text-neutral-900">
-              <span style={{ color: accent }}>{category.name.slice(0, 2)}</span>
-              {category.name.slice(2)}
-            </h1>
-
-            {/* Subtitle / Key Concept */}
-            {category.subtitle && (
-              <p
-                style={{ color: accent }}
-                className="mt-3 font-medium text-xs sm:text-sm md:text-base tracking-wide"
-              >
-                {category.subtitle}
-              </p>
-            )}
-          </div>
-
-          {/* Detailed Description */}
-          {category.description && (
-            <div className="mt-6 text-sm sm:text-base leading-relaxed text-muted/95 text-justify sm:text-center max-w-2xl mx-auto">
-              <p>{category.description}</p>
-            </div>
+        <div className="mt-8 max-w-3xl">
+          <p className="eyebrow flex items-center gap-2">
+            <span aria-hidden className="h-px w-6 bg-brand-pink" />
+            {brandName || "Brand Collection"}
+          </p>
+          <h1 className="mt-3 font-display text-4xl leading-[1.15] text-balance sm:text-5xl lg:text-6xl">
+            <span style={{ color: accent }}>{category.name.slice(0, 2)}</span>
+            {category.name.slice(2)}
+          </h1>
+          {category.subtitle && (
+            <p className="mt-3 text-base font-medium sm:text-lg" style={{ color: accent }}>
+              {category.subtitle}
+            </p>
           )}
-
-          {/* Highlights Box / 360° Blonde Protection (matches Image 2) */}
+          {category.description && <p className="mt-5 max-w-2xl text-base text-pretty text-muted sm:text-lg">{category.description}</p>}
           {category.highlights && (
-            <div
+            <p
+              className="mt-6 max-w-2xl rounded-2xl border p-4 text-sm leading-relaxed text-ink sm:p-5"
               style={{ borderColor: `${accent}40`, backgroundColor: `${accent}0c` }}
-              className="mt-8 rounded-2xl border p-4 sm:p-6 text-left"
             >
-              <p className="text-xs sm:text-sm leading-relaxed text-neutral-800 font-normal">
-                {category.highlights}
-              </p>
-            </div>
+              {category.highlights}
+            </p>
           )}
         </div>
       </div>

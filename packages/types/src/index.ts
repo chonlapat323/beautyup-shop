@@ -145,7 +145,8 @@ export const brandInput = z.object({
   tagline: localizedOptional,
   description: localizedOptional,
   highlights: z.array(localized).default([]),
-  features: z.array(brandFeatureSchema).default([]),
+  /** Hidden in the admin (cards are edited per menu); left untouched when not sent */
+  features: z.array(brandFeatureSchema).optional(),
   series: z.array(brandSeriesSchema).default([]),
   logoUrl: url,
   website: url,
