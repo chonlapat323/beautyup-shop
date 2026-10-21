@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import QRCode from "qrcode";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
+import { MediaGallery } from "@/components/media-gallery";
 import { SharePanel } from "@/components/share-panel";
 import { Media, VideoPlayer, formatDate } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
@@ -65,7 +66,7 @@ export default async function MediaPage({ params }: PageProps<"/[lang]/members/m
   const d = dict.members;
   const media = await getMedia(lang, (await params).slug);
   if (!media) notFound();
-  const [cover, ...rest] = media.images;
+  const cover = media.images[0];
   const pageUrl = `${SITE_URL}/${lang}/members/media/${media.slug}`;
   const qr = await QRCode.toDataURL(pageUrl, { width: 480, margin: 1 });
 
@@ -84,24 +85,16 @@ export default async function MediaPage({ params }: PageProps<"/[lang]/members/m
           {formatDate(media.publishedAt, lang)}
         </p>
 
-        {media.videoUrl ? (
+        {media.videoUrl && (
           <div className="mt-8 overflow-hidden rounded-3xl">
             <VideoPlayer src={media.videoUrl} poster={cover} title={media.title} rounded="rounded-none" />
           </div>
-        ) : (
-          <Media src={cover} alt={media.title} tone={2} className="mt-8 aspect-[16/9] w-full rounded-3xl" />
         )}
-
-        {(media.videoUrl ? media.images : rest).length > 0 && (
-          <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {(media.videoUrl ? media.images : rest).map((src, i) => (
-              <li key={src}>
-                <a href={src} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-2xl">
-                  <Media src={src} alt={`${media.title} ${i + 2}`} tone={i} className="aspect-square w-full transition-transform duration-500 hover:scale-105" />
-                </a>
-              </li>
-            ))}
-          </ul>
+        {media.images.length > 0 ? (
+          // With a video, the photos are all thumbnails; without one, the first is the large cover
+          <MediaGallery images={media.images} title={media.title} slug={media.slug} cover={!media.videoUrl} />
+        ) : (
+          !media.videoUrl && <Media alt={media.title} tone={2} className="mt-8 aspect-[16/9] w-full rounded-3xl" />
         )}
 
         <div className="mt-10 space-y-5 text-lg leading-relaxed">

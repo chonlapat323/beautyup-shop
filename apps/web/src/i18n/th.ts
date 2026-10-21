@@ -238,6 +238,15 @@ export const th = {
     brands: "แบรนด์ที่เกี่ยวข้อง",
     tags: "แท็ก",
   },
+  gallery: {
+    downloadAll: (n: number) => `ดาวน์โหลดรูปทั้งหมด (${n} รูป)`,
+    count: (n: number) => `${n} รูป`,
+    download: "ดาวน์โหลดรูปนี้",
+    open: (i: number, n: number) => `ดูรูปที่ ${i} จาก ${n}`,
+    close: "ปิด",
+    prev: "รูปก่อนหน้า",
+    next: "รูปถัดไป",
+  },
   share: {
     title: "แชร์",
     line: "แชร์ทาง LINE",

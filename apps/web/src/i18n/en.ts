@@ -239,6 +239,15 @@ export const en: Dictionary = {
     brands: "Related brands",
     tags: "Tags",
   },
+  gallery: {
+    downloadAll: (n: number) => `Download all photos (${n})`,
+    count: (n: number) => `${n} ${n === 1 ? "photo" : "photos"}`,
+    download: "Download this photo",
+    open: (i: number, n: number) => `View photo ${i} of ${n}`,
+    close: "Close",
+    prev: "Previous photo",
+    next: "Next photo",
+  },
   share: {
     title: "Share",
     line: "Share on LINE",
