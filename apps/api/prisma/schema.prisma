@@ -48,7 +48,6 @@ enum InquiryType {
   SALON
   COURSE
   ISSUE
-  PP_STUDIO
 }
 
 enum InquiryStatus {

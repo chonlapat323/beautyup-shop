@@ -66,7 +66,7 @@ export const REGIONS = ["BANGKOK_CENTRAL", "EAST", "WEST", "NORTH", "SOUTH", "NO
 export const POST_TYPES = ["ARTICLE", "ACTIVITY"] as const;
 export const DEPARTMENTS = ["SALES", "TECHNICIAN", "FINANCE", "LEGAL"] as const;
 export const MENU_LOCATIONS = ["header", "footer"] as const;
-export const INQUIRY_TYPES = ["CONTACT", "ORDER", "SALON", "COURSE", "ISSUE", "PP_STUDIO"] as const;
+export const INQUIRY_TYPES = ["CONTACT", "ORDER", "SALON", "COURSE", "ISSUE"] as const;
 export const INQUIRY_STATUSES = ["NEW", "IN_PROGRESS", "DONE"] as const;
 
 export type Role = (typeof ROLES)[number];

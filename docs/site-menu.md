@@ -16,7 +16,7 @@ Used to plan the new storefront navigation and the Admin Panel.
 | 4 | ผลิตภัณฑ์ผม | Fanola (ฟาโนลา), Nook (นุก), Sweet. (สวีท) | `/fanola-heona-sweet-thailand` |
 | 5 | ร้านบิวตี้อัพ | – | `/shop-laprairie-lamer-clarins-tomford-jomalone` |
 | 6 | คอร์สเรียน | – | `/courses-1` |
-| 7 | ติดต่อเรา | บิวตี้อัพ ทีม, เทคนิคเชี่ยน, สมัครซาลอน, การชำระเงิน, นโยบายการจำหน่ายและชำระเงิน, แจ้งปัญหา, PP STUDIO | `/fanola-heona-nook-sweet-thailand-team` |
+| 7 | ติดต่อเรา | บิวตี้อัพ ทีม, เทคนิคเชี่ยน, สมัครซาลอน, การชำระเงิน, นโยบายการจำหน่ายและชำระเงิน, แจ้งปัญหา | `/fanola-heona-nook-sweet-thailand-team` |
 | 8 | มุมสมาชิก | กิจกรรม, มีเดีย, บทความ | `/members` |
 
 Header also has a **search** icon and a **เข้าสู่ระบบ (login)** button.
@@ -73,7 +73,7 @@ Other URLs seen in links (keep for 301 redirects):
 - Department contacts (การเงิน/บัญชี, กฎหมาย)
 - **Contact form** with a success message
 - Inquiry topics (product, promotion, course schedule, study trips, jobs)
-- Sub-pages: บิวตี้อัพ ทีม, เทคนิคเชี่ยน, สมัครซาลอน (`/order-salon-partner`), การชำระเงิน, นโยบายฯ (`/policy`), แจ้งปัญหา, PP STUDIO
+- Sub-pages: บิวตี้อัพ ทีม, เทคนิคเชี่ยน, สมัครซาลอน (`/order-salon-partner`), การชำระเงิน, นโยบายฯ (`/policy`), แจ้งปัญหา
 
 #### สมัครซาลอน `/order-salon-partner`
 One form for **"สั่งสินค้า & สมัครร้านซาลอน & ลงทะเบียนเรียน"**:
@@ -89,13 +89,6 @@ One form for **"สั่งสินค้า & สมัครร้านซ�
 | ข้อความ | textarea | ✔ |
 
 Submit "ส่ง" → "ได้รับข้อมูลเรียบร้อย ขอบคุณสำหรับข้อมูล !"
-
-#### PP STUDIO
-A photo and video studio (in-house service). Contact 063-779-2433, LINE, Facebook, Instagram.
-- Intro: "Professional photographer and outsource retoucher to companies and individuals based in Lampang."
-  "รับถ่ายวีดิโอ ตัดต่อวีดิโอ ถ่ายภาพสินค้า และจัดอีเวนท์ เพิ่มมูลค่าให้ธุรกิจและสินค้าของคุณ โดยทีมงานคุณภาพ"
-- 6 service cards: Video Shooting, Mood & Tone, Video Editing, Real estate photo editing, Packshot, Event & Travel
-- Contact form: First Name, Last Name, Email, Message → Send
 
 ### 8. มุมสมาชิก
 - Members can log in, but login gives no extra benefits yet (we only store member data)
@@ -116,10 +109,10 @@ Nav links, brand logos (Nook, Fanola, Sweet), company address, phones, email, po
 | **Ambassadors** | ลูกค้า page cards | Ambassador (name, salon, photo, socials, order) |
 | **Salon directory** | ค้นหาซาลอน, region counts | Salon (name, region, province, address, map, phone) |
 | **Courses** | คอร์สเรียน | Course (title, price text, duration, content, gallery). Sign-ups come in through Inquiry |
-| **Content (CMS)** | บทความ, กิจกรรม, มีเดีย, เกี่ยวกับเรา, นโยบาย, การชำระเงิน, PP STUDIO | Post (type: article/activity/media, cover, body, publishedAt) + Page (slug, body) |
+| **Content (CMS)** | บทความ, กิจกรรม, มีเดีย, เกี่ยวกับเรา, นโยบาย, การชำระเงิน | Post (type: article/activity/media, cover, body, publishedAt) + Page (slug, body) |
 | **Videos / Galleries** | Video gallery, image galleries | Gallery, GalleryItem (image or YouTube URL) |
 | **Team** | บิวตี้อัพ ทีม, เทคนิคเชี่ยน, department contacts | TeamMember (name, role, department, phone, LINE, photo) |
-| **Inquiries inbox** | ติดต่อเรา, สั่งสินค้า, สมัครซาลอน, ลงทะเบียนเรียน, แจ้งปัญหา, PP STUDIO | Inquiry (type, status NEW/IN_PROGRESS/DONE, contact fields, staff note) |
+| **Inquiries inbox** | ติดต่อเรา, สั่งสินค้า, สมัครซาลอน, ลงทะเบียนเรียน, แจ้งปัญหา | Inquiry (type, status NEW/IN_PROGRESS/DONE, contact fields, staff note) |
 | **Site settings** | Footer info, bank accounts, socials | Settings (key/value) |
 | **Members / Users** | Login, member list, admin roles | `User` + roles (CUSTOMER / STAFF / ADMIN) |
 
@@ -131,7 +124,6 @@ Nav links, brand logos (Nook, Fanola, Sweet), company address, phones, email, po
 3. **Courses:** no online booking. Sign-up is a contact or Inquiry with type COURSE.
 4. **Salon application:** done through the `/order-salon-partner` form (Inquiry with type SALON). Staff review it and
    add the salon to the directory.
-5. **PP STUDIO:** a service page (photo, video, events) with its own contact form (Inquiry with type PP_STUDIO).
 
 ## Open questions
 
