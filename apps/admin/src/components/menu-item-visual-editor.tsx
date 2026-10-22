@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useTransition } from "react";
 import type { Option } from "@/lib/fields";
+import { DeleteButton } from "./delete-button";
 import { UploadBox } from "./image-upload";
 
 type L = { th?: string; en?: string };
@@ -79,6 +80,7 @@ export function MenuItemVisualEditor({
   onSave,
   onDelete,
   redirectTo = "/r/menu-items",
+  siteUrl,
 }: {
   id?: string;
   title?: string;
@@ -87,6 +89,8 @@ export function MenuItemVisualEditor({
   onSave: (payload: Record<string, unknown>) => Promise<{ ok: boolean; message?: string; errors?: any }>;
   onDelete?: () => Promise<any>;
   redirectTo?: string;
+  /** Public website address, for the "open on website" link */
+  siteUrl: string;
 }) {
   const router = useRouter();
 
@@ -94,7 +98,8 @@ export function MenuItemVisualEditor({
   const [data, setData] = useState<MenuItemData>(() => ({
     label: (initial.label as L) || { th: "", en: "" },
     href: (initial.href as string) || "/new-page",
-    location: (initial.location as string) || "header",
+    // The site shows header menus only (the footer reuses them), so every item is a header item
+    location: "header",
     parentId: (initial.parentId as string) || null,
     brandId: (initial.brandId as string) || null,
     showProducts: (initial.showProducts as boolean) ?? true,
@@ -128,7 +133,10 @@ export function MenuItemVisualEditor({
       // The API stores the header text as one "hero" object
       const { heroEyebrow, heroHeadline, heroLead, ...rest } = data;
       const res = await onSave({ ...rest, hero: { eyebrow: heroEyebrow, headline: heroHeadline, lead: heroLead } });
-      if (res.ok) {
+      if (res.ok && !id) {
+        // A new item is created once; go back to the list instead of creating it again on the next save
+        router.push(redirectTo);
+      } else if (res.ok) {
         setSaveStatus("บันทึกข้อมูลเรียบร้อยแล้ว!");
         setTimeout(() => setSaveStatus(null), 3000);
         router.refresh();
@@ -179,7 +187,7 @@ export function MenuItemVisualEditor({
 
           {data.href && (
             <a
-              href={`https://new.beautyup-enterprise.com${data.href}`}
+              href={`${siteUrl}${data.href}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-secondary inline-flex items-center gap-1.5 !min-h-9 text-xs"
@@ -187,6 +195,10 @@ export function MenuItemVisualEditor({
             >
               <ExternalLink className="size-3.5" /> เว็บจริง
             </a>
+          )}
+
+          {id && onDelete && (
+            <DeleteButton label="ลบเมนูนี้" confirmText={`ลบเมนู "${title}" ใช่หรือไม่? เมนูย่อยข้างใต้จะถูกลบด้วย และย้อนกลับไม่ได้`} action={onDelete} />
           )}
 
           <button
@@ -309,17 +321,31 @@ export function MenuItemVisualEditor({
                     <p className="mt-1 text-[11px] text-muted">เช่น /products หรือ /products/fanola</p>
                   </div>
 
+                  {initial.location === "footer" && (
+                    <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      เมนูนี้เคยตั้งไว้ที่ “ท้ายเว็บ” ซึ่งไม่แสดงบนเว็บ เมื่อบันทึกจะย้ายไปอยู่ในเมนูหลัก ถ้าไม่ต้องการให้แสดง ให้เอาเครื่องหมายที่ “แสดงเมนูนี้บนเว็บ” ออก
+                    </p>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <label className="flex items-center gap-2 self-end cursor-pointer text-xs font-semibold text-ink pb-2">
+                      <input
+                        type="checkbox"
+                        checked={data.isActive ?? true}
+                        onChange={(e) => setData({ ...data, isActive: e.target.checked })}
+                        className="size-4 accent-brand rounded"
+                      />
+                      แสดงเมนูนี้บนเว็บ
+                    </label>
+
                     <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">ตำแหน่งในเว็บไซต์</label>
-                      <select
+                      <label className="block text-xs font-semibold text-ink mb-1">ลำดับ (เลขน้อยขึ้นก่อน)</label>
+                      <input
+                        type="number"
                         className="input w-full text-xs"
-                        value={data.location ?? "header"}
-                        onChange={(e) => setData({ ...data, location: e.target.value })}
-                      >
-                        <option value="header">ส่วนหัว (Header Menu)</option>
-                        <option value="footer">ท้ายเว็บ (Footer Menu)</option>
-                      </select>
+                        value={data.sortOrder ?? 0}
+                        onChange={(e) => setData({ ...data, sortOrder: Number(e.target.value) || 0 })}
+                      />
                     </div>
 
                     <div>
@@ -1009,7 +1035,7 @@ export function MenuItemVisualEditor({
                   <span className="size-2.5 rounded-full bg-emerald-400" />
                 </div>
                 <div className="rounded-md bg-white border border-line px-2.5 py-0.5 text-[11px] font-mono text-muted flex items-center gap-1.5">
-                  <span>🔒 new.beautyup-enterprise.com/{previewLang}{data.href}</span>
+                  <span>🔒 {siteUrl.replace(/^https?:\/\//, "")}/{previewLang}{data.href}</span>
                 </div>
               </div>
 

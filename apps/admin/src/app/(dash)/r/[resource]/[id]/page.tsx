@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
 import { resourceUi } from "@/lib/fields";
 import { getResource, loadRelations, resolveResource, rowTitle } from "@/lib/resources";
+import { siteUrl } from "@/lib/site";
 import { deleteResource, saveMenuItem, saveResource } from "../../actions";
 
 export const metadata: Metadata = { title: "แก้ไขข้อมูล" };
@@ -27,6 +28,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
         relations={relations}
         onSave={saveMenuItem.bind(null, id)}
         onDelete={deleteResource.bind(null, name, id)}
+        siteUrl={siteUrl()}
       />
     );
   }
@@ -45,9 +47,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
 }
 
 async function MediaSharePanel({ slug, publishedAt }: { slug: string; publishedAt: string | null }) {
-  // SITE_URL is the public website; WEB_URL may be an internal address used for revalidation
-  const site = (process.env.SITE_URL || process.env.WEB_URL || "http://localhost:3000").replace(/\/$/, "");
-  const url = `${site}/th/members/media/${slug}`;
+  const url = `${siteUrl()}/th/members/media/${slug}`;
   const qr = await QRCode.toDataURL(url, { width: 600, margin: 2 });
   const published = !!publishedAt && new Date(publishedAt) <= new Date();
   return <MediaShare url={url} qr={qr} fileName={`${slug}-qr.png`} published={published} />;

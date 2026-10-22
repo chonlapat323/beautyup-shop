@@ -1,4 +1,4 @@
-import { DEPARTMENTS, MENU_LOCATIONS, POST_TYPES, REGIONS, type ResourceName, type SettingKey } from "@beautyup/types";
+import { DEPARTMENTS, POST_TYPES, REGIONS, type ResourceName, type SettingKey } from "@beautyup/types";
 
 /* Field definitions drive the generic admin form and list for every resource. */
 
@@ -176,7 +176,6 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "localized", name: "label", label: "ชื่อเมนู", required: true },
       { type: "text", name: "href", label: "ลิงก์", help: "เช่น /products/fanola หรือ /fanola หรือ https://...", required: true },
       { type: "relation", name: "parentId", label: "อยู่ใต้เมนู", resource: "menu-items", nullable: true, help: "เว้นว่างถ้าเป็นเมนูหลัก" },
-      { type: "select", name: "location", label: "ตำแหน่ง", options: opts(MENU_LOCATIONS, { header: "ส่วนหัว", footer: "ท้ายเว็บ" }) },
       {
         type: "relation",
         name: "brandId",
@@ -378,7 +377,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       isActive,
     ],
     columns: [
-      { name: "name", label: "ชื่อคอลเลกชัน", kind: "localized" },
+      { name: "name", label: "ชื่อหมวดหมู่", kind: "localized" },
       { name: "slug", label: "Slug" },
       activeCol,
     ],
@@ -394,7 +393,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       isActive,
     ],
     columns: [
-      { name: "name", label: "ชื่อคอลเลกชัน", kind: "localized" },
+      { name: "name", label: "ชื่อหมวดหมู่", kind: "localized" },
       { name: "slug", label: "Slug" },
       activeCol,
     ],

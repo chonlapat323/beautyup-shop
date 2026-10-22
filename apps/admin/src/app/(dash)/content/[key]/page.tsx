@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
 import { api } from "@/lib/api";
 import { PAGE_SETTINGS, settingsUi, type PageSettingKey } from "@/lib/fields";
+import { siteUrl } from "@/lib/site";
 import { saveSetting } from "../../settings/actions";
 
 export async function generateMetadata({ params }: PageProps<"/content/[key]">): Promise<Metadata> {
@@ -21,7 +22,6 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
   const value = (await api<Record<string, unknown>>("/admin/settings"))[key];
   // Bare-list settings are edited through a single unnamed field
   const initial = ui.fields[0]?.name === "" ? { "": value ?? [] } : ((value as Record<string, unknown>) ?? {});
-  const webUrl = (process.env.WEB_URL || "http://localhost:3000").replace(/\/$/, "");
 
   return (
     <>
@@ -29,7 +29,7 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
         title={ui.title}
         description={"description" in ui ? ui.description : undefined}
         actions={
-          <a href={`${webUrl}${PAGE_SETTINGS[key].path}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline inline-flex items-center gap-1.5">
+          <a href={`${siteUrl()}${PAGE_SETTINGS[key].path}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline inline-flex items-center gap-1.5">
             <ExternalLink className="size-4" /> ดูหน้าเว็บ
           </a>
         }

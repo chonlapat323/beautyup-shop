@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
 import { resourceUi } from "@/lib/fields";
 import { loadRelations, resolveResource } from "@/lib/resources";
+import { siteUrl } from "@/lib/site";
 import { saveMenuItem, saveResource } from "../../actions";
 
 export const metadata: Metadata = { title: "เพิ่มข้อมูล" };
@@ -29,6 +30,7 @@ export default async function NewResourcePage({ params }: PageProps<"/r/[resourc
         relations={relations}
         onSave={saveMenuItem.bind(null, null)}
         redirectTo="/r/menu-items"
+        siteUrl={siteUrl()}
       />
     );
   }
