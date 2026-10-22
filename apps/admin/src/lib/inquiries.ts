@@ -4,7 +4,6 @@ export const inquiryTypeLabels: Record<string, string> = {
   SALON: "สมัครซาลอน",
   COURSE: "ลงทะเบียนเรียน",
   ISSUE: "แจ้งปัญหา",
-  PP_STUDIO: "PP STUDIO",
 };
 
 export const inquiryStatusLabels: Record<string, string> = {

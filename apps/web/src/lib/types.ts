@@ -228,5 +228,4 @@ export type InquiryType =
   | "ORDER"
   | "SALON"
   | "COURSE"
-  | "ISSUE"
-  | "PP_STUDIO";
+  | "ISSUE";
