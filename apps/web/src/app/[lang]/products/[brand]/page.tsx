@@ -6,9 +6,8 @@ import { CategoryHero } from "@/components/category-hero";
 import { CategoryProductsView } from "@/components/category-products-view";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { MenuContentRenderer } from "@/components/menu-content-renderer";
-import { PinkBlackHoleEffect } from "@/components/pink-black-hole";
 import { ProductGrid } from "@/components/product-grid";
-import { ArrowLink, Media, PageHero, SectionHeading, SocialLinks, stagger } from "@/components/ui";
+import { PageHero, SectionHeading, SocialLinks } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
 import { getBrand, getBrandCategories, getBrands, getGrowVision, getMenuItemByHref, getProducts } from "@/lib/data";
 
@@ -51,11 +50,10 @@ export default async function BrandPage({
     ? categories.find((c) => c.slug.toLowerCase() === selectedCatSlug.toLowerCase())
     : undefined;
 
-  // If menu specifies a brand or default to current slug
-  const targetBrandSlug = menuItem?.brandSlug || slug;
+  // A brand page always lists its own brand's products; the menu item can only hide them
   const showProducts = menuItem?.showProducts ?? true;
 
-  const products = showProducts ? await getProducts(lang, { brandSlug: targetBrandSlug }) : [];
+  const products = showProducts ? await getProducts(lang, { brandSlug: slug }) : [];
 
   // List products under their collection headings, in the collections' order
   const groups = categories
@@ -125,75 +123,8 @@ export default async function BrandPage({
         </div>
       </PageHero>
 
-      {/* 1. Dynamic Menu Content (Configured directly in Admin > Menu Items) */}
-      {hasMenuContent ? (
-        <MenuContentRenderer menu={menuItem} />
-      ) : (
-        /* Fallback: Brand Pillars / Feature Highlights */
-        brand.features && brand.features.length > 0 && (
-          <section className="relative border-b border-line bg-gradient-to-b from-mist/50 via-blush/20 to-mist/30 py-12 md:py-20 overflow-hidden">
-            {/* Ambient Brand-Pink Glow Backdrop (Aura ละอองแสงสีชมพู เหมือนหน้า Home) */}
-            <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[36rem] sm:size-[52rem] rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.15),transparent_70%)] blur-3xl animate-drift motion-reduce:animate-none" />
-              <div className="absolute -top-12 -right-12 size-96 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.13),transparent_65%)] blur-3xl" />
-              <div className="absolute -bottom-12 -left-12 size-96 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.11),transparent_65%)] blur-3xl" />
-            </div>
-
-            {/* Floating Dreamy Pink Dust Particles (ละอองสีชมพูเหมือนหน้า Home) */}
-            <PinkBlackHoleEffect count={70} className="absolute inset-0 size-full pointer-events-none z-0" />
-
-            <div className="container-page relative z-10">
-              <div className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
-                <p className="eyebrow text-brand-pink font-semibold">Specialized Collections</p>
-                <h2 className="mt-2 font-display text-3xl sm:text-4xl text-ink">
-                  {lang === "th" ? "หมวดหมู่ผลิตภัณฑ์หลัก" : "Specialized Collections"}
-                </h2>
-                <p className="mt-3 text-sm sm:text-base text-muted">
-                  {lang === "th"
-                    ? "4 คอลเลกชันคุณภาพเพื่อช่างผมมืออาชีพและร้านซาลอนชั้นนำ"
-                    : "4 Professional collections for salons and stylists"}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {brand.features.map((feat, i) => (
-                  <div
-                    key={i}
-                    data-reveal
-                    suppressHydrationWarning
-                    style={stagger(i)}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-brand-pink/30"
-                  >
-                    <div>
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-sm font-semibold text-accent-dark">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <h3 className="mt-4 font-display text-xl sm:text-2xl font-semibold text-ink group-hover:text-accent transition-colors">
-                        {feat.title}
-                      </h3>
-                      {feat.description && (
-                        <p className="mt-3 text-sm leading-relaxed text-muted line-clamp-6">
-                          {feat.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-line/60">
-                      <Link
-                        href={feat.href || "#products"}
-                        className="btn-pill !text-xs sm:!text-sm group-hover:border-brand-pink group-hover:text-brand-pink"
-                      >
-                        <span>{dict.common.viewProducts || (lang === "th" ? "ดูสินค้า" : "View products")}</span>
-                        <span className="transition-transform group-hover:translate-x-1">→</span>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )
-      )}
+      {/* Content from the brand's menu item (Admin → เมนูและหน้าเว็บ) */}
+      {hasMenuContent && <MenuContentRenderer menu={menuItem} lang={lang} />}
 
       {/* Visual Category Grid (Pinterest Moodboard - Below Specialized Collections) */}
       {categories.length > 0 && (

@@ -18,7 +18,6 @@ import {
   Sparkles,
   Trash2,
   Package,
-  MenuSquare,
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
@@ -125,6 +124,8 @@ export function MenuItemVisualEditor({
   // loadRelations keys options by resource name, not by field name
   const brandOptions = relations.brands || [];
   const parentOptions = relations["menu-items"] || [];
+  // Brand pages take their title, description and products from the brand in the URL
+  const isBrandPage = /^\/products\/[^/]+\/?$/.test(data.href ?? "");
   const selectedBrand = brandOptions.find((b) => b.value === data.brandId);
 
   const handleSave = () => {
@@ -164,11 +165,11 @@ export function MenuItemVisualEditor({
                 {data.label?.[inputLang] ? `${data.label[inputLang]} (${data.href})` : title}
               </h1>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
-                <Sparkles className="size-3" /> Visual Builder
+                <Sparkles className="size-3" /> ตัวแก้ไขหน้าเว็บ
               </span>
             </div>
             <p className="mt-0.5 text-xs text-muted">
-              สร้างหรือแก้ไขเนื้อหาหน้าเว็บด้วย Component สวยๆ พร้อมจอ Realtime Preview ด้านขวา
+              แก้ไขเมนูและเนื้อหาของหน้านี้ ดูตัวอย่างหน้าเว็บได้ทางขวา
             </p>
           </div>
         </div>
@@ -223,9 +224,9 @@ export function MenuItemVisualEditor({
           <div className="flex items-center justify-between border-b border-line bg-white rounded-t-xl px-2 pt-2 shadow-2xs">
             <nav className="flex space-x-1" aria-label="Tabs">
               {[
-                { id: "general", label: "ข้อมูลเมนู & แบรนด์", count: undefined },
-                { id: "slides", label: "ภาพสไลด์แบนเนอร์", count: data.slides?.length },
-                { id: "sections", label: "บล็อกเนื้อหา (Component)", count: data.sections?.length },
+                { id: "general", label: "ข้อมูลเมนู", count: undefined },
+                { id: "slides", label: "สไลด์", count: data.slides?.length },
+                { id: "sections", label: "ส่วนเนื้อหา", count: data.sections?.length },
               ].map((t) => (
                 <button
                   key={t.id}
@@ -284,8 +285,8 @@ export function MenuItemVisualEditor({
             {activeTab === "general" && (
               <div className="space-y-4">
                 <div className="border-b border-line pb-3">
-                  <h2 className="text-sm font-bold text-ink">ข้อมูลเมนูและเส้นทาง (Routing)</h2>
-                  <p className="text-xs text-muted">กำหนดชื่อเมนู ลิงก์ปลายทาง และการผูกสินค้าของแบรนด์</p>
+                  <h2 className="text-sm font-bold text-ink">ข้อมูลเมนู</h2>
+                  <p className="text-xs text-muted">ชื่อเมนู ลิงก์ และตำแหน่งในเมนู</p>
                 </div>
 
                 <div className="space-y-3">
@@ -309,7 +310,7 @@ export function MenuItemVisualEditor({
 
                   <div>
                     <label className="block text-xs font-semibold text-ink mb-1">
-                      ลิงก์ (URL Path) <span className="text-brand">*</span>
+                      ลิงก์ <span className="text-brand">*</span>
                     </label>
                     <input
                       type="text"
@@ -349,13 +350,13 @@ export function MenuItemVisualEditor({
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">อยู่ใต้เมนูหลัก (Submenu)</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">อยู่ใต้เมนู</label>
                       <select
                         className="input w-full text-xs"
                         value={data.parentId ?? ""}
                         onChange={(e) => setData({ ...data, parentId: e.target.value || null })}
                       >
-                        <option value="">— เป็นเมนูหลัก (Main Menu) —</option>
+                        <option value="">— เป็นเมนูหลัก —</option>
                         {parentOptions.map((opt) => (
                           <option key={opt.value} value={opt.value}>
                             {opt.label}
@@ -365,13 +366,16 @@ export function MenuItemVisualEditor({
                     </div>
                   </div>
 
-                  {/* Brand Attachment Component */}
+                  {/* Products on the page. A brand page (/products/<brand>) always shows its own brand. */}
                   <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
                     <div className="flex items-center gap-2">
                       <Package className="size-4 text-brand" />
-                      <h3 className="text-xs font-bold text-ink">ดึงสินค้าของแบรนด์มาแสดงในหน้านี้อัตโนมัติ</h3>
+                      <h3 className="text-xs font-bold text-ink">สินค้าในหน้านี้</h3>
                     </div>
 
+                    {isBrandPage ? (
+                      <p className="text-xs text-muted">หน้าแบรนด์แสดงสินค้าของแบรนด์ตามลิงก์ ({data.href}) ให้อัตโนมัติ</p>
+                    ) : (
                     <div>
                       <label className="block text-xs font-medium text-muted mb-1">เลือกแบรนด์ที่ต้องการแสดง</label>
                       <select
@@ -387,8 +391,9 @@ export function MenuItemVisualEditor({
                         ))}
                       </select>
                     </div>
+                    )}
 
-                    {data.brandId && (
+                    {(isBrandPage || data.brandId) && (
                       <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-ink pt-1">
                         <input
                           type="checkbox"
@@ -396,13 +401,13 @@ export function MenuItemVisualEditor({
                           onChange={(e) => setData({ ...data, showProducts: e.target.checked })}
                           className="size-4 accent-brand rounded"
                         />
-                        เปิดแสดงกล่องสินค้า (Product Grid Showcase) ที่ด้านล่างของหน้า
+                        แสดงรายการสินค้าด้านล่างของหน้า
                       </label>
                     )}
                   </div>
 
                   {/* Page Hero Header Inputs (brand pages show the brand's own name and description) */}
-                  {data.brandId ? (
+                  {isBrandPage ? (
                     <p className="mt-3 rounded-xl border border-line bg-mist/30 p-3.5 text-xs text-muted">
                       หัวเรื่องของหน้าแบรนด์ใช้ชื่อและคำอธิบายจากเมนู แบรนด์ แก้ได้ที่นั่น
                     </p>
@@ -411,14 +416,14 @@ export function MenuItemVisualEditor({
                     <div className="flex items-center gap-2">
                       <Sparkles className="size-4 text-brand" />
                       <div>
-                        <h3 className="text-xs font-bold text-ink">หัวเรื่องบนหน้าเว็บ (Page Hero & Header)</h3>
-                        <p className="text-[11px] text-muted">กำหนดคำโปรย หัวเรื่องใหญ่ และคำบรรยายด้านบนสุดของหน้า</p>
+                        <h3 className="text-xs font-bold text-ink">หัวเรื่องด้านบนของหน้า</h3>
+                        <p className="text-[11px] text-muted">เว้นว่างได้ จะใช้ชื่อเมนูเป็นหัวเรื่อง</p>
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-ink mb-1">
-                        คำโปรยด้านบน (Eyebrow) [{inputLang.toUpperCase()}]
+                        ข้อความเล็กเหนือหัวเรื่อง [{inputLang.toUpperCase()}]
                       </label>
                       <input
                         type="text"
@@ -436,7 +441,7 @@ export function MenuItemVisualEditor({
 
                     <div>
                       <label className="block text-xs font-semibold text-ink mb-1">
-                        หัวเรื่องใหญ่ (Hero Headline) [{inputLang.toUpperCase()}]
+                        หัวเรื่อง [{inputLang.toUpperCase()}]
                       </label>
                       <input
                         type="text"
@@ -454,7 +459,7 @@ export function MenuItemVisualEditor({
 
                     <div>
                       <label className="block text-xs font-semibold text-ink mb-1">
-                        คำบรรยายใต้หัวเรื่อง (Hero Description) [{inputLang.toUpperCase()}]
+                        คำอธิบายใต้หัวเรื่อง [{inputLang.toUpperCase()}]
                       </label>
                       <textarea
                         rows={2}
@@ -480,8 +485,8 @@ export function MenuItemVisualEditor({
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-line pb-3">
                   <div>
-                    <h2 className="text-sm font-bold text-ink">ภาพสไลด์แบนเนอร์ใหญ่ประจำเมนู (16:9)</h2>
-                    <p className="text-xs text-muted">แบนเนอร์สไลด์เลื่อนอัตโนมัติ พร้อมเอฟเฟกต์ละอองแสงสีชมพู</p>
+                    <h2 className="text-sm font-bold text-ink">สไลด์ภาพด้านบนของหน้า (16:9)</h2>
+                    <p className="text-xs text-muted">สไลด์เลื่อนอัตโนมัติ ไม่ใส่ก็ได้</p>
                   </div>
                 </div>
 
@@ -489,8 +494,8 @@ export function MenuItemVisualEditor({
                   {(!data.slides || data.slides.length === 0) ? (
                     <div className="rounded-xl border border-dashed border-line p-8 text-center bg-mist/30">
                       <ImagePlus className="size-8 mx-auto text-muted/60 mb-2" />
-                      <p className="text-xs text-muted">ยังไม่ได้ใส่ภาพสไลด์แบนเนอร์ในเมนูนี้</p>
-                      <p className="text-[11px] text-muted/80 mt-1">กดปุ่มด้านล่างเพื่อเพิ่มภาพสไลด์แบนเนอร์ 16:9 สวยๆ ได้เลย</p>
+                      <p className="text-xs text-muted">ยังไม่มีสไลด์ในหน้านี้</p>
+                      <p className="text-[11px] text-muted/80 mt-1">กดปุ่มด้านล่างเพื่อเพิ่มสไลด์</p>
                     </div>
                   ) : (
                     data.slides.map((s, idx) => (
@@ -633,7 +638,7 @@ export function MenuItemVisualEditor({
                     }
                     className="btn btn-secondary w-full !min-h-9 text-xs font-medium flex items-center justify-center gap-1.5 border-dashed"
                   >
-                    <Plus className="size-4" /> เพิ่มภาพสไลด์แบนเนอร์ประจำเมนู
+                    <Plus className="size-4" /> เพิ่มสไลด์
                   </button>
                 </div>
               </div>
@@ -643,17 +648,17 @@ export function MenuItemVisualEditor({
             {activeTab === "sections" && (
               <div className="space-y-4">
                 <div className="border-b border-line pb-3">
-                  <h2 className="text-sm font-bold text-ink">บล็อกเนื้อหาประจำหน้า (Dynamic Content Blocks)</h2>
+                  <h2 className="text-sm font-bold text-ink">ส่วนเนื้อหาของหน้า</h2>
                   <p className="text-xs text-muted">
-                    เลือกใส่ Component สวยๆ เช่น สไลด์ผมวงรีแคปซูล, การ์ด 4 คอลัมน์แบบ Wix, รูปซ้ายข้อความขวา
+                    เพิ่มได้หลายส่วน เช่น สไลด์ผลงานทรงผม, การ์ด 4 ใบ, รูปคู่ข้อความ
                   </p>
                 </div>
 
                 {(!data.sections || data.sections.length === 0) ? (
                   <div className="rounded-xl border border-dashed border-line p-8 text-center bg-mist/30">
                     <Layers className="size-8 mx-auto text-muted/60 mb-2" />
-                    <p className="text-xs text-muted">ยังไม่มีบล็อกเนื้อหาในหน้านี้</p>
-                    <p className="text-[11px] text-muted/80 mt-1">กดเลือก Component ด้านล่างเพื่อเริ่มสร้างหน้าเว็บได้เลย</p>
+                    <p className="text-xs text-muted">ยังไม่มีส่วนเนื้อหาในหน้านี้</p>
+                    <p className="text-[11px] text-muted/80 mt-1">กดปุ่มด้านล่างเพื่อเพิ่มส่วนเนื้อหา</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -667,12 +672,12 @@ export function MenuItemVisualEditor({
                             <span className="grid size-5 place-items-center rounded-full bg-sand text-[10px] text-ink">
                               {idx + 1}
                             </span>
-                            {sec.title?.[inputLang] || `บล็อกที่ ${idx + 1}`}
+                            {sec.title?.[inputLang] || `ส่วนที่ ${idx + 1}`}
                             <span className="rounded bg-sand px-2 py-0.5 text-[10px] text-muted">
                               {sec.layout === "oval-carousel"
-                                ? "สไลด์วงรีแคปซูล"
+                                ? "สไลด์ผลงานทรงผม"
                                 : sec.layout === "columns"
-                                  ? "การ์ด 4 คอลัมน์ Wix"
+                                  ? "การ์ด 4 ใบ"
                                   : sec.layout}
                             </span>
                           </span>
@@ -720,7 +725,7 @@ export function MenuItemVisualEditor({
                         {/* Layout Selector */}
                         <div>
                           <label className="block text-[11px] font-semibold text-ink mb-1">
-                            รูปแบบ Component (Layout)
+                            รูปแบบ
                           </label>
                           <select
                             className="input w-full text-xs font-medium"
@@ -732,14 +737,14 @@ export function MenuItemVisualEditor({
                             }}
                           >
                             <option value="oval-carousel">
-                              🌟 สไลเดอร์ทรงรีแคปซูล (Oval Carousel - แกลเลอรีผมซาลอน พื้นหลังดำทอง)
+                              สไลด์ผลงานทรงผม (รูปทรงรี เลื่อนดูได้)
                             </option>
                             <option value="columns">
-                              🎴 การ์ดภาพ 4 คอลัมน์ (แบบ Wix: ภาพสูง + กล่องข้อความลอย + ละอองสีชมพู)
+                              การ์ด 4 ใบ (รูปสูง พร้อมกล่องข้อความ)
                             </option>
-                            <option value="left-image">🖼️ ภาพด้านซ้าย - ข้อความด้านขวา</option>
-                            <option value="right-image">🖼️ ข้อความด้านซ้าย - ภาพด้านขวา</option>
-                            <option value="text-only">📝 ข้อความและหัวข้อกึ่งกลาง</option>
+                            <option value="left-image">รูปซ้าย ข้อความขวา</option>
+                            <option value="right-image">ข้อความซ้าย รูปขวา</option>
+                            <option value="text-only">ข้อความอย่างเดียว (กึ่งกลาง)</option>
                           </select>
                         </div>
 
@@ -787,7 +792,7 @@ export function MenuItemVisualEditor({
                                 />
                                 <input
                                   type="text"
-                                  placeholder="หรือวาง URL รูป..."
+                                  placeholder="หรือวางลิงก์รูป..."
                                   value={sec.imageUrl ?? ""}
                                   onChange={(e) => {
                                     const arr = [...(data.sections || [])];
@@ -830,7 +835,7 @@ export function MenuItemVisualEditor({
                           <div className="rounded-lg border border-line bg-white p-3 space-y-3 mt-2">
                             <div className="flex items-center justify-between border-b border-line/40 pb-2">
                               <span className="text-[11px] font-bold text-ink">
-                                {sec.layout === "oval-carousel" ? "รายการทรงผมวงรีแคปซูล" : "รายการการ์ด 4 คอลัมน์"} ({sec.cards?.length || 0} รายการ)
+                                {sec.layout === "oval-carousel" ? "รายการผลงานทรงผม" : "รายการการ์ด"} ({sec.cards?.length || 0} รายการ)
                               </span>
                               <button
                                 type="button"
@@ -889,7 +894,7 @@ export function MenuItemVisualEditor({
                                     />
                                     <input
                                       type="text"
-                                      placeholder="URL รูป..."
+                                      placeholder="ลิงก์รูป..."
                                       value={card.imageUrl ?? ""}
                                       onChange={(e) => {
                                         const arr = [...(data.sections || [])];
@@ -923,7 +928,7 @@ export function MenuItemVisualEditor({
                                       type="text"
                                       placeholder={
                                         sec.layout === "oval-carousel"
-                                          ? `สูตรทำสี / ป้ายกำกับ (Formula) [${inputLang.toUpperCase()}]`
+                                          ? `สูตรทำสี / ป้ายกำกับ [${inputLang.toUpperCase()}]`
                                           : `คำบรรยายการ์ด [${inputLang.toUpperCase()}]`
                                       }
                                       value={card.description?.[inputLang] ?? ""}
@@ -987,7 +992,7 @@ export function MenuItemVisualEditor({
                     }
                     className="btn btn-secondary !min-h-9 text-xs font-semibold flex items-center justify-center gap-1.5 border-dashed bg-amber-50/50 text-amber-800 border-amber-300"
                   >
-                    <Sparkles className="size-3.5 text-amber-600" /> + สไลด์ทรงผมวงรีแคปซูล
+                    <Sparkles className="size-3.5 text-amber-600" /> + สไลด์ผลงานทรงผม
                   </button>
 
                   <button
@@ -1013,7 +1018,7 @@ export function MenuItemVisualEditor({
                     }
                     className="btn btn-secondary !min-h-9 text-xs font-semibold flex items-center justify-center gap-1.5 border-dashed bg-pink-50/50 text-pink-800 border-pink-300"
                   >
-                    <Plus className="size-3.5 text-pink-600" /> + การ์ด 4 คอลัมน์ (แบบ Wix)
+                    <Plus className="size-3.5 text-pink-600" /> + การ์ด 4 ใบ
                   </button>
                 </div>
               </div>

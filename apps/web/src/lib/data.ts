@@ -157,7 +157,7 @@ export async function getMenuItemByHref(lang: Locale, href: string): Promise<Men
 /* ------------------------------------------------------------- settings */
 
 interface CompanyRow {
-  name: L; address: L; phones: string[]; email: string; taxId: string; mapUrl: string; facebookGroup: string;
+  name: L; address: L; phones: string[]; email: string; taxId: string; mapUrl: string;
   departments: { name: L; phone: string }[];
   bankAccounts: { bank: L; accountName: L; accountNo: string }[];
 }
@@ -233,7 +233,6 @@ export async function getCompany(lang: Locale): Promise<CompanyInfo> {
     email: c?.email ?? "",
     taxId: c?.taxId ?? "",
     mapUrl: c?.mapUrl ?? "",
-    facebookGroup: c?.facebookGroup ?? "",
     departments: (c?.departments ?? []).map((d) => ({ name: t(d.name, lang), phone: d.phone })),
     bankAccounts: (c?.bankAccounts ?? []).map((b) => ({ bank: t(b.bank, lang), accountName: t(b.accountName, lang), accountNo: b.accountNo })),
   };
@@ -375,7 +374,7 @@ export async function getCurrentYear() {
 
 interface BrandRow extends Row {
   slug: string; type: "SALON" | "COUNTER"; name: string; localName: L; country: L; tagline: L; description: L;
-  highlights: L[]; features?: { title: L; description?: L; href?: string; imageUrl?: string }[];
+  highlights: L[];
   logoUrl: string; website: string; catalogUrl: string; socials: Brand["socials"];
 }
 
@@ -388,12 +387,6 @@ const toBrand = (b: BrandRow, lang: Locale): Brand => ({
   tagline: s(t(b.tagline, lang)),
   description: s(t(b.description, lang)),
   highlights: (b.highlights ?? []).map((h) => t(h, lang)).filter(Boolean),
-  features: (b.features ?? []).map((f) => ({
-    title: t(f.title, lang),
-    description: s(t(f.description, lang)),
-    href: f.href || "",
-    imageUrl: s(f.imageUrl),
-  })),
   logoUrl: s(b.logoUrl),
   website: s(b.website),
   catalogUrl: s(b.catalogUrl),

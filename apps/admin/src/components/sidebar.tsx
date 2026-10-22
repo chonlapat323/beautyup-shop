@@ -8,7 +8,6 @@ import {
   Film,
   FolderTree,
   GraduationCap,
-  History,
   Images,
   Inbox,
   Layers,
@@ -37,7 +36,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { logout } from "@/app/login/actions";
 
-type Item = { href: string; label: string; icon: LucideIcon; badge?: number; adminOnly?: boolean };
+/** `also`: other pages that belong to this entry (tabs of the same page) */
+type Item = { href: string; label: string; icon: LucideIcon; badge?: number; adminOnly?: boolean; also?: string[] };
 
 const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
@@ -59,19 +59,17 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     items: [
       { href: "/r/menu-items", label: "เมนูและหน้าเว็บ", icon: MenuSquare },
       { href: "/r/hero-slides", label: "สไลด์หน้าแรก", icon: Images },
-      { href: "/content/about", label: "หน้าเกี่ยวกับเรา", icon: Building2 },
-      { href: "/content/aboutSlides", label: "สไลด์หน้าเกี่ยวกับเรา", icon: Images },
-      { href: "/content/timeline", label: "เส้นทางของบิวตี้อัพ", icon: History },
-      { href: "/r/pages", label: "หน้าเนื้อหา (ข้อความล้วน)", icon: FileText },
+      { href: "/content/about", label: "หน้าเกี่ยวกับเรา", icon: Building2, also: ["/content/aboutSlides", "/content/timeline"] },
+      { href: "/r/pages", label: "หน้าข้อความ", icon: FileText },
       { href: "/r/posts", label: "บทความ / กิจกรรม", icon: Newspaper },
-      { href: "/r/videos", label: "วิดีโอ", icon: Clapperboard },
+      { href: "/r/videos", label: "วิดีโอหน้าแรก", icon: Clapperboard },
       { href: "/r/courses", label: "คอร์สเรียน", icon: GraduationCap },
     ],
   },
   {
     title: "มีเดีย",
     items: [
-      { href: "/r/media", label: "มีเดีย (รูป / วิดีโอ)", icon: Film },
+      { href: "/r/media", label: "มีเดีย", icon: Film },
       { href: "/r/media-categories", label: "หมวดหมู่มีเดีย", icon: FolderTree },
     ],
   },
@@ -88,7 +86,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     items: [
       { href: "/r/salons", label: "ซาลอนพันธมิตร", icon: Store },
       { href: "/r/ambassadors", label: "แบรนด์แอมบาสเดอร์", icon: Sparkles },
-      { href: "/content/vipCustomer", label: "แบนเนอร์ VIP Customer", icon: Crown },
+      { href: "/content/vipCustomer", label: "แบนเนอร์ลูกค้า VIP", icon: Crown },
       { href: "/r/team", label: "ทีมงาน", icon: Users },
       { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound },
     ],
@@ -106,7 +104,8 @@ export function Sidebar({ user, newInquiries }: { user: { name: string; email: s
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   // Whole-segment match, so /r/media does not also light up on /r/media-categories
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+  const isActive = (href: string, also: string[] = []) =>
+    href === "/" ? pathname === "/" : [href, ...also].some((h) => pathname === h || pathname.startsWith(`${h}/`));
 
   const nav = (
     <nav aria-label="เมนูหลังบ้าน" className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin]" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
@@ -116,14 +115,14 @@ export function Sidebar({ user, newInquiries }: { user: { name: string; email: s
           <ul className="space-y-0.5">
             {g.items
               .filter((it) => !it.adminOnly || user.role === "ADMIN")
-              .map(({ href, label, icon: Icon, badge }) => (
+              .map(({ href, label, icon: Icon, badge, also }) => (
                 <li key={href}>
                   <Link
                     href={href}
-                    aria-current={isActive(href) ? "page" : undefined}
+                    aria-current={isActive(href, also) ? "page" : undefined}
                     className={clsx(
                       "flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
-                      isActive(href) ? "bg-brand-soft font-medium text-brand" : "text-ink/80 hover:bg-sand hover:text-ink",
+                      isActive(href, also) ? "bg-brand-soft font-medium text-brand" : "text-ink/80 hover:bg-sand hover:text-ink",
                     )}
                   >
                     <Icon className="size-4 shrink-0" />

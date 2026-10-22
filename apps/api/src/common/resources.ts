@@ -34,7 +34,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     model: 'menuItem',
     orderBy: [{ location: 'asc' }, ...byOrder],
     hasActive: true,
-    include: { brand: { select: { id: true, slug: true, name: true } } },
+    include: { brand: { select: { id: true, slug: true, name: true } }, parent: { select: { id: true, label: true } } },
   },
   'hero-slides': {
     model: 'heroSlide',

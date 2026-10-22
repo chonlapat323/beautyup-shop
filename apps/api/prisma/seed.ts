@@ -78,7 +78,6 @@ async function seedSettings() {
       email: 'beautyup.enterprise@gmail.com',
       taxId: '0135558007001',
       mapUrl: 'https://maps.google.com/?q=BeautyUp+Enterprise+Lampang',
-      facebookGroup: 'https://www.facebook.com/groups/582427686617116',
       departments: [
         { name: L('ฝ่ายการเงินและบัญชี', 'Finance & Accounting'), phone: '063-779-2433' },
         { name: L('ฝ่ายกฎหมาย', 'Legal'), phone: '063-779-2433' },
@@ -146,44 +145,6 @@ async function seedBrands() {
       tagline: L('ปลดปล่อยความคิดสร้างสรรค์และความเป็นที่สุดของคุณ!', 'Unleash your creativity and be your very best!'),
       description: L('ผลิตภัณฑ์นำเข้าจากอิตาลีสำหรับร้านเสริมสวยและช่างผมมืออาชีพ', 'Imported from Italy for salons and professional hairdressers'),
       highlights: [L('Fashion precision', 'Fashion precision'), L('Creative thinking', 'Creative thinking'), L('ปกป้องและฟื้นฟู', 'Protect & restore'), L('หนังศีรษะสุขภาพดี', 'Healthy scalp'), L('Vegan', 'Vegan')],
-      features: [
-        {
-          title: L('ผลิตภัณฑ์ดูแลผม', 'Hair Care Products'),
-          description: L(
-            'การดูแลผมที่มีประสิทธิภาพตั้งแต่เส้นผมรากผมและหนังศีรษะช่วยให้ผมแข็งแรงนุ่มสลวยเงางามมีน้ำหนัก สุขภาพดีตั้งแต่ภายใน ป้องกันการสร้างเม็ดสีแฝง (เหลือง ส้ม แดง) ที่เกิดขึ้นใหม่ตลอดเวลา ผลิตภัณฑ์ฟาโนลามีกลิ่นหอมหรูหราด้วยแรงบันดาลใจจากน้ำหอมชั้นดี ปกป้องเส้นผมจากมลภาวะแสงแดดสารเคมีและความร้อน ทำให้เส้นผมสีสันสวยงามอยู่ทนนานเป็นพิเศษเหมือนออกจากซาลอนทุกวัน',
-            'Effective hair care from root to tip and scalp, enhancing strength, silky smoothness, shine, and inner vitality. Prevents unwanted undertones (yellow, orange, red) while shielding hair from heat and pollution.',
-          ),
-          href: '#fanola-hair-care',
-          imageUrl: '',
-        },
-        {
-          title: L('ผลิตภัณฑ์ทำสีผม', 'Hair Color Products'),
-          description: L(
-            'การทำสีผมที่มีความแตกต่าง มีรายละเอียดสูง เอกลักษณ์โดดเด่น ตอบโจทย์ความคิดสร้างสรรค์ สีทำผม 5 คอลเลคชั่น การทำงานของสีรวดเร็ว เม็ดสีติดแน่นทนนาน ไม่ติดแดงติดส้ม มีสารป้องกันเม็ดสีเหลืองแฝงในเส้นผม ช่วยให้ทำสีได้สวย ตรงใจ สีย้อมผมที่ให้ความเงางามมีระดับปราศจากกลิ่นฉุนไม่พึงประสงค์ ปราศจากแอมโมเนียและสารก่อมะเร็ง มีส่วนผสมพิเศษ อาทิ ทองคำ 24k เคราติน อาร์แกนออยล์',
-            'Exceptional hair color with 5 distinctive collections. Fast-acting, rich, long-lasting pigments without brassiness. Ammonia-free, enriched with 24k gold, keratin, and argan oil.',
-          ),
-          href: '#fanola-salon',
-          imageUrl: '',
-        },
-        {
-          title: L('ผลิตภัณฑ์ฟอกสีผม', 'Hair Bleaching Products'),
-          description: L(
-            'การฟอกสีผม ด้วยความเข้าใจในสภาพเส้นผมและความต้องการที่แตกต่างกัน รองรับการฟอกผมทุกสภาพทุกสไตล์ ด้วยผลิตภัณฑ์ฟอกผม 8 แบบ ตั้งแต่การยกระดับ 9 ระดับ รวดเร็วให้ความสว่างสดใส, ครีมฟอกที่ให้ความนวลกลมกลืน และอ่อนโยนแม้กับเส้นผมอ่อนแอเส้นเล็ก, ผงฟอกแม่ม่วง/แม่น้ำเงิน/แม่เขียว กำจัดเม็ดสีเหลือง/ส้ม/แดง อย่างตรงจุด ทนุถนอมเส้นผมและเพิ่มความชุ่มชื้น ผมไม่แห้ง ผมเงางาม สุขภาพดี',
-            'Advanced lightening with 8 formulas lifting up to 9 levels. Gentle bleaching cream for fragile hair, specialized violet/blue/green toning bleaches to neutralize yellow/orange/red undertones.',
-          ),
-          href: '#fanola-salon',
-          imageUrl: '',
-        },
-        {
-          title: L('ผลิตภัณฑ์ยืดดัดผม', 'Perm & Straightening'),
-          description: L(
-            'การดัดผม ยืดผมด้วยน้ำยาที่มีส่วนผสมพิเศษ อาทิ โปรตีนอัลมอนด์ สูตรปราศจากแอมโมเนีย อ่อนโยนต่อเส้นผม ปลอดภัยต่อสุขภาพในระยะยาว น้ำยาดัดผมกลิ่นอ่อนโยน กลิ่นไม่ฉุน ขั้นตอนการทำงานไม่ยุ่งยาก น้ำยาดัดเย็น และ น้ำยาดัด/ยืดดิจิตอล สามารถดัดผมอ่อนแอและผมแข็งแรงได้อย่างมีประสิทธิภาพ ให้ผลลัพธ์คือ ผมสวยลอนเด้งกระชับ อยู่ทรงนานและผมมีสุขภาพดีเงางาม',
-            'Ammonia-free straightening and perming enriched with almond protein. Gentle scent, easy application for cold and digital perm, leaving hair bouncy, resilient, and full of natural shine.',
-          ),
-          href: '#fanola-salon',
-          imageUrl: '',
-        },
-      ],
       logoUrl: '/brands/fanola.png',
       website: 'https://www.fanola.it/fa_en/',
       socials: { youtube: 'https://www.youtube.com/@FanolaOfficial' },

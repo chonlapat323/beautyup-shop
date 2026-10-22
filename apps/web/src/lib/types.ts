@@ -51,13 +51,6 @@ export interface Socials {
 
 export type BrandType = "SALON" | "COUNTER";
 
-export interface BrandFeatureItem {
-  title: string;
-  description?: string;
-  href?: string;
-  imageUrl?: string;
-}
-
 export interface Brand {
   slug: string;
   type: BrandType;
@@ -67,7 +60,6 @@ export interface Brand {
   tagline?: string;
   description?: string;
   highlights?: string[];
-  features?: BrandFeatureItem[];
   logoUrl?: string;
   website?: string;
   catalogUrl?: string;
@@ -227,7 +219,6 @@ export interface CompanyInfo {
   email: string;
   taxId: string;
   mapUrl: string;
-  facebookGroup: string;
   departments: { name: string; phone: string }[];
   bankAccounts: { bank: string; accountName: string; accountNo: string }[];
 }

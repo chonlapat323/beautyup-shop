@@ -129,14 +129,6 @@ export const menuItemInput = z.object({
   isActive,
 });
 
-export const brandFeatureSchema = z.object({
-  title: localized,
-  description: localizedOptional,
-  href: z.string().trim().default(""),
-  imageUrl: url.optional().default(""),
-});
-export type BrandFeature = z.infer<typeof brandFeatureSchema>;
-
 export const brandInput = z.object({
   slug,
   type: z.enum(BRAND_TYPES),
@@ -146,8 +138,6 @@ export const brandInput = z.object({
   tagline: localizedOptional,
   description: localizedOptional,
   highlights: z.array(localized).default([]),
-  /** Hidden in the admin (cards are edited per menu); left untouched when not sent */
-  features: z.array(brandFeatureSchema).optional(),
   logoUrl: url,
   website: url,
   catalogUrl: url,
@@ -423,7 +413,6 @@ export const companySetting = z.object({
   email: z.string().default(""),
   taxId: z.string().default(""),
   mapUrl: z.string().default(""),
-  facebookGroup: z.string().default(""),
   departments: z.array(z.object({ name: localized, phone: z.string() })).default([]),
   bankAccounts: z
     .array(z.object({ bank: localized, accountName: localized, accountNo: z.string() }))
@@ -491,14 +480,14 @@ export const settingSchemas = {
  * ------------------------------------------------------------------------- */
 
 export const resources = {
-  "menu-items": { schema: menuItemInput, label: "เมนู" },
+  "menu-items": { schema: menuItemInput, label: "เมนูและหน้าเว็บ" },
   "hero-slides": { schema: heroSlideInput, label: "สไลด์หน้าแรก" },
   brands: { schema: brandInput, label: "แบรนด์" },
   categories: { schema: categoryInput, label: "คอลเลกชัน" },
   products: { schema: productInput, label: "สินค้า" },
-  videos: { schema: videoInput, label: "วิดีโอ" },
+  videos: { schema: videoInput, label: "วิดีโอหน้าแรก" },
   ambassadors: { schema: ambassadorInput, label: "แบรนด์แอมบาสเดอร์" },
-  salons: { schema: salonInput, label: "ซาลอน" },
+  salons: { schema: salonInput, label: "ซาลอนพันธมิตร" },
   courses: { schema: courseInput, label: "คอร์สเรียน" },
   posts: { schema: postInput, label: "บทความ / กิจกรรม" },
   media: { schema: mediaInput, label: "มีเดีย" },
@@ -506,7 +495,7 @@ export const resources = {
   "forum-categories": { schema: forumCategoryInput, label: "หมวดหมู่ฟอรั่ม" },
   "forum-topics": { schema: forumTopicInput, label: "กระทู้" },
   "forum-replies": { schema: forumReplyInput, label: "ความคิดเห็น" },
-  pages: { schema: pageInput, label: "หน้าเนื้อหา" },
+  pages: { schema: pageInput, label: "หน้าข้อความ" },
   team: { schema: teamMemberInput, label: "ทีมงาน" },
 } as const;
 export type ResourceName = keyof typeof resources;

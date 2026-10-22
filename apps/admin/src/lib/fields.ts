@@ -2,15 +2,23 @@ import { DEPARTMENTS, POST_TYPES, REGIONS, type ResourceName, type SettingKey } 
 
 /* Field definitions drive the generic admin form and list for every resource. */
 
-export type Option = { value: string; label: string };
+/** `parent` lets a dependent dropdown show only some options (e.g. collections of the chosen brand) */
+export type Option = { value: string; label: string; parent?: string };
 
-export type Field =
-  | { type: "text" | "textarea" | "url" | "color" | "date"; name: string; label: string; help?: string; required?: boolean }
+/** Extras every field accepts */
+type FieldExtras = {
+  /** Show the field only while another field has this value (e.g. brand type SALON) */
+  showIf?: { field: string; equals: string };
+};
+
+export type Field = FieldExtras &
+  (
+  | { type: "text" | "textarea" | "url" | "color" | "date"; name: string; label: string; help?: string; required?: boolean; /** Fill this field from another one (slug from name) until edited by hand */ slugFrom?: string }
   | { type: "number"; name: string; label: string; help?: string; required?: boolean; step?: string }
   | { type: "localized" | "localizedTextarea"; name: string; label: string; help?: string; required?: boolean }
   | { type: "boolean"; name: string; label: string; help?: string }
   | { type: "select"; name: string; label: string; options: Option[]; help?: string; required?: boolean }
-  | { type: "relation"; name: string; label: string; resource: ResourceName; nullable?: boolean; help?: string; required?: boolean }
+  | { type: "relation"; name: string; label: string; resource: ResourceName; nullable?: boolean; help?: string; required?: boolean; /** Only options whose parent equals this field's value */ filterBy?: string }
   /** Pick any number of rows; the value is an array of ids */
   | { type: "relations"; name: string; label: string; resource: ResourceName; help?: string }
   | { type: "image" | "file"; name: string; label: string; help?: string }
@@ -18,7 +26,8 @@ export type Field =
   | { type: "images"; name: string; label: string; help?: string; max?: number }
   | { type: "tags"; name: string; label: string; help?: string; suggestions?: string[] }
   | { type: "socials"; name: string; label: string; help?: string }
-  | { type: "list"; name: string; label: string; item: Field[]; help?: string };
+  | { type: "list"; name: string; label: string; item: Field[]; help?: string }
+  );
 
 export type Column = {
   name: string;
@@ -38,7 +47,7 @@ export const regionLabels: Record<string, string> = {
 export const postTypeLabels: Record<string, string> = { ARTICLE: "บทความ", ACTIVITY: "กิจกรรม" };
 export const departmentLabels: Record<string, string> = {
   SALES: "ฝ่ายขาย",
-  TECHNICIAN: "เทคนิคเชี่ยน",
+  TECHNICIAN: "ฝ่ายเทคนิค",
   FINANCE: "การเงินและบัญชี",
   LEGAL: "กฎหมาย",
 };
@@ -47,7 +56,10 @@ export const brandTypeLabels: Record<string, string> = { SALON: "แบรนด
 const opts = (values: readonly string[], labels: Record<string, string>) =>
   values.map((v) => ({ value: v, label: labels[v] ?? v }));
 
-const slugHelp = "ส่วนท้ายของ URL เช่น no-yellow-shampoo (a-z, 0-9, -)";
+const slugHelp = "ส่วนท้ายของลิงก์หน้าเว็บ ใช้ a-z ตัวเล็ก ตัวเลข และ - เช่น no-yellow-shampoo ระบบสร้างจากชื่อภาษาอังกฤษให้ แก้เองได้";
+/** URL part, filled from the English name/title while it is still untouched */
+const slugField = (from: string): Field => ({ type: "text", name: "slug", label: "ชื่อในลิงก์ (URL)", help: slugHelp, required: true, slugFrom: from });
+const slugCol: Column = { name: "slug", label: "ชื่อในลิงก์" };
 const sortOrder: Field = { type: "number", name: "sortOrder", label: "ลำดับการแสดง", help: "เลขน้อยแสดงก่อน" };
 const isActive: Field = { type: "boolean", name: "isActive", label: "แสดงบนเว็บไซต์" };
 const activeCol: Column = { name: "isActive", label: "แสดง", kind: "boolean" };
@@ -74,13 +86,13 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     fields: [
       { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
       { type: "localized", name: "name", label: "ชื่อคอลเลกชัน", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
-      { type: "localized", name: "subtitle", label: "คำโปรยสั้น / คอนเซ็ปต์" },
-      { type: "localizedTextarea", name: "description", label: "คำบรรยายละเอียด (แสดงใน Category Hero)" },
-      { type: "localizedTextarea", name: "highlights", label: "ไฮไลต์เด่น (เช่น 360° Blonde Protection)" },
-      { type: "image", name: "imageUrl", label: "รูปภาพ Moodboard" },
-      { type: "image", name: "bannerUrl", label: "รูปแบนเนอร์ Hero ด้านบน" },
-      { type: "text", name: "accentColor", label: "สีประจำคอลเลกชัน (เช่น #7e22ce)", help: "รหัสสี HEX เช่น #7e22ce หรือ #1d4ed8" },
+      slugField("name"),
+      { type: "localized", name: "subtitle", label: "คำโปรยสั้น" },
+      { type: "localizedTextarea", name: "description", label: "คำอธิบาย (แสดงด้านบนหน้าคอลเลกชัน)" },
+      { type: "localizedTextarea", name: "highlights", label: "จุดเด่น (เช่น 360° Blonde Protection)" },
+      { type: "image", name: "imageUrl", label: "รูปการ์ดคอลเลกชัน" },
+      { type: "image", name: "bannerUrl", label: "รูปพื้นหลังด้านบนหน้าคอลเลกชัน" },
+      { type: "color", name: "accentColor", label: "สีประจำคอลเลกชัน" },
       sortOrder,
       isActive,
     ],
@@ -88,7 +100,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { name: "imageUrl", label: "", kind: "image" },
       { name: "name", label: "ชื่อคอลเลกชัน", kind: "localized" },
       { name: "brand", label: "แบรนด์", kind: "brand" },
-      { name: "slug", label: "Slug" },
+      slugCol,
       activeCol,
     ],
   },
@@ -99,9 +111,9 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     searchable: true,
     fields: [
       { type: "localized", name: "name", label: "ชื่อสินค้า", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("name"),
       { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
-      { type: "relation", name: "categoryId", label: "คอลเลกชัน", resource: "categories", nullable: true, help: "สินค้าจะแสดงในหน้าคอลเลกชันนี้ เลือกคอลเลกชันของแบรนด์เดียวกับสินค้า" },
+      { type: "relation", name: "categoryId", label: "คอลเลกชัน", resource: "categories", nullable: true, filterBy: "brandId", help: "สินค้าจะแสดงในหน้าคอลเลกชันนี้ (แสดงเฉพาะคอลเลกชันของแบรนด์ที่เลือก)" },
       { type: "number", name: "price", label: "ราคา (บาท)", step: "0.01", required: true },
       { type: "number", name: "salePrice", label: "ราคาลด (บาท)", step: "0.01", help: "เว้นว่างถ้าไม่มีส่วนลด" },
       { type: "tags", name: "badges", label: "ป้าย", suggestions: ["New", "Hot", "Best Seller", "Soft hair"] },
@@ -126,17 +138,17 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     searchable: true,
     fields: [
       { type: "text", name: "name", label: "ชื่อแบรนด์", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("name"),
       { type: "select", name: "type", label: "ประเภท", options: opts(["SALON", "COUNTER"], brandTypeLabels), required: true },
       { type: "localized", name: "localName", label: "ชื่อเรียก (เช่น ฟาโนลา)" },
       { type: "localized", name: "country", label: "ประเทศ" },
-      { type: "localized", name: "tagline", label: "สโลแกน" },
+      { type: "localized", name: "tagline", label: "สโลแกน", showIf: { field: "type", equals: "SALON" } },
       { type: "localizedTextarea", name: "description", label: "คำอธิบาย" },
-      { type: "list", name: "highlights", label: "จุดเด่น", item: [{ type: "localized", name: "", label: "จุดเด่น", required: true }] },
+      { type: "list", name: "highlights", label: "จุดเด่น", item: [{ type: "localized", name: "", label: "จุดเด่น", required: true }], showIf: { field: "type", equals: "SALON" } },
       { type: "image", name: "logoUrl", label: "โลโก้ / รูปแบรนด์" },
       { type: "url", name: "website", label: "เว็บไซต์แบรนด์" },
-      { type: "file", name: "catalogUrl", label: "แคตตาล็อก (PDF)" },
-      { type: "socials", name: "socials", label: "โซเชียล" },
+      { type: "file", name: "catalogUrl", label: "แคตตาล็อก (PDF)", showIf: { field: "type", equals: "SALON" } },
+      { type: "socials", name: "socials", label: "โซเชียล", showIf: { field: "type", equals: "SALON" } },
       sortOrder,
       isActive,
     ],
@@ -157,7 +169,6 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "localized", name: "product", label: "หัวข้อ / ชื่อสไลด์", required: true },
       { type: "localized", name: "caption", label: "คำบรรยายสั้น (ไม่บังคับ)" },
       { type: "text", name: "href", label: "ลิงก์เมื่อกด", help: "เช่น /products หรือ /shop หรือลิงก์ภายนอก", required: true },
-      { type: "relation", name: "brandId", label: "แบรนด์ (ไม่บังคับ)", resource: "brands", nullable: true },
       sortOrder,
       isActive,
     ],
@@ -169,76 +180,20 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     ],
   },
   "menu-items": {
-    title: "เมนูเว็บไซต์",
+    title: "เมนูและหน้าเว็บ",
     noun: "เมนู",
     titleField: "label",
+    // Edited in the menu editor; these fields only tell loadRelations which dropdowns it needs
     fields: [
       { type: "localized", name: "label", label: "ชื่อเมนู", required: true },
-      { type: "text", name: "href", label: "ลิงก์", help: "เช่น /products/fanola หรือ /fanola หรือ https://...", required: true },
-      { type: "relation", name: "parentId", label: "อยู่ใต้เมนู", resource: "menu-items", nullable: true, help: "เว้นว่างถ้าเป็นเมนูหลัก" },
-      {
-        type: "relation",
-        name: "brandId",
-        label: "ดึงสินค้าของแบรนด์มาแสดงในหน้านี้ (Component สินค้า)",
-        resource: "brands",
-        nullable: true,
-        help: "เลือกแบรนด์ที่ต้องการนำสินค้ามาแสดงในหน้านี้ เช่น Fanola (เว้นว่างถ้าไม่ต้องการแสดงสินค้า)",
-      },
-      { type: "boolean", name: "showProducts", label: "แสดงรายการสินค้าในหน้านี้" },
-      {
-        type: "list",
-        name: "slides",
-        label: "ภาพสไลด์แบนเนอร์ประจำเมนู (ใส่หรือไม่ใส่ก็ได้)",
-        item: [
-          { type: "image", name: "imageUrl", label: "ภาพสไลด์ (16:9)" },
-          { type: "localized", name: "title", label: "หัวข้อสไลด์" },
-          { type: "localized", name: "caption", label: "คำบรรยายสไลด์" },
-          { type: "text", name: "href", label: "ลิงก์เมื่อกดสไลด์" },
-        ],
-      },
-      {
-        type: "list",
-        name: "sections",
-        label: "บล็อกเนื้อหาประจำหน้า (Content Blocks)",
-        item: [
-          {
-            type: "select",
-            name: "layout",
-            label: "รูปแบบการจัดวาง (Layout)",
-            options: [
-              { value: "oval-carousel", label: "สไลเดอร์ทรงรีแคปซูล (Oval Carousel - แกลเลอรีผลงานผมซาลอน)" },
-              { value: "columns", label: "การ์ดภาพ 4 คอลัมน์ (แบบ Wix: ภาพพื้นหลัง + กล่องข้อความลอย)" },
-              { value: "left-image", label: "ภาพด้านซ้าย - ข้อความด้านขวา" },
-              { value: "right-image", label: "ข้อความด้านซ้าย - ภาพด้านขวา (สลับข้าง)" },
-              { value: "text-only", label: "ข้อความและหัวข้อกึ่งกลาง" },
-            ],
-            required: true,
-          },
-          { type: "localized", name: "title", label: "หัวข้อหลัก" },
-          { type: "localizedTextarea", name: "description", label: "คำบรรยาย" },
-          { type: "image", name: "imageUrl", label: "รูปภาพหลัก (สำหรับรูปแบบภาพซ้าย/ขวา)" },
-          { type: "localized", name: "buttonText", label: "ข้อความปุ่ม (เช่น ดูสินค้า)" },
-          { type: "text", name: "buttonHref", label: "ลิงก์ปลายทางของปุ่ม (เช่น #products หรือ URL)" },
-          {
-            type: "list",
-            name: "cards",
-            label: "รายการการ์ด (สำหรับการ์ด 4 คอลัมน์แบบ Wix)",
-            item: [
-              { type: "image", name: "imageUrl", label: "ภาพประกอบ (แนวตั้ง)" },
-              { type: "localized", name: "title", label: "ชื่อหมวด/การ์ด", required: true },
-              { type: "localizedTextarea", name: "description", label: "คำบรรยายการ์ด", required: true },
-              { type: "text", name: "href", label: "ลิงก์ปุ่มดูสินค้า (เช่น #products หรือ URL)" },
-            ],
-          },
-        ],
-      },
-      sortOrder,
-      isActive,
+      { type: "relation", name: "parentId", label: "อยู่ใต้เมนู", resource: "menu-items", nullable: true },
+      { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", nullable: true },
     ],
     columns: [
       { name: "label", label: "ชื่อเมนู", kind: "localized" },
       { name: "href", label: "ลิงก์" },
-      { name: "brand", label: "แบรนด์สินค้า", kind: "brand" },
+      { name: "parent", label: "อยู่ใต้เมนู", kind: "brand" },
+      { name: "sortOrder", label: "ลำดับ" },
       activeCol,
     ],
   },
@@ -249,7 +204,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     searchable: true,
     fields: [
       { type: "localized", name: "title", label: "ชื่อคอร์ส", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("title"),
       { type: "localized", name: "priceText", label: "ราคา", help: "เช่น 49,900 ฿" },
       { type: "localized", name: "duration", label: "ระยะเวลา", help: "เช่น 3 วัน" },
       { type: "localizedTextarea", name: "summary", label: "สรุปสั้น" },
@@ -274,7 +229,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     fields: [
       { type: "select", name: "type", label: "หมวด", options: opts(POST_TYPES, postTypeLabels), required: true },
       { type: "localized", name: "title", label: "หัวข้อ", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("title"),
       { type: "localizedTextarea", name: "excerpt", label: "สรุปสั้น" },
       { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด" },
       { type: "image", name: "coverUrl", label: "รูปปก" },
@@ -296,10 +251,10 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     searchable: true,
     fields: [
       { type: "localized", name: "title", label: "หัวข้อ", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("title"),
       { type: "relation", name: "categoryId", label: "หมวดหมู่มีเดีย", resource: "media-categories", nullable: true },
       { type: "relations", name: "brandIds", label: "แบรนด์ที่เกี่ยวข้อง", resource: "brands", help: "เลือกได้หลายแบรนด์ ใช้ตั้งชื่อไฟล์รูปและบอก Google/AI ว่ามีเดียนี้เกี่ยวกับแบรนด์ไหน" },
-      { type: "tags", name: "tags", label: "Tag / คำค้นหา", help: "พิมพ์แล้วกด Enter เช่น shampoo, ทำสีผม, งานสัมมนา" },
+      { type: "tags", name: "tags", label: "คำค้นหา (แท็ก)", help: "พิมพ์แล้วกด Enter เช่น shampoo, ทำสีผม, งานสัมมนา" },
       { type: "localizedTextarea", name: "excerpt", label: "สรุปสั้น", help: "ใช้เป็นคำอธิบายใน Google และตอนแชร์ลิงก์" },
       { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด" },
       {
@@ -371,14 +326,14 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     titleField: "name",
     fields: [
       { type: "localized", name: "name", label: "ชื่อหมวดหมู่", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("name"),
       { type: "localizedTextarea", name: "description", label: "คำอธิบาย" },
       sortOrder,
       isActive,
     ],
     columns: [
       { name: "name", label: "ชื่อหมวดหมู่", kind: "localized" },
-      { name: "slug", label: "Slug" },
+      slugCol,
       activeCol,
     ],
   },
@@ -388,36 +343,37 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     titleField: "name",
     fields: [
       { type: "localized", name: "name", label: "ชื่อหมวดหมู่", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
+      slugField("name"),
       sortOrder,
       isActive,
     ],
     columns: [
       { name: "name", label: "ชื่อหมวดหมู่", kind: "localized" },
-      { name: "slug", label: "Slug" },
+      slugCol,
       activeCol,
     ],
   },
   pages: {
-    title: "หน้าเนื้อหา",
+    title: "หน้าข้อความ",
     noun: "หน้า",
-    description: "หน้าข้อความ เช่น นโยบาย ใช้ slug เป็นชื่อหน้า (policy = /policy)",
+    description: "หน้าที่มีแต่ข้อความ เช่น นโยบาย ชื่อในลิงก์คือที่อยู่หน้า (policy = /policy) หน้าที่มีรูปหรือสไลด์ให้สร้างที่ เมนูและหน้าเว็บ",
     titleField: "title",
     fields: [
       { type: "localized", name: "title", label: "หัวข้อ", required: true },
-      { type: "text", name: "slug", label: "Slug", help: slugHelp, required: true },
-      { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด · ## หัวข้อใหญ่ · ### หัวข้อย่อย · - รายการแบบจุด" },
+      slugField("title"),
+      { type: "localizedTextarea", name: "body", label: "เนื้อหา", help: "หนึ่งย่อหน้าต่อหนึ่งบรรทัด · บรรทัดที่ขึ้นต้นด้วย ## คือหัวข้อ" },
       isActive,
     ],
     columns: [
       { name: "title", label: "หัวข้อ", kind: "localized" },
-      { name: "slug", label: "Slug" },
+      slugCol,
       activeCol,
     ],
   },
   videos: {
-    title: "วิดีโอ",
+    title: "วิดีโอหน้าแรก",
     noun: "วิดีโอ",
+    description: "หน้าแรกแสดงวิดีโอลำดับแรกที่เปิดแสดงอยู่ 1 รายการ",
     titleField: "title",
     fields: [
       { type: "localized", name: "title", label: "ชื่อวิดีโอ", required: true },
@@ -505,7 +461,6 @@ export const settingsUi = {
       { type: "text", name: "email", label: "อีเมล" },
       { type: "text", name: "taxId", label: "เลขประจำตัวผู้เสียภาษี" },
       { type: "url", name: "mapUrl", label: "ลิงก์ Google Maps" },
-      { type: "url", name: "facebookGroup", label: "กลุ่ม Facebook" },
       {
         type: "list",
         name: "departments",
@@ -531,19 +486,19 @@ export const settingsUi = {
     title: "หน้าเกี่ยวกับเรา",
     description: "ข้อความ รูปผู้ก่อตั้ง และปุ่มลิงก์ในหน้าเกี่ยวกับเรา",
     fields: [
-      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)" },
-      { type: "localized", name: "headline", label: "ชื่อหัวเรื่องหลัก (Headline)", required: true },
-      { type: "localizedTextarea", name: "lead", label: "ข้อความบรรยายบริษัท (Lead Paragraph)" },
-      { type: "localizedTextarea", name: "welcomeText", label: "ข้อความยินดีต้อนรับ (Welcome Text)" },
-      { type: "image", name: "founderPhoto", label: "รูปผู้ก่อตั้ง (คุณเอมี่)" },
+      { type: "localized", name: "eyebrow", label: "ข้อความเล็กเหนือหัวเรื่อง" },
+      { type: "localized", name: "headline", label: "หัวเรื่อง", required: true },
+      { type: "localizedTextarea", name: "lead", label: "ข้อความแนะนำบริษัท" },
+      { type: "localizedTextarea", name: "welcomeText", label: "ข้อความต้อนรับ" },
+      { type: "image", name: "founderPhoto", label: "รูปผู้ก่อตั้ง" },
       { type: "localized", name: "founderName", label: "ชื่อผู้ก่อตั้ง", required: true },
       { type: "localized", name: "founderRole", label: "ตำแหน่งผู้ก่อตั้ง" },
       { type: "localizedTextarea", name: "education", label: "ประวัติการศึกษา (หนึ่งบรรทัดต่อรายการ)" },
-      { type: "socials", name: "socials", label: "โซเชียลมีเดียผู้ก่อตั้ง (Facebook, IG, TikTok, YouTube)" },
+      { type: "socials", name: "socials", label: "โซเชียลของผู้ก่อตั้ง" },
       {
         type: "list",
         name: "links",
-        label: "ปุ่มลิงก์นำทาง (Quick Action Buttons)",
+        label: "ปุ่มลิงก์",
         item: [
           { type: "localized", name: "label", label: "ข้อความบนปุ่ม", required: true },
           { type: "text", name: "href", label: "ลิงก์ปลายทาง (เช่น /products หรือ https://...)", required: true },
@@ -568,25 +523,25 @@ export const settingsUi = {
     ] satisfies Field[],
   },
   vipCustomer: {
-    title: "แบนเนอร์ VIP Customer",
-    description: "จัดการข้อความและภาพพื้นหลังส่วน VIP Customer บนหน้าแบรนด์แอมบาสเดอร์ / ลูกค้าคนสำคัญ",
+    title: "แบนเนอร์ลูกค้า VIP",
+    description: "ข้อความและรูปพื้นหลังด้านบนหน้าลูกค้า (/customers)",
     fields: [
-      { type: "localized", name: "eyebrow", label: "ข้อความหัวเรื่องเล็ก (Eyebrow)", help: "เช่น Our VIP Customer" },
-      { type: "localizedTextarea", name: "quote", label: "ข้อความคำคมหลัก (Quote / Headline)", help: "เช่น ช่างผมประสบการณ์สูง ความสามารถโดดเด่น... (ขึ้นบรรทัดใหม่ได้อิสระ)" },
-      { type: "localized", name: "subtext", label: "ข้อความเสริมใต้คำคม (ไม่บังคับ)" },
-      { type: "image", name: "bgImageUrl", label: "รูปภาพพื้นหลัง (Background Image)", help: "อัปโหลดภาพบรรยากาศซาลอนหรู/แอมบาสเดอร์ (หากเว้นว่างจะใช้โทนพื้นหลัง Dark Luxury เริ่มต้น)" },
+      { type: "localized", name: "eyebrow", label: "ข้อความเล็กเหนือหัวเรื่อง", help: "เช่น Our VIP Customer" },
+      { type: "localizedTextarea", name: "quote", label: "ข้อความหลัก", help: "เช่น ช่างผมประสบการณ์สูง ความสามารถโดดเด่น... (ขึ้นบรรทัดใหม่ได้)" },
+      { type: "localized", name: "subtext", label: "ข้อความเสริมใต้ข้อความหลัก (ไม่บังคับ)" },
+      { type: "image", name: "bgImageUrl", label: "รูปพื้นหลัง", help: "แสดงจางๆ ด้านหลังข้อความ เว้นว่างได้" },
     ] satisfies Field[],
   },
   growVision: {
     title: "แถบ Grow Your Vision",
-    description: "จัดการรูปภาพ ป้ายข้อความ และลิงก์ในกล่อง Grow Your Vision ที่แสดงอยู่ก่อนถึง Footer ของทุกหน้า",
+    description: "กล่องรูปและลิงก์ที่แสดงก่อนท้ายเว็บของทุกหน้า",
     fields: [
-      { type: "image", name: "imageUrl", label: "รูปภาพฝั่งขวา", help: "ภาพประกอบสำหรับแถบ Grow Your Vision" },
+      { type: "image", name: "imageUrl", label: "รูปภาพฝั่งขวา" },
       { type: "localized", name: "badge", label: "ป้ายข้อความบนรูป", help: "เช่น Heona · No Yellow · Sweet" },
       {
         type: "list",
         name: "items",
-        label: "รายการลิงก์และข้อความ (3 รายการ)",
+        label: "รายการลิงก์และข้อความ",
         item: [
           { type: "localized", name: "title", label: "หัวข้อ", required: true },
           { type: "localized", name: "text", label: "คำบรรยายสั้น" },
@@ -622,9 +577,9 @@ export const SITE_SETTING_KEYS = ["company", "growVision", "regionCounts"] as co
 
 /** Settings that belong to one page; each has its own sidebar entry at /content/<key> */
 export const PAGE_SETTINGS = {
-  about: { path: "/about" },
-  aboutSlides: { path: "/about" },
-  timeline: { path: "/about" },
-  vipCustomer: { path: "/customers" },
-} as const satisfies Partial<Record<SettingKey, { path: string }>>;
+  about: { path: "/about", page: "หน้าเกี่ยวกับเรา", tab: "เนื้อหา" },
+  aboutSlides: { path: "/about", page: "หน้าเกี่ยวกับเรา", tab: "สไลด์" },
+  timeline: { path: "/about", page: "หน้าเกี่ยวกับเรา", tab: "เส้นทางของบิวตี้อัพ" },
+  vipCustomer: { path: "/customers", page: "แบนเนอร์ลูกค้า VIP", tab: "แบนเนอร์" },
+} as const satisfies Partial<Record<SettingKey, { path: string; page: string; tab: string }>>;
 export type PageSettingKey = keyof typeof PAGE_SETTINGS;

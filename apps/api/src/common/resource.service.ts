@@ -91,7 +91,7 @@ export class ResourceService {
       const page = await this.prisma.page.findFirst({ where: { slug }, select: { title: true } });
       if (page) {
         const title = (page.title as { th?: string }).th ?? slug;
-        throw conflict('href', `URL นี้เป็นของหน้าเนื้อหา "${title}" อยู่แล้ว ให้แก้เนื้อหาที่เมนู หน้าเนื้อหา หรือเปลี่ยน URL`);
+        throw conflict('href', `ลิงก์นี้เป็นของหน้าข้อความ "${title}" อยู่แล้ว ให้แก้เนื้อหาที่เมนู หน้าข้อความ หรือเปลี่ยนลิงก์`);
       }
     }
     if (name === 'pages') {
@@ -100,7 +100,7 @@ export class ResourceService {
       const menu = menus.find(hasContent);
       if (menu) {
         const label = (menu.label as { th?: string }).th ?? href;
-        throw conflict('slug', `URL นี้เป็นของเมนู "${label}" ที่มีเนื้อหาของตัวเองอยู่แล้ว ให้แก้เนื้อหาที่ เมนูและหน้าเว็บ หรือเปลี่ยน slug`);
+        throw conflict('slug', `ลิงก์นี้เป็นของเมนู "${label}" ที่มีเนื้อหาของตัวเองอยู่แล้ว ให้แก้เนื้อหาที่ เมนูและหน้าเว็บ หรือเปลี่ยนชื่อในลิงก์`);
       }
     }
   }

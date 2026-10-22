@@ -38,6 +38,19 @@ export function ResourceForm({
   const [errors, setErrors] = useState<Errors>({});
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
+  // Slugs follow the English name until someone edits them; existing rows keep theirs
+  const [slugTouched, setSlugTouched] = useState(() => Boolean(initial?.slug));
+
+  const change = (name: string, v: unknown) =>
+    setValues((s) => {
+      const next = { ...s, [name]: v };
+      for (const f of fields) {
+        if (f.type === "text" && f.slugFrom === name && !slugTouched) next[f.name] = slugify(v);
+        // A dependent dropdown is cleared when what it depends on changes (collection after brand)
+        if (f.type === "relation" && f.filterBy === name && s[name] !== v) next[f.name] = f.nullable ? null : "";
+      }
+      return next;
+    });
 
   const hasLocalized = JSON.stringify(fields).includes('"localized');
   const missing = missingEnglish(fields, values);
@@ -95,18 +108,28 @@ export function ResourceForm({
       )}
 
       <div className="card grid gap-5 p-4 sm:p-6">
-        {fields.map((f) => (
-          <FieldInput
-            key={f.name || "root"}
-            field={f}
-            value={f.name ? values[f.name] : values[""]}
-            onChange={(v) => setValues((s) => ({ ...s, [f.name]: v }))}
-            locale={locale}
-            errors={errors}
-            path={f.name || rootPath}
-            relations={relations}
-          />
-        ))}
+        {fields.map((f) => {
+          if (f.showIf && values[f.showIf.field] !== f.showIf.equals) return null;
+          const filterBy = f.type === "relation" ? f.filterBy : undefined;
+          const own = filterBy
+            ? { ...relations, [(f as { resource: string }).resource]: (relations[(f as { resource: string }).resource] ?? []).filter((o) => o.parent === values[filterBy]) }
+            : relations;
+          return (
+            <FieldInput
+              key={f.name || "root"}
+              field={f}
+              value={f.name ? values[f.name] : values[""]}
+              onChange={(v) => {
+                if (f.type === "text" && f.name === "slug") setSlugTouched(true);
+                change(f.name, v);
+              }}
+              locale={locale}
+              errors={errors}
+              path={f.name || rootPath}
+              relations={own}
+            />
+          );
+        })}
       </div>
 
       {message && (
@@ -129,4 +152,15 @@ export function ResourceForm({
       </div>
     </form>
   );
+}
+
+/** "No Yellow Care" -> "no-yellow-care". Uses the English name; Thai-only names give "" (type the slug by hand). */
+function slugify(v: unknown): string {
+  const text = typeof v === "string" ? v : ((v as { en?: string } | null)?.en ?? "");
+  return text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
