@@ -383,56 +383,44 @@ export function CategoryProductsView({
       </div>
 
       {/* Quick View Modal */}
+      {/* Same quick view as the product grid elsewhere on the site */}
       <dialog
         ref={dialogRef}
-        className="backdrop:bg-black/60 rounded-3xl p-0 w-full max-w-lg shadow-2xl border border-line bg-white open:animate-in open:fade-in open:zoom-in-95"
+        onClick={(e) => e.target === dialogRef.current && dialogRef.current?.close()}
+        className="m-auto w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-3xl bg-white p-0 text-ink shadow-2xl backdrop:bg-ink/50 backdrop:backdrop-blur-sm"
       >
         {selectedProduct && (
-          <div className="relative p-6 sm:p-8">
-            <button
-              type="button"
-              onClick={() => dialogRef.current?.close()}
-              className="absolute top-4 right-4 rounded-full p-2 text-muted hover:bg-sand/40 hover:text-ink transition-colors"
-            >
-              <X className="size-5" />
-            </button>
-
-            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-100 mb-6">
+          <div className="grid max-h-[85dvh] grid-cols-1 overflow-y-auto sm:grid-cols-2">
+            <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 sm:aspect-auto sm:h-full">
               {selectedProduct.imageUrl ? (
-                <LoadingImage
-                  src={selectedProduct.imageUrl}
-                  alt={selectedProduct.name}
-                  className="size-full object-cover object-center"
-                />
+                <LoadingImage src={selectedProduct.imageUrl} alt={selectedProduct.name} className="size-full object-cover object-center" />
               ) : (
                 <MockImagePlaceholder label={selectedProduct.name} />
               )}
             </div>
-
-            <p className="eyebrow text-brand-pink">{brandName || "Brand"}</p>
-            <h3 className="mt-1 font-display text-xl sm:text-2xl font-bold text-ink">
-              {selectedProduct.name}
-            </h3>
-            <p className="mt-4 font-display text-2xl font-extrabold text-brand-pink">
-              {formatPrice(selectedProduct.price)}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
-              <Link
-                href={`/product/${selectedProduct.slug}`}
-                className="btn btn-primary flex-1 text-center"
+            <div className="relative p-6 sm:p-8">
+              <button
+                type="button"
+                aria-label={dict.common.close}
+                onClick={() => dialogRef.current?.close()}
+                className="absolute top-3 right-3 grid size-11 place-items-center rounded-full text-muted transition-colors hover:bg-sand hover:text-ink"
               >
-                {isThai ? "ดูรายละเอียดสินค้าเต็ม" : "View Full Details"}
-              </Link>
-              <a
-                href="https://lin.ee/beautyup"
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-outline inline-flex items-center justify-center gap-2"
+                <X className="size-5" />
+              </button>
+              <p className="eyebrow text-brand-pink">{brandName || "Brand"}</p>
+              <h3 className="mt-2 pr-10 font-display text-xl leading-snug font-bold text-ink sm:text-2xl">{selectedProduct.name}</h3>
+              <p className="mt-4 font-display text-2xl font-extrabold text-brand-pink">{formatPrice(selectedProduct.price)}</p>
+              {selectedProduct.description && <p className="mt-4 text-sm text-muted">{selectedProduct.description}</p>}
+              <Link
+                href={`/contact/salon-partner?product=${encodeURIComponent(selectedProduct.name)}`}
+                className="btn btn-primary mt-8 w-full"
               >
                 <MessageCircle className="size-4" />
-                <span>{isThai ? "สอบถาม / สั่งซื้อ" : "Order / Inquire"}</span>
-              </a>
+                {dict.common.contactToOrder}
+              </Link>
+              <Link href={`/product/${selectedProduct.slug}`} className="btn btn-outline mt-2 w-full">
+                {dict.product.viewDetails}
+              </Link>
             </div>
           </div>
         )}
