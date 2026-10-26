@@ -83,7 +83,12 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
         ...((row.tags as string[] | null) ?? []),
         ...((row.badges as string[] | null) ?? []),
       ];
-      const base = mediaFileBase(brandName ? [brandName] : [], String(row.slug), tags, (row.createdAt as Date | null) ?? new Date());
+      const base = mediaFileBase(
+        brandName ? [brandName] : [],
+        String(row.slug),
+        tags,
+        (row.updatedAt as Date | null) ?? (row.createdAt as Date | null) ?? new Date(),
+      );
       const [renamed] = renameUploads([imageUrl], base);
       return renamed && renamed !== imageUrl ? { imageUrl: renamed } : undefined;
     },

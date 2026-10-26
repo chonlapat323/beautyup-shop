@@ -57,5 +57,13 @@ async function MediaSharePanel({ slug, publishedAt }: { slug: string; publishedA
 async function ProductSharePanel({ slug, isActive }: { slug: string; isActive: boolean }) {
   const url = `${siteUrl()}/th/product/${slug}`;
   const qr = await QRCode.toDataURL(url, { width: 600, margin: 2 });
-  return <MediaShare url={url} qr={qr} fileName={`${slug}-qr.png`} published={isActive} />;
+  return (
+    <MediaShare
+      url={url}
+      qr={qr}
+      fileName={`${slug}-qr.png`}
+      published={isActive}
+      unpublishedText="ยังปิดการแสดงบนเว็บไซต์ ลูกค้าจะเปิดลิงก์นี้ไม่ได้จนกว่าจะติ๊ก แสดงบนเว็บไซต์"
+    />
+  );
 }
