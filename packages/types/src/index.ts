@@ -146,8 +146,20 @@ export const brandInput = z.object({
   isActive,
 });
 
+/** A brand's main product group (ดูแลผม, ทำสีผม ...); holds several collections */
+export const mainCategoryInput = z.object({
+  brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+  slug,
+  name: localized,
+  description: localizedOptional,
+  imageUrl: url,
+  sortOrder,
+  isActive,
+});
+
 export const categoryInput = z.object({
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+  mainCategoryId: z.string().nullable().optional().default(null),
   slug,
   name: localized,
   subtitle: localizedOptional,
@@ -483,6 +495,7 @@ export const resources = {
   "menu-items": { schema: menuItemInput, label: "เมนูและหน้าเว็บ" },
   "hero-slides": { schema: heroSlideInput, label: "สไลด์หน้าแรก" },
   brands: { schema: brandInput, label: "แบรนด์" },
+  "main-categories": { schema: mainCategoryInput, label: "หมวดหมู่หลัก" },
   categories: { schema: categoryInput, label: "คอลเลกชัน" },
   products: { schema: productInput, label: "สินค้า" },
   videos: { schema: videoInput, label: "วิดีโอหน้าแรก" },

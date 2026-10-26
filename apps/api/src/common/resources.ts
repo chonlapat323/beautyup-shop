@@ -43,12 +43,23 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     include: { brand: { select: { id: true, slug: true, name: true } } },
   },
   brands: { model: 'brand', orderBy: [{ type: 'asc' }, ...byOrder], slugField: 'slug', hasActive: true, searchFields: ['name', 'slug'] },
+  'main-categories': {
+    model: 'mainCategory',
+    orderBy: byOrder,
+    slugField: 'slug',
+    hasActive: true,
+    include: { brand: { select: { id: true, slug: true, name: true } } },
+    searchFields: ['slug'],
+  },
   categories: {
     model: 'category',
     orderBy: byOrder,
     slugField: 'slug',
     hasActive: true,
-    include: { brand: { select: { id: true, slug: true, name: true, type: true } } },
+    include: {
+      brand: { select: { id: true, slug: true, name: true, type: true } },
+      mainCategory: { select: { id: true, slug: true, name: true } },
+    },
     searchFields: ['slug'],
   },
   products: {

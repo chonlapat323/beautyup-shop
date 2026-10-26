@@ -77,6 +77,29 @@ export interface ResourceUi {
 }
 
 export const resourceUi: Record<ResourceName, ResourceUi> = {
+  "main-categories": {
+    title: "หมวดหมู่หลัก",
+    noun: "หมวดหมู่หลัก",
+    description: "กลุ่มใหญ่ของสินค้าแต่ละแบรนด์ (เช่น ผลิตภัณฑ์ดูแลผม, ผลิตภัณฑ์ทำสีผม) แสดงเป็นการ์ดบนหน้าแบรนด์ กดแล้วเห็นคอลเลกชันและสินค้าในหมวดนั้น เลือกว่าคอลเลกชันไหนอยู่หมวดไหนได้ที่หน้าแก้ไขคอลเลกชัน",
+    titleField: "name",
+    searchable: true,
+    fields: [
+      { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
+      { type: "localized", name: "name", label: "ชื่อหมวดหมู่หลัก", required: true },
+      slugField("name"),
+      { type: "localizedTextarea", name: "description", label: "คำอธิบาย (แสดงบนการ์ดและด้านบนหน้าหมวด)" },
+      { type: "image", name: "imageUrl", label: "รูปการ์ด" },
+      sortOrder,
+      isActive,
+    ],
+    columns: [
+      { name: "imageUrl", label: "", kind: "image" },
+      { name: "name", label: "ชื่อหมวดหมู่หลัก", kind: "localized" },
+      { name: "brand", label: "แบรนด์", kind: "brand" },
+      { name: "sortOrder", label: "ลำดับ" },
+      activeCol,
+    ],
+  },
   categories: {
     title: "คอลเลกชัน",
     noun: "คอลเลกชัน",
@@ -85,6 +108,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
     searchable: true,
     fields: [
       { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
+      { type: "relation", name: "mainCategoryId", label: "หมวดหมู่หลัก", resource: "main-categories", nullable: true, filterBy: "brandId", help: "คอลเลกชันจะแสดงในหน้าหมวดหมู่หลักนี้ (แสดงเฉพาะหมวดของแบรนด์ที่เลือก)" },
       { type: "localized", name: "name", label: "ชื่อคอลเลกชัน", required: true },
       slugField("name"),
       { type: "localized", name: "subtitle", label: "คำโปรยสั้น" },
@@ -100,6 +124,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { name: "imageUrl", label: "", kind: "image" },
       { name: "name", label: "ชื่อคอลเลกชัน", kind: "localized" },
       { name: "brand", label: "แบรนด์", kind: "brand" },
+      { name: "mainCategory", label: "หมวดหมู่หลัก", kind: "brand" },
       slugCol,
       activeCol,
     ],

@@ -10,4 +10,14 @@ export interface BrandCategory {
   bannerUrl?: string;
   accentColor: string;
   subCategories?: string[];
+  /** The main category this collection belongs to, if any */
+  mainCategorySlug?: string;
+}
+
+/** A brand's main product group (Admin → หมวดหมู่หลัก); holds several collections */
+export interface BrandMainCategory {
+  slug: string;
+  name: string;
+  description?: string;
+  imageUrl: string;
 }

@@ -9,10 +9,12 @@ interface CategoryHeroProps {
   brandSlug: string;
   brandName?: string;
   lang: Locale;
+  /** Where the back link goes; defaults to the brand page */
+  back?: { href: string; label: string };
 }
 
 /** Same look as the home hero (soft pink-to-white, pink-line eyebrow); the category's accent colour marks the title. */
-export function CategoryHero({ category, brandSlug, brandName, lang }: CategoryHeroProps) {
+export function CategoryHero({ category, brandSlug, brandName, lang, back }: CategoryHeroProps) {
   const isThai = lang === "th";
   const accent = category.accentColor || "#d6297f";
 
@@ -32,11 +34,11 @@ export function CategoryHero({ category, brandSlug, brandName, lang }: CategoryH
 
       <div className="container-page relative animate-fade-up">
         <Link
-          href={`/products/${brandSlug}`}
+          href={back?.href ?? `/products/${brandSlug}`}
           className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
         >
           <ArrowLeft className="size-4" />
-          {isThai ? `ดูหมวดหมู่ทั้งหมดของ ${brandName || "แบรนด์"}` : `All ${brandName || "brand"} categories`}
+          {back?.label ?? (isThai ? `ดูหมวดหมู่ทั้งหมดของ ${brandName || "แบรนด์"}` : `All ${brandName || "brand"} categories`)}
         </Link>
 
         <div className="mt-8 max-w-3xl">

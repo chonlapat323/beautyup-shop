@@ -28,7 +28,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 
 /** Resources the website may read (everything except admin-only data). */
 const PUBLIC: ResourceName[] = [
-  'menu-items', 'hero-slides', 'brands', 'categories', 'products', 'videos', 'ambassadors',
+  'menu-items', 'hero-slides', 'brands', 'main-categories', 'categories', 'products', 'videos', 'ambassadors',
   'salons', 'courses', 'posts', 'media', 'media-categories', 'pages', 'team',
 ];
 
@@ -55,7 +55,7 @@ export class PublicController {
       if (category) where.category = { slug: category };
       if (brand) where.brands = { some: { slug: brand } };
     }
-    if (name === 'categories') {
+    if (name === 'categories' || name === 'main-categories') {
       where.brand = {
         isActive: true,
         ...(brand && { slug: brand }),

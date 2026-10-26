@@ -7,7 +7,7 @@ import "server-only";
 import { t, type Localized } from "@beautyup/types";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDictionary, type Locale } from "@/i18n";
-import type { BrandCategory } from "./brand-categories";
+import type { BrandCategory, BrandMainCategory } from "./brand-categories";
 import { provinces } from "./provinces";
 import {
   PROVINCE_EN,
@@ -470,6 +470,7 @@ interface CategoryRow extends Row {
   accentColor?: string;
   subCategories?: { th: string; en: string }[];
   brand: { id: string; slug: string; name: string };
+  mainCategory?: { slug: string } | null;
 }
 
 export async function getBrandCategories(lang: Locale, brandSlug: string): Promise<BrandCategory[]> {
@@ -487,6 +488,19 @@ export async function getBrandCategories(lang: Locale, brandSlug: string): Promi
     subCategories: c.subCategories
       ? c.subCategories.map((sc) => (lang === "en" ? sc.en || sc.th : sc.th || sc.en))
       : undefined,
+    mainCategorySlug: c.mainCategory?.slug,
+  }));
+}
+
+export async function getBrandMainCategories(lang: Locale, brandSlug: string): Promise<BrandMainCategory[]> {
+  const rows = await get<{ slug: string; name: L; description?: L | null; imageUrl: string }[]>(
+    `/resources/main-categories?brand=${encodeURIComponent(brandSlug)}`,
+  );
+  return rows.map((m) => ({
+    slug: m.slug,
+    name: t(m.name, lang),
+    description: s(t(m.description ?? undefined, lang)),
+    imageUrl: s(m.imageUrl) || "",
   }));
 }
 

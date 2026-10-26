@@ -50,6 +50,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     title: "แบรนด์และสินค้า",
     items: [
       { href: "/r/brands", label: "แบรนด์", icon: Tags },
+      { href: "/r/main-categories", label: "หมวดหมู่หลัก", icon: FolderTree },
       { href: "/r/categories", label: "คอลเลกชัน", icon: Layers },
       { href: "/r/products", label: "สินค้า", icon: Package },
     ],

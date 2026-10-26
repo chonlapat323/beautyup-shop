@@ -104,11 +104,30 @@ model Brand {
   socials     Json        @default("{}")
   sortOrder   Int         @default(0)
   isActive    Boolean     @default(true)
+  mainCategories MainCategory[]
   categories  Category[]
   products    Product[]
   heroSlides  HeroSlide[]
   menuItems   MenuItem[]
   media       Media[]
+}
+
+/// A brand's main product group (ดูแลผม, ทำสีผม ...). Each holds several collections.
+model MainCategory {
+  id          String     @id @default(cuid())
+  slug        String
+  name        Json
+  description Json?
+  imageUrl    String     @default("")
+  sortOrder   Int        @default(0)
+  isActive    Boolean    @default(true)
+
+  brandId     String
+  brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  collections Category[]
+
+  @@unique([brandId, slug])
+  @@index([brandId])
 }
 
 model Category {
@@ -129,10 +148,13 @@ model Category {
 
   brandId       String
   brand         Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  mainCategoryId String?
+  mainCategory  MainCategory? @relation(fields: [mainCategoryId], references: [id], onDelete: SetNull)
   products      Product[]
 
   @@unique([brandId, slug])
   @@index([brandId])
+  @@index([mainCategoryId])
 }
 
 model Product {

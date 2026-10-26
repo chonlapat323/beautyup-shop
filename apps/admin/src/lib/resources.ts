@@ -24,8 +24,8 @@ export async function loadRelations(fields: readonly Field[], excludeId?: string
       let rows = await listResource(r);
       // Menus only nest one level: offer top-level items as parents, never itself
       if (r === "menu-items") rows = rows.filter((x) => !x.parentId && x.id !== excludeId);
-      // Collections remember their brand, so the product form can list only that brand's
-      const parent = (x: Row) => (r === "categories" ? { parent: String(x.brandId) } : {});
+      // Collections and main categories remember their brand, so dependent dropdowns list only that brand's
+      const parent = (x: Row) => (r === "categories" || r === "main-categories" ? { parent: String(x.brandId) } : {});
       return [r, rows.map((x) => ({ value: x.id, label: rowTitle(r, x), ...parent(x) }))] as const;
     }),
   );

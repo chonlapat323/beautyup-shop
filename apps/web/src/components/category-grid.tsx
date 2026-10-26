@@ -27,6 +27,8 @@ interface CategoryGridProps {
   title?: string;
   eyebrow?: string;
   subtitle?: string;
+  /** Anchor for in-page links, e.g. "collections" */
+  id?: string;
 }
 
 export function CategoryGrid({
@@ -38,6 +40,7 @@ export function CategoryGrid({
   title,
   eyebrow,
   subtitle,
+  id,
 }: CategoryGridProps) {
   const dict = useDict();
   const isThai = dict.common.loading === "กำลังโหลด";
@@ -123,7 +126,7 @@ export function CategoryGrid({
   if (!categories || categories.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden py-12 sm:py-20 bg-gradient-to-b from-sand/20 via-white to-sand/20 border-b border-line/60">
+    <section id={id} className="relative scroll-mt-24 overflow-hidden py-12 sm:py-20 bg-gradient-to-b from-sand/20 via-white to-sand/20 border-b border-line/60">
       {/* Dreamy ambient light backdrop */}
       <div
         aria-hidden
