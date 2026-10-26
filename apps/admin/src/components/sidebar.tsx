@@ -3,8 +3,10 @@
 import clsx from "clsx";
 import {
   Building2,
+  ChevronDown,
   Clapperboard,
   Crown,
+  FileText,
   Film,
   FolderTree,
   GraduationCap,
@@ -27,7 +29,6 @@ import {
   UserRound,
   Users,
   X,
-  FileText,
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -37,7 +38,15 @@ import { useState } from "react";
 import { logout } from "@/app/login/actions";
 
 /** `also`: other pages that belong to this entry (tabs of the same page) */
-type Item = { href: string; label: string; icon: LucideIcon; badge?: number; adminOnly?: boolean; also?: string[] };
+type Item = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  badge?: number;
+  adminOnly?: boolean;
+  also?: string[];
+  children?: Item[];
+};
 
 const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
@@ -47,54 +56,56 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
     ],
   },
   {
-    title: "แบรนด์และสินค้า",
+    title: "จัดการเนื้อหาหลัก",
     items: [
-      { href: "/r/brands", label: "แบรนด์", icon: Tags },
-      { href: "/r/main-categories", label: "หมวดหมู่หลัก", icon: FolderTree },
-      { href: "/r/categories", label: "คอลเลกชัน", icon: Layers },
-      { href: "/r/products", label: "สินค้า", icon: Package },
+      {
+        href: "/r/menu-items",
+        label: "เมนูและหน้าเว็บ",
+        icon: MenuSquare,
+        children: [
+          { href: "/r/hero-slides", label: "สไลด์หน้าแรก", icon: Images },
+          { href: "/r/videos", label: "วิดีโอหน้าแรก", icon: Clapperboard },
+          { href: "/content/about", label: "หน้าเกี่ยวกับเรา", icon: Building2, also: ["/content/aboutSlides", "/content/timeline"] },
+          { href: "/content/vipCustomer", label: "แบนเนอร์ลูกค้า VIP", icon: Crown },
+          { href: "/r/ambassadors", label: "แบรนด์แอมบาสเดอร์", icon: Sparkles },
+          { href: "/r/salons", label: "ซาลอนพันธมิตร", icon: Store },
+          { href: "/r/courses", label: "คอร์สเรียน", icon: GraduationCap },
+          { href: "/r/posts", label: "บทความ / กิจกรรม", icon: Newspaper },
+          { href: "/r/pages", label: "หน้าข้อความ (นโยบาย)", icon: FileText },
+          { href: "/r/team", label: "ทีมงาน (ฝ่ายขาย)", icon: Users },
+        ],
+      },
+      {
+        href: "/r/products",
+        label: "สินค้าและแบรนด์",
+        icon: Package,
+        children: [
+          { href: "/r/brands", label: "แบรนด์", icon: Tags },
+          { href: "/r/main-categories", label: "หมวดหมู่หลัก", icon: FolderTree },
+          { href: "/r/categories", label: "คอลเลกชัน", icon: Layers },
+        ],
+      },
+      {
+        href: "/r/media",
+        label: "มีเดีย",
+        icon: Film,
+        children: [{ href: "/r/media-categories", label: "หมวดหมู่มีเดีย", icon: FolderTree }],
+      },
+      {
+        href: "/r/forum-topics",
+        label: "ฟอรั่ม",
+        icon: MessagesSquare,
+        children: [
+          { href: "/r/forum-replies", label: "ความคิดเห็น", icon: MessageCircle },
+          { href: "/r/forum-categories", label: "หมวดหมู่ฟอรั่ม", icon: FolderTree },
+        ],
+      },
     ],
   },
   {
-    title: "หน้าเว็บ",
+    title: "ระบบและสมาชิก",
     items: [
-      { href: "/r/menu-items", label: "เมนูและหน้าเว็บ", icon: MenuSquare },
-      { href: "/r/hero-slides", label: "สไลด์หน้าแรก", icon: Images },
-      { href: "/content/about", label: "หน้าเกี่ยวกับเรา", icon: Building2, also: ["/content/aboutSlides", "/content/timeline"] },
-      { href: "/r/pages", label: "หน้าข้อความ", icon: FileText },
-      { href: "/r/posts", label: "บทความ / กิจกรรม", icon: Newspaper },
-      { href: "/r/videos", label: "วิดีโอหน้าแรก", icon: Clapperboard },
-      { href: "/r/courses", label: "คอร์สเรียน", icon: GraduationCap },
-    ],
-  },
-  {
-    title: "มีเดีย",
-    items: [
-      { href: "/r/media", label: "มีเดีย", icon: Film },
-      { href: "/r/media-categories", label: "หมวดหมู่มีเดีย", icon: FolderTree },
-    ],
-  },
-  {
-    title: "ฟอรั่ม",
-    items: [
-      { href: "/r/forum-topics", label: "กระทู้", icon: MessagesSquare },
-      { href: "/r/forum-replies", label: "ความคิดเห็น", icon: MessageCircle },
-      { href: "/r/forum-categories", label: "หมวดหมู่ฟอรั่ม", icon: FolderTree },
-    ],
-  },
-  {
-    title: "ลูกค้าและทีม",
-    items: [
-      { href: "/r/salons", label: "ซาลอนพันธมิตร", icon: Store },
-      { href: "/r/ambassadors", label: "แบรนด์แอมบาสเดอร์", icon: Sparkles },
-      { href: "/content/vipCustomer", label: "แบนเนอร์ลูกค้า VIP", icon: Crown },
-      { href: "/r/team", label: "ทีมงาน", icon: Users },
       { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound },
-    ],
-  },
-  {
-    title: "ระบบ",
-    items: [
       { href: "/settings", label: "ตั้งค่าเว็บไซต์", icon: Settings },
       { href: "/users", label: "ผู้ใช้หลังบ้าน", icon: UserCog, adminOnly: true },
     ],
@@ -104,34 +115,102 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
 export function Sidebar({ user, newInquiries }: { user: { name: string; email: string; role: string }; newInquiries: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
   // Whole-segment match, so /r/media does not also light up on /r/media-categories
   const isActive = (href: string, also: string[] = []) =>
     href === "/" ? pathname === "/" : [href, ...also].some((h) => pathname === h || pathname.startsWith(`${h}/`));
 
+  const isGroupOpen = (item: Item) => {
+    const childActive = item.children?.some((c) => isActive(c.href, c.also)) ?? false;
+    if (expanded[item.href] !== undefined) return expanded[item.href];
+    return childActive;
+  };
+
+  const toggleGroup = (href: string, current: boolean) => {
+    setExpanded((prev) => ({ ...prev, [href]: !current }));
+  };
+
   const nav = (
-    <nav aria-label="เมนูหลังบ้าน" className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin]" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
+    <nav
+      aria-label="เมนูหลังบ้าน"
+      className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin]"
+      onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
+    >
       {groups(newInquiries).map((g, i) => (
         <div key={i} className="mb-5">
-          {g.title && <p className="mb-1 px-3 text-xs font-medium tracking-wide text-muted">{g.title}</p>}
-          <ul className="space-y-0.5">
+          {g.title && <p className="mb-1.5 px-3 text-xs font-medium tracking-wide text-muted">{g.title}</p>}
+          <ul className="space-y-1">
             {g.items
               .filter((it) => !it.adminOnly || user.role === "ADMIN")
-              .map(({ href, label, icon: Icon, badge, also }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={isActive(href, also) ? "page" : undefined}
-                    className={clsx(
-                      "flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
-                      isActive(href, also) ? "bg-brand-soft font-medium text-brand" : "text-ink/80 hover:bg-sand hover:text-ink",
+              .map((item) => {
+                const { href, label, icon: Icon, badge, also, children } = item;
+                const active = isActive(href, also);
+                const childActive = children?.some((c) => isActive(c.href, c.also)) ?? false;
+                const groupOpen = isGroupOpen(item);
+
+                return (
+                  <li key={href}>
+                    <div className="flex items-center gap-0.5">
+                      <Link
+                        href={href}
+                        aria-current={active ? "page" : undefined}
+                        className={clsx(
+                          "flex min-h-10 flex-1 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
+                          active
+                            ? "bg-brand-soft font-medium text-brand"
+                            : childActive
+                              ? "bg-sand/70 font-medium text-ink"
+                              : "text-ink/80 hover:bg-sand hover:text-ink",
+                        )}
+                      >
+                        <Icon className="size-4 shrink-0" />
+                        <span className="flex-1">{label}</span>
+                        {!!badge && <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-medium text-white">{badge}</span>}
+                      </Link>
+                      {children && children.length > 0 && (
+                        <button
+                          type="button"
+                          aria-label={groupOpen ? `ซ่อนเมนูย่อยของ ${label}` : `แสดงเมนูย่อยของ ${label}`}
+                          aria-expanded={groupOpen}
+                          title={groupOpen ? "หุบเมนูย่อย" : `ดูเมนูย่อย (${children.length})`}
+                          onClick={() => toggleGroup(href, groupOpen)}
+                          className={clsx(
+                            "grid size-9 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-sand hover:text-ink",
+                            (groupOpen || childActive) && "text-ink",
+                          )}
+                        >
+                          <ChevronDown className={clsx("size-4 transition-transform duration-200", groupOpen && "rotate-180")} />
+                        </button>
+                      )}
+                    </div>
+
+                    {children && children.length > 0 && groupOpen && (
+                      <ul className="mt-1 ml-4 space-y-0.5 border-l border-line pl-2.5">
+                        {children.map((sub) => {
+                          const SubIcon = sub.icon;
+                          const subActive = isActive(sub.href, sub.also);
+                          return (
+                            <li key={sub.href}>
+                              <Link
+                                href={sub.href}
+                                aria-current={subActive ? "page" : undefined}
+                                className={clsx(
+                                  "flex min-h-8.5 items-center gap-2.5 rounded-lg px-2.5 text-xs transition-colors",
+                                  subActive ? "bg-brand-soft font-medium text-brand" : "text-muted hover:bg-sand/70 hover:text-ink",
+                                )}
+                              >
+                                <SubIcon className="size-3.5 shrink-0" />
+                                <span className="flex-1 truncate">{sub.label}</span>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
-                  >
-                    <Icon className="size-4 shrink-0" />
-                    <span className="flex-1">{label}</span>
-                    {!!badge && <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-medium text-white">{badge}</span>}
-                  </Link>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
           </ul>
         </div>
       ))}
