@@ -19,7 +19,7 @@ import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { memoryStorage } from 'multer';
-import { UPLOAD_DIR } from '../admin/admin-uploads.controller.js';
+import { UPLOAD_DIR, convertHeicToJpg, isHeicBuffer } from '../admin/admin-uploads.controller.js';
 import { clientIp, throttle } from '../common/throttle.js';
 import { parseOrThrow } from '../common/zod-validation.pipe.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -41,16 +41,20 @@ function imageExt(buf: Buffer) {
   if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return '.jpg';
   if (buf.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return '.png';
   if (buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP') return '.webp';
+  if (isHeicBuffer(buf)) return '.heic';
   return null;
 }
 
 async function saveImages(files: Express.Multer.File[] = []) {
   const typed = files.map((f) => ({ f, ext: imageExt(f.buffer) }));
-  if (typed.some((t) => !t.ext)) throw new BadRequestException('รองรับเฉพาะรูป JPG, PNG หรือ WebP');
+  if (typed.some((t) => !t.ext)) throw new BadRequestException('รองรับเฉพาะรูป JPG, PNG, WebP หรือ HEIC');
   return Promise.all(
     typed.map(async ({ f, ext }) => {
-      const name = `forum-${randomUUID()}${ext}`;
-      await writeFile(join(UPLOAD_DIR, name), f.buffer);
+      const isHeic = ext === '.heic';
+      const buf = isHeic ? await convertHeicToJpg(f.buffer) : f.buffer;
+      const finalExt = isHeic ? '.jpg' : ext;
+      const name = `forum-${randomUUID()}${finalExt}`;
+      await writeFile(join(UPLOAD_DIR, name), buf);
       return `${process.env.API_PUBLIC_URL ?? ''}/uploads/${name}`;
     }),
   );

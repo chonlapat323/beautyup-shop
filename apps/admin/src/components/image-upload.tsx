@@ -5,17 +5,29 @@ import { ChevronLeft, ChevronRight, FileText, ImagePlus, Loader2, X } from "luci
 import { useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
 
 const TYPES = {
-  image: { mime: ["image/jpeg", "image/png", "image/webp", "image/avif"], hint: "JPG, PNG, WebP, AVIF" },
-  file: { mime: ["application/pdf"], hint: "PDF" },
+  image: {
+    mime: ["image/jpeg", "image/png", "image/webp", "image/avif", "image/heic", "image/heif"],
+    ext: [".jpg", ".jpeg", ".png", ".webp", ".avif", ".heic", ".heif"],
+    hint: "JPG, PNG, WebP, AVIF, HEIC",
+  },
+  file: {
+    mime: ["application/pdf"],
+    ext: [".pdf"],
+    hint: "PDF",
+  },
 } as const;
 export type UploadKind = keyof typeof TYPES;
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export const uploadHint = (kind: UploadKind) => `${TYPES[kind].hint} ไม่เกิน 10MB`;
+const acceptFor = (kind: UploadKind) => [...TYPES[kind].mime, ...TYPES[kind].ext].join(",");
 
 /** Uploads one file through the admin's /api/upload proxy and returns its public URL. */
 export async function uploadFile(file: File, kind: UploadKind = "image"): Promise<string> {
-  if (!(TYPES[kind].mime as readonly string[]).includes(file.type)) throw new Error(`${file.name}: รองรับเฉพาะ ${TYPES[kind].hint}`);
+  const lowerName = file.name.toLowerCase();
+  const validMime = (TYPES[kind].mime as readonly string[]).includes(file.type.toLowerCase());
+  const validExt = TYPES[kind].ext.some((ext) => lowerName.endsWith(ext));
+  if (!validMime && !validExt) throw new Error(`${file.name}: รองรับเฉพาะ ${TYPES[kind].hint}`);
   if (file.size > MAX_BYTES) throw new Error(`${file.name}: ไฟล์ใหญ่เกิน 10MB`);
   const body = new FormData();
   body.append("file", file);
@@ -107,7 +119,7 @@ export function UploadBox({
         )}
       </button>
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-      <input ref={input} type="file" hidden accept={TYPES[kind].mime.join(",")} onChange={(e) => upload(e.target.files?.[0])} />
+      <input ref={input} type="file" hidden accept={acceptFor(kind)} onChange={(e) => upload(e.target.files?.[0])} />
     </div>
   );
 }
@@ -251,7 +263,7 @@ export function ImageGallery({ value, onChange, max = 20 }: { value: string[]; o
           {e}
         </p>
       ))}
-      <input ref={input} type="file" multiple hidden accept={TYPES.image.mime.join(",")} onChange={(e) => add(e.target.files)} />
+      <input ref={input} type="file" multiple hidden accept={acceptFor("image")} onChange={(e) => add(e.target.files)} />
     </div>
   );
 }

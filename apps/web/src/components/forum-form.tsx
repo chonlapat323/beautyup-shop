@@ -169,7 +169,7 @@ export function ForumForm(props: Props) {
                   {d.addImages}
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,.heic,.heif"
                     multiple
                     className="sr-only"
                     onChange={(e) => {
