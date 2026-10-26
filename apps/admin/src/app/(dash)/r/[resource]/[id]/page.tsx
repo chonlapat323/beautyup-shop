@@ -5,6 +5,7 @@ import { MediaShare } from "@/components/media-share";
 import { MenuItemVisualEditor } from "@/components/menu-item-visual-editor";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
+import { SectionFlowBar } from "@/components/section-flow-bar";
 import { resourceUi } from "@/lib/fields";
 import { getResource, loadRelations, resolveResource, rowTitle } from "@/lib/resources";
 import { siteUrl } from "@/lib/site";
@@ -35,6 +36,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
 
   return (
     <>
+      <SectionFlowBar currentKey={name} />
       <PageHeader
         title={title}
         back={{ href: `/r/${name}`, label: ui.title }}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MenuItemVisualEditor } from "@/components/menu-item-visual-editor";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
+import { SectionFlowBar } from "@/components/section-flow-bar";
 import { resourceUi } from "@/lib/fields";
 import { loadRelations, resolveResource } from "@/lib/resources";
 import { siteUrl } from "@/lib/site";
@@ -37,6 +38,7 @@ export default async function NewResourcePage({ params }: PageProps<"/r/[resourc
 
   return (
     <>
+      <SectionFlowBar currentKey={name} />
       <PageHeader title={`เพิ่ม${ui.noun}`} back={{ href: `/r/${name}`, label: ui.title }} />
       <ResourceForm fields={ui.fields} relations={relations} onSave={saveResource.bind(null, name, null)} redirectTo={`/r/${name}`} />
     </>

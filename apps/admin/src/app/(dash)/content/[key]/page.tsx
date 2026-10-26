@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
+import { SectionFlowBar } from "@/components/section-flow-bar";
 import { api } from "@/lib/api";
 import { PAGE_SETTINGS, settingsUi, type PageSettingKey } from "@/lib/fields";
 import { siteUrl } from "@/lib/site";
@@ -45,6 +46,7 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
 
   return (
     <>
+      <SectionFlowBar currentKey={key} />
       <PageHeader
         title={PAGE_SETTINGS[key].page}
         description={"description" in ui ? ui.description : undefined}

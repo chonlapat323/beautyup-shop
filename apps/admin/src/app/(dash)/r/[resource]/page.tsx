@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
+import { SectionFlowBar } from "@/components/section-flow-bar";
 import { resourceUi } from "@/lib/fields";
 import { listResource, resolveResource } from "@/lib/resources";
 
@@ -53,6 +54,7 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
 
   return (
     <>
+      <SectionFlowBar currentKey={name} />
       <PageHeader
         title={ui.title}
         description={ui.description ?? `ทั้งหมด ${total} รายการ`}

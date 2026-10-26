@@ -5,6 +5,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
+import { SectionFlowBar } from "@/components/section-flow-bar";
 import { api } from "@/lib/api";
 import { PAGE_SETTINGS, SITE_SETTING_KEYS, settingsUi } from "@/lib/fields";
 import { saveSetting } from "./actions";
@@ -39,6 +40,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
 
   return (
     <>
+      <SectionFlowBar currentKey={key} />
       <PageHeader title="ตั้งค่าเว็บไซต์" description="ข้อมูลที่ใช้หลายหน้าบนเว็บ เนื้อหาของแต่ละหน้าแก้ได้ที่เมนูของหน้านั้น" />
       <nav aria-label="หมวดการตั้งค่า" className="-mx-4 mb-6 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0">
         {SITE_SETTING_KEYS.map((k) => (
