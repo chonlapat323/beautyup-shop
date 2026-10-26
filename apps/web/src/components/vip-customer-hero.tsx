@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Quote } from "lucide-react";
+import { renderInlineRichText } from "@/components/rich-text";
 import type { VipCustomerData } from "@/lib/data";
 
 /** Same look as the home hero: soft pink-to-white background, pink-line eyebrow, dark text. */
@@ -36,11 +37,11 @@ export function VipCustomerHero({ data }: { data: VipCustomerData }) {
           <blockquote className="mt-4 space-y-3">
             {(lines.length ? lines : [data.quote]).map((line, idx) => (
               <p key={idx} className="font-display text-2xl leading-snug text-balance text-ink sm:text-3xl lg:text-4xl">
-                {line}
+                {renderInlineRichText(line.replace(/^##\s+/, ""))}
               </p>
             ))}
           </blockquote>
-          {data.subtext && <p className="mx-auto mt-6 max-w-2xl text-base text-pretty text-muted sm:text-lg">{data.subtext}</p>}
+          {data.subtext && <p className="mx-auto mt-6 max-w-2xl text-base text-pretty text-muted sm:text-lg">{renderInlineRichText(data.subtext)}</p>}
         </div>
       </div>
     </section>

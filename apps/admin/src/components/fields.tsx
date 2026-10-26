@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, Check, Plus, Trash2, X } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import type { Field, Option } from "@/lib/fields";
 import { ImageGallery, UploadBox, uploadHint, type UploadKind } from "./image-upload";
+import { RichTextarea } from "./rich-textarea";
 
 export type Locale = "th" | "en";
 export type Errors = Record<string, string[]>;
@@ -135,7 +136,15 @@ export function FieldInput({
       );
 
     case "textarea":
-      return shell(<textarea id={id} className="input" rows={3} value={(value as string) ?? ""} aria-invalid={invalid} onChange={(e) => onChange(e.target.value)} />);
+      return shell(
+        <RichTextarea
+          id={id}
+          value={(value as string) ?? ""}
+          invalid={invalid}
+          minRows={4}
+          onChange={(v) => onChange(v)}
+        />,
+      );
 
     case "number":
       return shell(
@@ -221,22 +230,32 @@ export function FieldInput({
       const v = (value as { th?: string; en?: string }) ?? {};
       const err = errors[`${path}.${locale}`] ?? own;
       const other = locale === "th" ? "en" : "th";
-      const Tag = field.type === "localized" ? "input" : "textarea";
       return (
         <FieldShell id={id} label={field.label} help={field.help} required={locale === "th" && field.required} errors={err}>
-          <div className="relative">
-            <Tag
+          {field.type === "localizedTextarea" ? (
+            <RichTextarea
               id={id}
-              className={clsx("input", field.type === "localizedTextarea" && "min-h-28")}
-              rows={field.type === "localizedTextarea" ? 5 : undefined}
               lang={locale}
               placeholder={locale === "en" && v.th ? v.th : undefined}
               value={v[locale] ?? ""}
-              aria-invalid={err?.length ? true : undefined}
-              onChange={(e) => onChange({ ...v, [locale]: e.target.value })}
+              invalid={err?.length ? true : undefined}
+              minRows={5}
+              onChange={(next) => onChange({ ...v, [locale]: next })}
             />
-            <span className="pointer-events-none absolute top-2 right-2 rounded bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-muted uppercase">{locale}</span>
-          </div>
+          ) : (
+            <div className="relative">
+              <input
+                id={id}
+                className="input"
+                lang={locale}
+                placeholder={locale === "en" && v.th ? v.th : undefined}
+                value={v[locale] ?? ""}
+                aria-invalid={err?.length ? true : undefined}
+                onChange={(e) => onChange({ ...v, [locale]: e.target.value })}
+              />
+              <span className="pointer-events-none absolute top-2 right-2 rounded bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-muted uppercase">{locale}</span>
+            </div>
+          )}
           {locale === "en" && v.th && !v.en && <p className="mt-1 text-xs text-amber-700">ยังไม่มีคำแปล จะแสดงภาษาไทยแทน</p>}
           {locale === "th" && v[other] && <p className="mt-1 truncate text-xs text-muted">EN: {v[other]}</p>}
         </FieldShell>

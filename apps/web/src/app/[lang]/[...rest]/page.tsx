@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { GrowYourVision } from "@/components/grow-your-vision";
 import { MenuContentRenderer } from "@/components/menu-content-renderer";
 import { ProductGrid } from "@/components/product-grid";
+import { RichText } from "@/components/rich-text";
 import { PageHero, SectionHeading } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getGrowVision, getMenuItemByHref, getPage, getProducts } from "@/lib/data";
@@ -115,13 +116,11 @@ export default async function DynamicCatchAllPage({ params }: PageProps<"/[lang]
                     {sec.title}
                   </h2>
                 )}
-                <div className="space-y-4">
-                  {sec.paragraphs.map((p, pi) => (
-                    <p key={pi} className="text-muted leading-relaxed text-base sm:text-lg">
-                      {p}
-                    </p>
-                  ))}
-                </div>
+                <RichText
+                  text={sec.paragraphs}
+                  className="space-y-4"
+                  paragraphClassName="text-muted leading-relaxed text-base sm:text-lg"
+                />
               </div>
             ))}
           </article>

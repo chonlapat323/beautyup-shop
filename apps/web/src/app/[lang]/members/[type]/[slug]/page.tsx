@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "@/components/link";
 import { notFound } from "next/navigation";
 import { postTypePath } from "@/components/post-card";
+import { RichText, renderInlineRichText } from "@/components/rich-text";
 import { resolveLang, type Locale } from "@/i18n";
 import { Media, formatDate } from "@/components/ui";
 import { getPost, getPosts } from "@/lib/data";
@@ -35,10 +36,8 @@ export default async function PostPage({ params }: PageProps<"/[lang]/members/[t
       <p className="mt-4 text-sm text-muted">{formatDate(post.publishedAt, lang)}</p>
       <Media src={post.coverUrl} tone={2} className="mt-8 aspect-[16/9] w-full rounded-3xl" />
       <div className="mt-10 space-y-5 text-lg leading-relaxed">
-        <p className="text-muted">{post.excerpt}</p>
-        {post.body.map((para) => (
-          <p key={para}>{para}</p>
-        ))}
+        {post.excerpt && <p className="text-muted">{renderInlineRichText(post.excerpt)}</p>}
+        <RichText text={post.body} className="space-y-5" />
       </div>
     </article>
   );

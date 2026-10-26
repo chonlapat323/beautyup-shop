@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import Link from "@/components/link";
 import { ProductGrid } from "@/components/product-grid";
+import { RichText } from "@/components/rich-text";
 import { SharePanel } from "@/components/share-panel";
 import { Badge, Media, SectionHeading, formatPrice } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
@@ -134,13 +135,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
               {product.salePrice && <span className="text-lg text-muted line-through">{formatPrice(product.price)}</span>}
             </p>
 
-            {product.description && (
-              <div className="mt-6 space-y-3 text-muted">
-                {product.description.split("\n").filter(Boolean).map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
-              </div>
-            )}
+            {product.description && <RichText text={product.description} className="mt-6 space-y-3 text-muted" />}
 
             <div className="mt-8 rounded-3xl border border-line bg-mist p-6">
               <p className="font-medium">{d.orderTitle}</p>
