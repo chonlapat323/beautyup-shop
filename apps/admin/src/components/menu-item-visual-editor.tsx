@@ -116,14 +116,29 @@ const DEDICATED_ROUTES: Record<string, DedicatedRouteInfo> = {
       { label: "แบรนด์", detail: "จัดการข้อมูลและช่องทางของแต่ละแบรนด์", href: "/r/brands" },
     ],
   },
+  "/policy": {
+    pageTitle: "หน้านโยบายการจำหน่ายและชำระเงิน (Policy)",
+    description: "หน้านโยบายดึงข้อความจากเมนู หน้าข้อความ (Pages) โดยตรง",
+    links: [
+      { label: "หน้าข้อความ (Pages)", detail: "แก้ไขเนื้อหานโยบายการจัดจำหน่าย การชำระเงิน และข้อมูลส่วนบุคคล", href: "/r/pages" },
+    ],
+  },
 };
 
 function getDedicatedRoute(href?: string): DedicatedRouteInfo | undefined {
   if (!href) return undefined;
   const clean = href.trim().replace(/\/+$/, "") || "/";
-  if (DEDICATED_ROUTES[clean]) return DEDICATED_ROUTES[clean];
-  if (clean.startsWith("/members/")) return DEDICATED_ROUTES["/members"];
-  if (clean.startsWith("/contact/")) return DEDICATED_ROUTES["/contact"];
+  if (/^https?:\/\//i.test(clean)) {
+    return {
+      pageTitle: "ลิงก์ไปยังเว็บไซต์ภายนอก (External Link)",
+      description: "เมนูนี้เป็นลิงก์เปิดไปยังเว็บไซต์ภายนอกโดยตรง ไม่ได้เป็นหน้าเว็บภายในระบบ",
+      links: [],
+    };
+  }
+  const withoutHash = clean.split("#")[0] || "/";
+  if (DEDICATED_ROUTES[withoutHash]) return DEDICATED_ROUTES[withoutHash];
+  if (withoutHash.startsWith("/members/")) return DEDICATED_ROUTES["/members"];
+  if (withoutHash.startsWith("/contact/")) return DEDICATED_ROUTES["/contact"];
   return undefined;
 }
 
@@ -520,9 +535,29 @@ export function MenuItemVisualEditor({
 
                       {/* Page Hero Header Inputs (brand pages show the brand's own name and description) */}
                       {isBrandPage ? (
-                        <p className="mt-3 rounded-xl border border-line bg-mist/30 p-3.5 text-xs text-muted">
-                          หัวเรื่องของหน้าแบรนด์ใช้ชื่อและคำอธิบายจากเมนู แบรนด์ แก้ได้ที่นั่น
-                        </p>
+                        <div className="mt-3 rounded-xl border border-brand/25 bg-brand-soft/40 p-3.5 space-y-2.5 text-xs">
+                          <p className="font-semibold text-brand">ทางลัดจัดการข้อมูลของหน้าแบรนด์นี้ ({data.href})</p>
+                          <p className="text-muted">
+                            หัวเรื่อง หมวดหมู่หลัก คอลเลกชัน และสินค้าของแบรนด์ แยกจัดการในเมนูเฉพาะด้านล่างนี้ ส่วนแท็บ <b>สไลด์</b> และ <b>ส่วนเนื้อหา</b> ด้านบนใช้เพิ่มแบนเนอร์/บล็อกเสริมในหน้าแบรนด์ได้ครับ
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            {[
+                              { label: "1. ข้อมูลแบรนด์ / หัวเรื่อง", href: "/r/brands" },
+                              { label: "2. หมวดหมู่หลัก", href: "/r/main-categories" },
+                              { label: "3. คอลเลกชัน", href: "/r/categories" },
+                              { label: "4. สินค้า", href: "/r/products" },
+                            ].map((bLink) => (
+                              <Link
+                                key={bLink.href}
+                                href={bLink.href}
+                                className="flex items-center justify-between rounded-lg border border-line bg-white px-3 py-2 font-medium text-ink transition-colors hover:border-brand hover:text-brand"
+                              >
+                                <span>{bLink.label}</span>
+                                <ChevronRight className="size-3.5 text-muted" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
                       ) : (
                       <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
                         <div className="flex items-center gap-2">

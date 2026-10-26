@@ -36,7 +36,12 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
           },
           ...rawInitial,
         }
-      : rawInitial;
+      : key === "about"
+        ? {
+            ...rawInitial,
+            founderPhoto: (rawInitial.founderPhoto as string) || "/founder.png",
+          }
+        : rawInitial;
 
   return (
     <>

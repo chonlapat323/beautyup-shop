@@ -20,7 +20,22 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
   const key: SiteKey = (SITE_SETTING_KEYS as readonly string[]).includes(tab as string) ? (tab as SiteKey) : "company";
   const all = await api<Record<string, unknown>>("/admin/settings");
   const ui = settingsUi[key];
-  const initial = (all[key] as Record<string, unknown>) ?? {};
+  const rawInitial = (all[key] as Record<string, unknown>) ?? {};
+  const initial =
+    key === "growVision"
+      ? {
+          imageUrl: (rawInitial.imageUrl as string) || "/slides/14.jpg",
+          badge: (rawInitial.badge as Record<string, string>) || { th: "Heona · No Yellow · Sweet", en: "Heona · No Yellow · Sweet" },
+          items:
+            Array.isArray(rawInitial.items) && rawInitial.items.length > 0
+              ? rawInitial.items
+              : [
+                  { title: { th: "ผลิตภัณฑ์ซาลอน", en: "Salon products" }, text: { th: "Fanola, Nook, Sweet Professional", en: "Fanola, Nook, Sweet Professional" }, href: "/products" },
+                  { title: { th: "เคาน์เตอร์แบรนด์", en: "Counter brands" }, text: { th: "La Prairie, La Mer, Clarins และอีกมากมาย", en: "La Prairie, La Mer, Clarins and more" }, href: "/shop" },
+                  { title: { th: "โปรโมทร้านทำผมฟรี", en: "Promote your salon for free" }, text: { th: "เข้ากลุ่ม Facebook ชี้เป้าร้านทำผม", en: "Join our Facebook salon group" }, href: "https://www.facebook.com/groups/582427686617116" },
+                ],
+        }
+      : rawInitial;
 
   return (
     <>
