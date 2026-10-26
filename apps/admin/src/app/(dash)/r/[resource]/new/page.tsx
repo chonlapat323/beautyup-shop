@@ -17,28 +17,31 @@ export default async function NewResourcePage({ params }: PageProps<"/r/[resourc
 
   if (name === "menu-items") {
     return (
-      <MenuItemVisualEditor
-        title="เพิ่มเมนูและหน้าเว็บใหม่"
-        initial={{
-          label: { th: "", en: "" },
-          href: "/new-page",
-          location: "header",
-          isActive: true,
-          sortOrder: 0,
-          slides: [],
-          sections: [],
-        }}
-        relations={relations}
-        onSave={saveMenuItem.bind(null, null)}
-        redirectTo="/r/menu-items"
-        siteUrl={siteUrl()}
-      />
+      <>
+        <SectionFlowBar currentKey="menu-items" trail={[{ label: "เพิ่มเมนูและหน้าเว็บใหม่" }]} />
+        <MenuItemVisualEditor
+          title="เพิ่มเมนูและหน้าเว็บใหม่"
+          initial={{
+            label: { th: "", en: "" },
+            href: "/new-page",
+            location: "header",
+            isActive: true,
+            sortOrder: 0,
+            slides: [],
+            sections: [],
+          }}
+          relations={relations}
+          onSave={saveMenuItem.bind(null, null)}
+          redirectTo="/r/menu-items"
+          siteUrl={siteUrl()}
+        />
+      </>
     );
   }
 
   return (
     <>
-      <SectionFlowBar currentKey={name} />
+      <SectionFlowBar currentKey={name} trail={[{ label: `เพิ่ม${ui.noun}` }]} />
       <PageHeader title={`เพิ่ม${ui.noun}`} back={{ href: `/r/${name}`, label: ui.title }} />
       <ResourceForm fields={ui.fields} relations={relations} onSave={saveResource.bind(null, name, null)} redirectTo={`/r/${name}`} />
     </>

@@ -538,24 +538,28 @@ export function MenuItemVisualEditor({
                         <div className="mt-3 rounded-xl border border-brand/25 bg-brand-soft/40 p-3.5 space-y-2.5 text-xs">
                           <p className="font-semibold text-brand">ทางลัดจัดการข้อมูลของหน้าแบรนด์นี้ ({data.href})</p>
                           <p className="text-muted">
-                            หัวเรื่อง หมวดหมู่หลัก คอลเลกชัน และสินค้าของแบรนด์ แยกจัดการในเมนูเฉพาะด้านล่างนี้ ส่วนแท็บ <b>สไลด์</b> และ <b>ส่วนเนื้อหา</b> ด้านบนใช้เพิ่มแบนเนอร์/บล็อกเสริมในหน้าแบรนด์ได้ครับ
+                            หัวเรื่อง หมวดหมู่หลัก คอลเลกชัน และสินค้าของแบรนด์ แยกจัดการในเมนูเฉพาะด้านล่างนี้ (กรองเฉพาะแบรนด์นี้ให้อัตโนมัติ) ส่วนแท็บ <b>สไลด์</b> และ <b>ส่วนเนื้อหา</b> ด้านบนใช้เพิ่มแบนเนอร์/บล็อกเสริมในหน้าแบรนด์ได้ครับ
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                            {[
-                              { label: "1. ข้อมูลแบรนด์ / หัวเรื่อง", href: "/r/brands" },
-                              { label: "2. หมวดหมู่หลัก", href: "/r/main-categories" },
-                              { label: "3. คอลเลกชัน", href: "/r/categories" },
-                              { label: "4. สินค้า", href: "/r/products" },
-                            ].map((bLink) => (
-                              <Link
-                                key={bLink.href}
-                                href={bLink.href}
-                                className="flex items-center justify-between rounded-lg border border-line bg-white px-3 py-2 font-medium text-ink transition-colors hover:border-brand hover:text-brand"
-                              >
-                                <span>{bLink.label}</span>
-                                <ChevronRight className="size-3.5 text-muted" />
-                              </Link>
-                            ))}
+                            {(() => {
+                              const brandSlug = (data.href ?? "").trim().replace(/^\/products\//, "").split("/")[0] || "";
+                              const brandQ = brandSlug ? `?filter=${encodeURIComponent(brandSlug)}` : "";
+                              return [
+                                { label: "1. ข้อมูลแบรนด์ / หัวเรื่อง", href: "/r/brands" },
+                                { label: "2. หมวดหมู่หลักของแบรนด์นี้", href: `/r/main-categories${brandQ}` },
+                                { label: "3. คอลเลกชันของแบรนด์นี้", href: `/r/categories${brandQ}` },
+                                { label: "4. สินค้าของแบรนด์นี้", href: `/r/products${brandQ}` },
+                              ].map((bLink) => (
+                                <Link
+                                  key={bLink.href}
+                                  href={bLink.href}
+                                  className="flex items-center justify-between rounded-lg border border-line bg-white px-3 py-2 font-medium text-ink transition-colors hover:border-brand hover:text-brand"
+                                >
+                                  <span>{bLink.label}</span>
+                                  <ChevronRight className="size-3.5 text-muted" />
+                                </Link>
+                              ));
+                            })()}
                           </div>
                         </div>
                       ) : (

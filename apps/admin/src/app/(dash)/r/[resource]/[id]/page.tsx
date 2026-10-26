@@ -5,7 +5,7 @@ import { MediaShare } from "@/components/media-share";
 import { MenuItemVisualEditor } from "@/components/menu-item-visual-editor";
 import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
-import { SectionFlowBar } from "@/components/section-flow-bar";
+import { SectionFlowBar, type BreadcrumbItem } from "@/components/section-flow-bar";
 import { resourceUi } from "@/lib/fields";
 import { getResource, loadRelations, resolveResource, rowTitle } from "@/lib/resources";
 import { siteUrl } from "@/lib/site";
@@ -21,22 +21,47 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
   const title = rowTitle(name, row);
 
   if (name === "menu-items") {
+    const parentOpt = row.parentId ? relations["menu-items"]?.find((o) => o.value === String(row.parentId)) : undefined;
+    const menuTrail: BreadcrumbItem[] = [];
+    if (parentOpt) {
+      menuTrail.push({ label: `เมนูหลัก: ${parentOpt.label}`, href: `/r/menu-items?filter=${parentOpt.value}` });
+    }
+    menuTrail.push({ label: `${title} (${String(row.href ?? "")})` });
     return (
-      <MenuItemVisualEditor
-        id={id}
-        title={title}
-        initial={row}
-        relations={relations}
-        onSave={saveMenuItem.bind(null, id)}
-        onDelete={deleteResource.bind(null, name, id)}
-        siteUrl={siteUrl()}
-      />
+      <>
+        <SectionFlowBar currentKey="menu-items" trail={menuTrail} />
+        <MenuItemVisualEditor
+          id={id}
+          title={title}
+          initial={row}
+          relations={relations}
+          onSave={saveMenuItem.bind(null, id)}
+          onDelete={deleteResource.bind(null, name, id)}
+          siteUrl={siteUrl()}
+        />
+      </>
     );
   }
 
+  const trail: BreadcrumbItem[] = [];
+  if (row.brandId && relations.brands) {
+    const b = relations.brands.find((o) => o.value === String(row.brandId));
+    if (b) trail.push({ label: `แบรนด์: ${b.label}`, href: `/r/${name}?filter=${b.value}` });
+  }
+  if (row.mainCategoryId && relations["main-categories"]) {
+    const mc = relations["main-categories"].find((o) => o.value === String(row.mainCategoryId));
+    if (mc) trail.push({ label: `หมวดหลัก: ${mc.label}`, href: `/r/${name}?sub=${mc.value}` });
+  }
+  if (row.categoryId) {
+    const catList = relations.categories || relations["media-categories"] || relations["forum-categories"];
+    const cat = catList?.find((o) => o.value === String(row.categoryId));
+    if (cat) trail.push({ label: `หมวด/คอลเลกชัน: ${cat.label}`, href: `/r/${name}?sub=${cat.value}` });
+  }
+  trail.push({ label: `แก้ไข: ${title}` });
+
   return (
     <>
-      <SectionFlowBar currentKey={name} />
+      <SectionFlowBar currentKey={name} trail={trail} />
       <PageHeader
         title={title}
         back={{ href: `/r/${name}`, label: ui.title }}

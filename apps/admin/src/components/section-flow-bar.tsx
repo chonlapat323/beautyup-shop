@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ArrowLeft, ChevronRight, FolderKanban } from "lucide-react";
+import { ChevronRight, FolderKanban, Home } from "lucide-react";
 import Link from "next/link";
 
 type FlowStep = {
@@ -12,6 +12,11 @@ type MenuFlow = {
   menuLabel: string;
   menuPath: string;
   steps: FlowStep[];
+};
+
+export type BreadcrumbItem = {
+  label: string;
+  href?: string;
 };
 
 const FLOWS: MenuFlow[] = [
@@ -87,56 +92,95 @@ const FLOWS: MenuFlow[] = [
   },
 ];
 
-export function SectionFlowBar({ currentKey }: { currentKey: string }) {
+export function SectionFlowBar({
+  currentKey,
+  trail = [],
+}: {
+  currentKey: string;
+  trail?: BreadcrumbItem[];
+}) {
   const flow = FLOWS.find((f) => f.steps.some((s) => s.key === currentKey));
-  if (!flow) return null;
+  const currentStep = flow?.steps.find((s) => s.key === currentKey);
+
+  // Also render a clean breadcrumb for /r/menu-items itself
+  if (!flow && currentKey !== "menu-items") return null;
+
+  const crumbs: BreadcrumbItem[] = [
+    { label: "ภาพรวม", href: "/" },
+    { label: "เมนูและหน้าเว็บ", href: "/r/menu-items" },
+  ];
+
+  if (flow) {
+    crumbs.push({ label: `เมนู: ${flow.menuLabel} (${flow.menuPath})`, href: "/r/menu-items" });
+  }
+  if (currentStep) {
+    crumbs.push({
+      label: currentStep.label.replace(/^\d+\.\s*/, ""),
+      href: trail.length > 0 ? currentStep.href : undefined,
+    });
+  }
+  crumbs.push(...trail);
 
   return (
     <div className="mb-6 rounded-2xl border border-line bg-white p-3.5 sm:px-5 shadow-2xs">
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div className="flex flex-wrap items-center gap-1.5 text-muted">
-          <Link
-            href="/r/menu-items"
-            className="inline-flex items-center gap-1 rounded-lg bg-sand/70 px-2.5 py-1 font-medium text-ink transition-colors hover:bg-brand-soft hover:text-brand"
-          >
-            <ArrowLeft className="size-3.5" /> เมนูและหน้าเว็บ
-          </Link>
-          <ChevronRight className="size-3.5 text-muted/60" />
-          <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
-            <FolderKanban className="size-3.5 text-brand" />
-            มาจากเมนู: <span className="text-brand">{flow.menuLabel}</span>
-            <code className="rounded bg-mist px-1.5 py-0.5 font-mono text-[11px] text-muted">{flow.menuPath}</code>
-          </span>
-        </div>
-        <span className="text-[11px] text-muted">คลิกเลือกส่วนที่ต้องการแก้ไขตามลำดับ</span>
-      </div>
-
-      {flow.steps.length > 1 && (
-        <nav
-          aria-label="ลำดับการจัดการในเมนูนี้"
-          className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-line/70 pt-3"
-        >
-          {flow.steps.map((step, idx) => {
-            const active = step.key === currentKey;
-            return (
-              <div key={step.key} className="flex items-center gap-1.5">
-                {idx > 0 && <ChevronRight className="size-3.5 text-muted/50 hidden sm:block" />}
+      {/* Breadcrumb Trail */}
+      <nav aria-label="ตำแหน่งปัจจุบัน (Breadcrumb)" className="flex flex-wrap items-center gap-1.5 text-xs">
+        {crumbs.map((c, idx) => {
+          const isLast = idx === crumbs.length - 1;
+          return (
+            <span key={idx} className="inline-flex items-center gap-1.5">
+              {idx > 0 && <ChevronRight className="size-3.5 text-muted/50 shrink-0" />}
+              {c.href && !isLast ? (
                 <Link
-                  href={step.href}
-                  aria-current={active ? "page" : undefined}
+                  href={c.href}
+                  className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-medium text-muted transition-colors hover:bg-sand/70 hover:text-brand"
+                >
+                  {idx === 0 && <Home className="size-3.5" />}
+                  {c.label}
+                </Link>
+              ) : (
+                <span
                   className={clsx(
-                    "inline-flex min-h-8.5 items-center rounded-lg border px-3 py-1 text-xs font-medium transition-colors",
-                    active
-                      ? "border-brand bg-brand text-white shadow-2xs"
-                      : "border-line bg-mist/50 text-ink/80 hover:border-brand/50 hover:bg-brand-soft/40 hover:text-brand",
+                    "inline-flex items-center gap-1 rounded-md px-2 py-0.5",
+                    isLast ? "bg-brand-soft/70 font-semibold text-brand" : "font-medium text-ink",
                   )}
                 >
-                  {step.label}
-                </Link>
-              </div>
-            );
-          })}
-        </nav>
+                  {idx === 2 && <FolderKanban className="size-3.5 text-brand" />}
+                  {c.label}
+                </span>
+              )}
+            </span>
+          );
+        })}
+      </nav>
+
+      {/* Ordered Step-by-Step Bar */}
+      {flow && flow.steps.length > 1 && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-3">
+          <div className="flex flex-wrap items-center gap-1.5" role="navigation" aria-label="ลำดับการจัดการในเมนูนี้">
+            {flow.steps.map((step, idx) => {
+              const active = step.key === currentKey;
+              return (
+                <div key={step.key} className="flex items-center gap-1.5">
+                  {idx > 0 && <ChevronRight className="size-3.5 text-muted/50 hidden sm:block" />}
+                  <Link
+                    href={step.href}
+                    aria-current={active ? "page" : undefined}
+                    className={clsx(
+                      "inline-flex min-h-8 items-center rounded-lg border px-3 py-1 text-xs font-medium transition-colors",
+                      active
+                        ? "border-brand bg-brand text-white shadow-2xs"
+                        : "border-line bg-mist/50 text-ink/80 hover:border-brand/50 hover:bg-brand-soft/40 hover:text-brand",
+                    )}
+                  >
+                    {step.label}
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+          <span className="text-[11px] text-muted hidden md:inline">เรียงตามลำดับส่วนในเมนู {flow.menuLabel}</span>
+        </div>
       )}
     </div>
   );
