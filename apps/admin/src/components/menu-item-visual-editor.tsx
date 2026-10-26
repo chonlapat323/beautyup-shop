@@ -29,6 +29,104 @@ import { UploadBox } from "./image-upload";
 
 type L = { th?: string; en?: string };
 
+type DedicatedRouteInfo = {
+  pageTitle: string;
+  description: string;
+  links: { label: string; detail: string; href: string }[];
+};
+
+const DEDICATED_ROUTES: Record<string, DedicatedRouteInfo> = {
+  "/": {
+    pageTitle: "หน้าแรก (Home)",
+    description: "หน้าแรกของเว็บไซต์ดึงข้อมูลจากส่วนจัดการเฉพาะแต่ละส่วน ไม่ได้ใช้สไลด์หรือบล็อกจากหน้าเมนูนี้",
+    links: [
+      { label: "สไลด์หน้าแรก", detail: "แบนเนอร์สไลด์ใหญ่ด้านบนสุดของหน้าแรก", href: "/r/hero-slides" },
+      { label: "แบรนด์", detail: "รายชื่อแบรนด์ โลโก้ และข้อมูลแบรนด์", href: "/r/brands" },
+      { label: "วิดีโอหน้าแรก", detail: "คลิปวิดีโอแนะนำบนหน้าแรก", href: "/r/videos" },
+      { label: "ตั้งค่าเว็บไซต์", detail: "ข้อมูลบริษัท จำนวนซาลอน และแถบ Grow Your Vision", href: "/settings" },
+    ],
+  },
+  "/customers": {
+    pageTitle: "หน้าลูกค้าของเรา (Our Customers)",
+    description: "หน้าลูกค้าของเราประกอบด้วย 4 ส่วนหลัก ซึ่งแยกจัดการในเมนูเฉพาะด้านล่างนี้ (หน้านี้ใช้ตั้งชื่อปุ่มเมนูและลำดับบนหัวเว็บเท่านั้น)",
+    links: [
+      { label: "1. แบนเนอร์ลูกค้า VIP (ส่วนบนสุด)", detail: "แก้ไขหัวข้อ คำพูดรีวิวลูกค้า VIP ชื่อร้าน และรูปพื้นหลัง", href: "/content/vipCustomer" },
+      { label: "2. แบรนด์แอมบาสเดอร์", detail: "เพิ่ม/ลบ/แก้ไข รายชื่อแอมบาสเดอร์ รูปถ่าย และลิงก์โซเชียล", href: "/r/ambassadors" },
+      { label: "3. ซาลอนพันธมิตร (รายชื่อร้าน)", detail: "เพิ่ม/แก้ไข รายชื่อร้านซาลอน จังหวัด แผนที่ และรูปหน้าร้าน", href: "/r/salons" },
+      { label: "4. จำนวนซาลอนแต่ละภาค", detail: "ตัวเลขจำนวนร้านรวม 6 ภูมิภาคที่แสดงในหน้าลูกค้า", href: "/settings?tab=regions" },
+      { label: "5. แถบ Grow Your Vision (ท้ายหน้า)", detail: "แบนเนอร์และปุ่มชวนร่วมเป็นพาร์ทเนอร์ด้านล่างสุด", href: "/settings?tab=growVision" },
+    ],
+  },
+  "/customers/salons": {
+    pageTitle: "หน้าทำเนียบซาลอนพันธมิตร",
+    description: "หน้ารวมรายชื่อร้านซาลอนพันธมิตรทั้งหมด ดึงข้อมูลจากเมนูซาลอนพันธมิตรโดยตรง",
+    links: [
+      { label: "ซาลอนพันธมิตร (รายชื่อร้าน)", detail: "เพิ่ม/แก้ไข รายชื่อร้านซาลอน จังหวัด แผนที่ และรูปหน้าร้าน", href: "/r/salons" },
+      { label: "จำนวนซาลอนแต่ละภาค", detail: "ตัวเลขจำนวนร้านรวม 6 ภูมิภาค", href: "/settings?tab=regions" },
+    ],
+  },
+  "/about": {
+    pageTitle: "หน้าเกี่ยวกับเรา (About Us)",
+    description: "หน้าเกี่ยวกับเรามีเมนูจัดการเฉพาะ 3 ส่วน (หน้านี้ใช้ตั้งชื่อปุ่มเมนูและลำดับบนหัวเว็บเท่านั้น)",
+    links: [
+      { label: "1. เนื้อหาหน้าเกี่ยวกับเรา", detail: "ประวัติ วิสัยทัศน์ พันธกิจ และข้อมูลผู้บริหาร", href: "/content/about" },
+      { label: "2. สไลด์หน้าเกี่ยวกับเรา", detail: "รูปภาพสไลด์ในหน้าเกี่ยวกับเรา", href: "/content/aboutSlides" },
+      { label: "3. เส้นทางของบิวตี้อัพ (Timeline)", detail: "เหตุการณ์สำคัญแต่ละปีของบริษัท", href: "/content/timeline" },
+    ],
+  },
+  "/courses": {
+    pageTitle: "หน้าคอร์สเรียน (Education / Courses)",
+    description: "หน้าคอร์สเรียนดึงรายการคอร์สจากเมนูคอร์สเรียนโดยตรง",
+    links: [
+      { label: "จัดการคอร์สเรียน", detail: "เพิ่ม/แก้ไข รายละเอียดคอร์สเรียน วันเวลา และสถานที่", href: "/r/courses" },
+    ],
+  },
+  "/members": {
+    pageTitle: "หน้ามุมสมาชิก / มีเดีย",
+    description: "หน้ามุมสมาชิกและคลังมีเดียดึงข้อมูลจากเมนูมีเดียและบทความโดยตรง",
+    links: [
+      { label: "มีเดีย (รูปภาพ/วิดีโอ/แคตตาล็อก)", detail: "จัดการคลังมีเดีย แบรนด์ และแท็ก SEO", href: "/r/media" },
+      { label: "หมวดหมู่มีเดีย", detail: "จัดการหมวดหมู่ของคลังมีเดีย", href: "/r/media-categories" },
+      { label: "บทความ / กิจกรรม", detail: "จัดการข่าวสาร บทความ และกิจกรรม", href: "/r/posts" },
+    ],
+  },
+  "/forum": {
+    pageTitle: "หน้าฟอรั่ม (Forum)",
+    description: "หน้าฟอรั่มดึงข้อมูลกระทู้และหมวดหมู่จากระบบฟอรั่มโดยตรง",
+    links: [
+      { label: "กระทู้ฟอรั่ม", detail: "ดู ปักหมุด ล็อก หรือลบกระทู้ในฟอรั่ม", href: "/r/forum-topics" },
+      { label: "ความคิดเห็น", detail: "จัดการความคิดเห็นในกระทู้", href: "/r/forum-replies" },
+      { label: "หมวดหมู่ฟอรั่ม", detail: "เพิ่ม/แก้ไขหมวดหมู่ของฟอรั่ม", href: "/r/forum-categories" },
+    ],
+  },
+  "/contact": {
+    pageTitle: "หน้าติดต่อเรา (Contact Us)",
+    description: "หน้าติดต่อเราดึงที่อยู่ เบอร์โทร โซเชียล และรายชื่อทีมงานจากเมนูด้านล่างนี้",
+    links: [
+      { label: "ข้อมูลบริษัท / ช่องทางติดต่อ", detail: "แก้ไขที่อยู่ เบอร์โทร LINE แผนที่ และโซเชียลมีเดีย", href: "/settings?tab=company" },
+      { label: "ทีมงาน (ฝ่ายขาย)", detail: "จัดการรายชื่อและช่องทางติดต่อทีมงาน", href: "/r/team" },
+      { label: "กล่องข้อความ", detail: "ดูข้อความและคำสั่งซื้อที่ลูกค้าส่งเข้ามา", href: "/inquiries" },
+    ],
+  },
+  "/shop": {
+    pageTitle: "หน้าช่องทางสั่งซื้อ (Shop Online)",
+    description: "หน้าช่องทางสั่งซื้อดึงลิงก์ Shopee, Lazada, TikTok Shop และ LINE จากข้อมูลบริษัทและแบรนด์",
+    links: [
+      { label: "ข้อมูลบริษัท / ลิงก์ร้านค้าออนไลน์", detail: "แก้ไขลิงก์ Shopee, Lazada, TikTok Shop, LINE Official", href: "/settings?tab=company" },
+      { label: "แบรนด์", detail: "จัดการข้อมูลและช่องทางของแต่ละแบรนด์", href: "/r/brands" },
+    ],
+  },
+};
+
+function getDedicatedRoute(href?: string): DedicatedRouteInfo | undefined {
+  if (!href) return undefined;
+  const clean = href.trim().replace(/\/+$/, "") || "/";
+  if (DEDICATED_ROUTES[clean]) return DEDICATED_ROUTES[clean];
+  if (clean.startsWith("/members/")) return DEDICATED_ROUTES["/members"];
+  if (clean.startsWith("/contact/")) return DEDICATED_ROUTES["/contact"];
+  return undefined;
+}
+
 export interface MenuVisualSlide {
   imageUrl: string;
   title?: L;
@@ -126,6 +224,8 @@ export function MenuItemVisualEditor({
   const parentOptions = relations["menu-items"] || [];
   // Brand pages take their title, description and products from the brand in the URL
   const isBrandPage = /^\/products\/[^/]+\/?$/.test(data.href ?? "");
+  const dedicatedRoute = getDedicatedRoute(data.href);
+  const currentTab = dedicatedRoute ? "general" : activeTab;
   const selectedBrand = brandOptions.find((b) => b.value === data.brandId);
 
   const handleSave = () => {
@@ -165,11 +265,13 @@ export function MenuItemVisualEditor({
                 {data.label?.[inputLang] ? `${data.label[inputLang]} (${data.href})` : title}
               </h1>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
-                <Sparkles className="size-3" /> ตัวแก้ไขหน้าเว็บ
+                <Sparkles className="size-3" /> {dedicatedRoute ? "ตั้งค่าปุ่มเมนู" : "ตัวแก้ไขหน้าเว็บ"}
               </span>
             </div>
             <p className="mt-0.5 text-xs text-muted">
-              แก้ไขเมนูและเนื้อหาของหน้านี้ ดูตัวอย่างหน้าเว็บได้ทางขวา
+              {dedicatedRoute
+                ? "ตั้งชื่อปุ่มเมนู ลำดับ และการแสดงผลบนหัวเว็บ · เนื้อหาของหน้านี้กดแก้ไขได้จากปุ่มลัดทางขวา"
+                : "แก้ไขเมนูและเนื้อหาของหน้านี้ ดูตัวอย่างหน้าเว็บได้ทางขวา"}
             </p>
           </div>
         </div>
@@ -223,18 +325,21 @@ export function MenuItemVisualEditor({
           {/* Section Navigation Tabs */}
           <div className="flex items-center justify-between border-b border-line bg-white rounded-t-xl px-2 pt-2 shadow-2xs">
             <nav className="flex space-x-1" aria-label="Tabs">
-              {[
-                { id: "general", label: "ข้อมูลเมนู", count: undefined },
-                { id: "slides", label: "สไลด์", count: data.slides?.length },
-                { id: "sections", label: "ส่วนเนื้อหา", count: data.sections?.length },
-              ].map((t) => (
+              {(dedicatedRoute
+                ? [{ id: "general", label: "ข้อมูลเมนู", count: undefined }]
+                : [
+                    { id: "general", label: "ข้อมูลเมนู", count: undefined },
+                    { id: "slides", label: "สไลด์", count: data.slides?.length },
+                    { id: "sections", label: "ส่วนเนื้อหา", count: data.sections?.length },
+                  ]
+              ).map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => setActiveTab(t.id as any)}
                   className={clsx(
                     "flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs sm:text-sm font-medium transition-colors",
-                    activeTab === t.id
+                    currentTab === t.id
                       ? "border-brand text-brand font-semibold"
                       : "border-transparent text-muted hover:border-line hover:text-ink",
                   )}
@@ -244,7 +349,7 @@ export function MenuItemVisualEditor({
                     <span
                       className={clsx(
                         "rounded-full px-1.5 py-0.2 text-[10px]",
-                        activeTab === t.id ? "bg-brand text-white" : "bg-sand text-muted",
+                        currentTab === t.id ? "bg-brand text-white" : "bg-sand text-muted",
                       )}
                     >
                       {t.count}
@@ -282,7 +387,7 @@ export function MenuItemVisualEditor({
           {/* Form Container */}
           <div className="rounded-b-xl border-x border-b border-line bg-white p-5 shadow-xs">
             {/* ---------------- 1. GENERAL TAB ---------------- */}
-            {activeTab === "general" && (
+            {currentTab === "general" && (
               <div className="space-y-4">
                 <div className="border-b border-line pb-3">
                   <h2 className="text-sm font-bold text-ink">ข้อมูลเมนู</h2>
@@ -366,122 +471,131 @@ export function MenuItemVisualEditor({
                     </div>
                   </div>
 
-                  {/* Products on the page. A brand page (/products/<brand>) always shows its own brand. */}
-                  <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
-                    <div className="flex items-center gap-2">
-                      <Package className="size-4 text-brand" />
-                      <h3 className="text-xs font-bold text-ink">สินค้าในหน้านี้</h3>
+                  {dedicatedRoute ? (
+                    <div className="mt-3 rounded-xl border border-brand/25 bg-brand-soft/40 p-3.5 text-xs text-ink">
+                      <p className="font-semibold text-brand">หน้านี้เป็นหน้าเฉพาะของระบบ ({dedicatedRoute.pageTitle})</p>
+                      <p className="mt-1 text-muted">{dedicatedRoute.description}</p>
                     </div>
-
-                    {isBrandPage ? (
-                      <p className="text-xs text-muted">หน้าแบรนด์แสดงสินค้าของแบรนด์ตามลิงก์ ({data.href}) ให้อัตโนมัติ</p>
-                    ) : (
-                    <div>
-                      <label className="block text-xs font-medium text-muted mb-1">เลือกแบรนด์ที่ต้องการแสดง</label>
-                      <select
-                        className="input w-full text-xs font-medium"
-                        value={data.brandId ?? ""}
-                        onChange={(e) => setData({ ...data, brandId: e.target.value || null })}
-                      >
-                        <option value="">— ไม่ระบุ (ไม่ดึงสินค้าแบรนด์) —</option>
-                        {brandOptions.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    )}
-
-                    {(isBrandPage || data.brandId) && (
-                      <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-ink pt-1">
-                        <input
-                          type="checkbox"
-                          checked={data.showProducts}
-                          onChange={(e) => setData({ ...data, showProducts: e.target.checked })}
-                          className="size-4 accent-brand rounded"
-                        />
-                        แสดงรายการสินค้าด้านล่างของหน้า
-                      </label>
-                    )}
-                  </div>
-
-                  {/* Page Hero Header Inputs (brand pages show the brand's own name and description) */}
-                  {isBrandPage ? (
-                    <p className="mt-3 rounded-xl border border-line bg-mist/30 p-3.5 text-xs text-muted">
-                      หัวเรื่องของหน้าแบรนด์ใช้ชื่อและคำอธิบายจากเมนู แบรนด์ แก้ได้ที่นั่น
-                    </p>
                   ) : (
-                  <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="size-4 text-brand" />
-                      <div>
-                        <h3 className="text-xs font-bold text-ink">หัวเรื่องด้านบนของหน้า</h3>
-                        <p className="text-[11px] text-muted">เว้นว่างได้ จะใช้ชื่อเมนูเป็นหัวเรื่อง</p>
+                    <>
+                      {/* Products on the page. A brand page (/products/<brand>) always shows its own brand. */}
+                      <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
+                        <div className="flex items-center gap-2">
+                          <Package className="size-4 text-brand" />
+                          <h3 className="text-xs font-bold text-ink">สินค้าในหน้านี้</h3>
+                        </div>
+
+                        {isBrandPage ? (
+                          <p className="text-xs text-muted">หน้าแบรนด์แสดงสินค้าของแบรนด์ตามลิงก์ ({data.href}) ให้อัตโนมัติ</p>
+                        ) : (
+                        <div>
+                          <label className="block text-xs font-medium text-muted mb-1">เลือกแบรนด์ที่ต้องการแสดง</label>
+                          <select
+                            className="input w-full text-xs font-medium"
+                            value={data.brandId ?? ""}
+                            onChange={(e) => setData({ ...data, brandId: e.target.value || null })}
+                          >
+                            <option value="">— ไม่ระบุ (ไม่ดึงสินค้าแบรนด์) —</option>
+                            {brandOptions.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        )}
+
+                        {(isBrandPage || data.brandId) && (
+                          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-ink pt-1">
+                            <input
+                              type="checkbox"
+                              checked={data.showProducts}
+                              onChange={(e) => setData({ ...data, showProducts: e.target.checked })}
+                              className="size-4 accent-brand rounded"
+                            />
+                            แสดงรายการสินค้าด้านล่างของหน้า
+                          </label>
+                        )}
                       </div>
-                    </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        ข้อความเล็กเหนือหัวเรื่อง [{inputLang.toUpperCase()}]
-                      </label>
-                      <input
-                        type="text"
-                        className="input w-full text-xs font-medium"
-                        placeholder="เช่น Professional Salon Products หรือ Beauty Up"
-                        value={data.heroEyebrow?.[inputLang] ?? ""}
-                        onChange={(e) =>
-                          setData({
-                            ...data,
-                            heroEyebrow: { ...data.heroEyebrow, [inputLang]: e.target.value },
-                          })
-                        }
-                      />
-                    </div>
+                      {/* Page Hero Header Inputs (brand pages show the brand's own name and description) */}
+                      {isBrandPage ? (
+                        <p className="mt-3 rounded-xl border border-line bg-mist/30 p-3.5 text-xs text-muted">
+                          หัวเรื่องของหน้าแบรนด์ใช้ชื่อและคำอธิบายจากเมนู แบรนด์ แก้ได้ที่นั่น
+                        </p>
+                      ) : (
+                      <div className="rounded-xl border border-line bg-mist/30 p-3.5 space-y-3 mt-3">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="size-4 text-brand" />
+                          <div>
+                            <h3 className="text-xs font-bold text-ink">หัวเรื่องด้านบนของหน้า</h3>
+                            <p className="text-[11px] text-muted">เว้นว่างได้ จะใช้ชื่อเมนูเป็นหัวเรื่อง</p>
+                          </div>
+                        </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        หัวเรื่อง [{inputLang.toUpperCase()}]
-                      </label>
-                      <input
-                        type="text"
-                        className="input w-full text-xs font-bold"
-                        placeholder="เช่น เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ"
-                        value={data.heroHeadline?.[inputLang] ?? ""}
-                        onChange={(e) =>
-                          setData({
-                            ...data,
-                            heroHeadline: { ...data.heroHeadline, [inputLang]: e.target.value },
-                          })
-                        }
-                      />
-                    </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-ink mb-1">
+                            ข้อความเล็กเหนือหัวเรื่อง [{inputLang.toUpperCase()}]
+                          </label>
+                          <input
+                            type="text"
+                            className="input w-full text-xs font-medium"
+                            placeholder="เช่น Professional Salon Products หรือ Beauty Up"
+                            value={data.heroEyebrow?.[inputLang] ?? ""}
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                heroEyebrow: { ...data.heroEyebrow, [inputLang]: e.target.value },
+                              })
+                            }
+                          />
+                        </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        คำอธิบายใต้หัวเรื่อง [{inputLang.toUpperCase()}]
-                      </label>
-                      <textarea
-                        rows={2}
-                        className="input w-full text-xs"
-                        placeholder="เช่น ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ"
-                        value={data.heroLead?.[inputLang] ?? ""}
-                        onChange={(e) =>
-                          setData({
-                            ...data,
-                            heroLead: { ...data.heroLead, [inputLang]: e.target.value },
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-ink mb-1">
+                            หัวเรื่อง [{inputLang.toUpperCase()}]
+                          </label>
+                          <input
+                            type="text"
+                            className="input w-full text-xs font-bold"
+                            placeholder="เช่น เรามอบสิ่งที่ดีที่สุดเพื่อลูกค้าของคุณ"
+                            value={data.heroHeadline?.[inputLang] ?? ""}
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                heroHeadline: { ...data.heroHeadline, [inputLang]: e.target.value },
+                              })
+                            }
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-ink mb-1">
+                            คำอธิบายใต้หัวเรื่อง [{inputLang.toUpperCase()}]
+                          </label>
+                          <textarea
+                            rows={2}
+                            className="input w-full text-xs"
+                            placeholder="เช่น ผลิตภัณฑ์ซาลอนมืออาชีพ นำเข้าจากอิตาลีและบราซิล สำหรับร้านเสริมสวยและช่างผมมืออาชีพ"
+                            value={data.heroLead?.[inputLang] ?? ""}
+                            onChange={(e) =>
+                              setData({
+                                ...data,
+                                heroLead: { ...data.heroLead, [inputLang]: e.target.value },
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
             )}
 
             {/* ---------------- 2. SLIDES TAB ---------------- */}
-            {activeTab === "slides" && (
+            {currentTab === "slides" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-line pb-3">
                   <div>
@@ -645,7 +759,7 @@ export function MenuItemVisualEditor({
             )}
 
             {/* ---------------- 3. SECTIONS TAB ---------------- */}
-            {activeTab === "sections" && (
+            {currentTab === "sections" && (
               <div className="space-y-4">
                 <div className="border-b border-line pb-3">
                   <h2 className="text-sm font-bold text-ink">ส่วนเนื้อหาของหน้า</h2>
@@ -1027,9 +1141,53 @@ export function MenuItemVisualEditor({
         </div>
 
         {/* ========================================================= */}
-        {/* RIGHT COLUMN: Sticky Realtime Preview (6 cols)            */}
+        {/* RIGHT COLUMN: Sticky Realtime Preview OR Shortcut Panel   */}
         {/* ========================================================= */}
         <div className="lg:col-span-6 sticky top-20">
+          {dedicatedRoute ? (
+            <div className="rounded-2xl border border-line bg-white p-6 shadow-xs space-y-5">
+              <div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">
+                  <Layers className="size-3.5" /> ทางลัดจัดการเนื้อหาในหน้านี้
+                </span>
+                <h2 className="mt-2.5 text-lg font-bold text-ink">{dedicatedRoute.pageTitle}</h2>
+                <p className="mt-1 text-xs text-muted leading-relaxed">{dedicatedRoute.description}</p>
+              </div>
+
+              <ul className="space-y-2.5">
+                {dedicatedRoute.links.map((item) => (
+                  <li key={item.href + item.label}>
+                    <Link
+                      href={item.href}
+                      className="group flex items-center justify-between gap-4 rounded-xl border border-line bg-mist/40 p-3.5 transition-all hover:border-brand hover:bg-brand-soft/40"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-ink group-hover:text-brand">{item.label}</p>
+                        <p className="mt-0.5 text-xs text-muted">{item.detail}</p>
+                      </div>
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-ink shadow-2xs border border-line group-hover:border-brand group-hover:text-brand">
+                        ไปที่เมนูนี้ <ChevronRight className="size-3.5" />
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              {data.href && (
+                <div className="border-t border-line pt-4 flex items-center justify-between text-xs text-muted">
+                  <span>ลิงก์หน้าเว็บจริง: <code className="rounded bg-sand px-1.5 py-0.5 font-mono text-ink">{data.href}</code></span>
+                  <a
+                    href={`${siteUrl}${data.href}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 font-semibold text-brand hover:underline"
+                  >
+                    เปิดดูหน้าเว็บจริง <ExternalLink className="size-3.5" />
+                  </a>
+                </div>
+              )}
+            </div>
+          ) : (
           <div className="rounded-2xl border border-line bg-white shadow-md overflow-hidden">
             {/* Browser Header Mock */}
             <div className="flex items-center justify-between border-b border-line bg-sand/60 px-3.5 py-2.5">
@@ -1290,6 +1448,7 @@ export function MenuItemVisualEditor({
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
