@@ -406,7 +406,7 @@ export async function getBrand(lang: Locale, slug: string) {
 /* ------------------------------------------------------------- products */
 
 interface ProductRow extends Row {
-  slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; tags?: string[]; imageUrl: string;
+  slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; tags?: string[]; imageUrl: string; images?: string[];
   mainCategory?: { slug: string; name: L } | null;
   categoryRel?: { slug: string; name: L } | null;
   brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
@@ -432,21 +432,27 @@ const productFallbacks: Record<string, string> = {
   "nutri-care-shampoo-1000ml": "/categories/fanola/nutri-care.jpg",
 };
 
-const toProduct = (p: ProductRow, lang: Locale): Product => ({
-  slug: p.slug,
-  name: t(p.name, lang),
-  brandSlug: p.brand.slug,
-  brandName: p.brand.name,
-  brandType: p.brand.type,
-  mainCategory: p.mainCategory ? { slug: p.mainCategory.slug, name: t(p.mainCategory.name, lang) } : undefined,
-  collection: p.categoryRel ? { slug: p.categoryRel.slug, name: t(p.categoryRel.name, lang) } : undefined,
-  price: p.price,
-  salePrice: p.salePrice ?? undefined,
-  badges: p.badges,
-  tags: p.tags ?? [],
-  imageUrl: s(p.imageUrl) || productFallbacks[p.slug] || "",
-  description: s(t(p.description, lang)),
-});
+const toProduct = (p: ProductRow, lang: Locale): Product => {
+  const rawImages = (p.images ?? []).map((u) => s(u)).filter(Boolean) as string[];
+  const cover = rawImages[0] || s(p.imageUrl) || productFallbacks[p.slug] || "";
+  const images = rawImages.length > 0 ? rawImages : cover ? [cover] : [];
+  return {
+    slug: p.slug,
+    name: t(p.name, lang),
+    brandSlug: p.brand.slug,
+    brandName: p.brand.name,
+    brandType: p.brand.type,
+    mainCategory: p.mainCategory ? { slug: p.mainCategory.slug, name: t(p.mainCategory.name, lang) } : undefined,
+    collection: p.categoryRel ? { slug: p.categoryRel.slug, name: t(p.categoryRel.name, lang) } : undefined,
+    price: p.price,
+    salePrice: p.salePrice ?? undefined,
+    badges: p.badges,
+    tags: p.tags ?? [],
+    imageUrl: cover,
+    images,
+    description: s(t(p.description, lang)),
+  };
+};
 
 export async function getProduct(lang: Locale, slug: string) {
   const row = await get<ProductRow | null>(`/resources/products/${encodeURIComponent(slug)}`);

@@ -75,8 +75,12 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     },
     searchFields: ['slug'],
     afterSave: async (row) => {
-      const imageUrl = (row.imageUrl as string | null) ?? '';
-      if (!imageUrl) return undefined;
+      const rawImages = ((row.images as string[] | null) ?? []).filter(Boolean);
+      const fallbackSingle = (row.imageUrl as string | null) ?? '';
+      const images = rawImages.length > 0 ? rawImages : fallbackSingle ? [fallbackSingle] : [];
+      if (images.length === 0) {
+        return fallbackSingle !== '' ? { imageUrl: '' } : undefined;
+      }
       const brandName = (row.brand as { name?: string } | undefined)?.name;
       const mainCategorySlug = (row.mainCategory as { slug?: string } | undefined)?.slug;
       const collectionSlug = (row.categoryRel as { slug?: string } | undefined)?.slug;
@@ -92,8 +96,11 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
         tags,
         (row.updatedAt as Date | null) ?? (row.createdAt as Date | null) ?? new Date(),
       );
-      const [renamed] = await renameUploads([imageUrl], base);
-      return renamed && renamed !== imageUrl ? { imageUrl: renamed } : undefined;
+      const renamed = await renameUploads(images, base);
+      const cover = renamed[0] ?? '';
+      const imagesChanged = renamed.length !== rawImages.length || renamed.some((u, i) => u !== rawImages[i]);
+      const coverChanged = cover !== fallbackSingle;
+      return imagesChanged || coverChanged ? { images: renamed, imageUrl: cover } : undefined;
     },
   },
   videos: { model: 'video', orderBy: byOrder, hasActive: true },

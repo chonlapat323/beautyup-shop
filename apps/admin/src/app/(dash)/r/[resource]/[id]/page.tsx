@@ -18,6 +18,12 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
   const name = resolveResource(resource);
   const ui = resourceUi[name];
   const [row, relations] = await Promise.all([getResource(name, id), loadRelations(ui.fields, id)]);
+  if (name === "products") {
+    const imgs = (row.images as string[] | undefined) ?? [];
+    if (imgs.length === 0 && typeof row.imageUrl === "string" && row.imageUrl.trim()) {
+      row.images = [row.imageUrl.trim()];
+    }
+  }
   const title = rowTitle(name, row);
 
   if (name === "menu-items") {

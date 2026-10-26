@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import Link from "@/components/link";
 import { ProductGrid } from "@/components/product-grid";
+import { ProductImageGallery } from "@/components/product-image-gallery";
 import { RichText } from "@/components/rich-text";
 import { SharePanel } from "@/components/share-panel";
-import { Badge, Media, SectionHeading, formatPrice } from "@/components/ui";
+import { SectionHeading, formatPrice } from "@/components/ui";
 import { resolveLang, type Locale } from "@/i18n";
 import { getCompany, getProduct, getProducts } from "@/lib/data";
 import { SITE_URL, absoluteUrl } from "@/lib/site";
@@ -38,7 +39,11 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/product/[s
       description,
       type: "website",
       url: `${SITE_URL}/${lang}/product/${product.slug}`,
-      images: product.imageUrl ? [absoluteUrl(product.imageUrl)] : undefined,
+      images: product.images?.length
+        ? product.images.map(absoluteUrl)
+        : product.imageUrl
+          ? [absoluteUrl(product.imageUrl)]
+          : undefined,
     },
   };
 }
@@ -48,6 +53,7 @@ function jsonLd(product: Product, lang: Locale) {
   const url = `${SITE_URL}/${lang}/product/${product.slug}`;
   const price = product.salePrice ?? product.price;
   const keywords = productKeywords(product);
+  const allImages = product.images?.length ? product.images.map(absoluteUrl) : product.imageUrl ? [absoluteUrl(product.imageUrl)] : undefined;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -55,7 +61,7 @@ function jsonLd(product: Product, lang: Locale) {
     description: product.description || undefined,
     url,
     inLanguage: lang === "th" ? "th-TH" : "en-US",
-    image: product.imageUrl ? [absoluteUrl(product.imageUrl)] : undefined,
+    image: allImages,
     brand: product.brandName ? { "@type": "Brand", name: product.brandName } : undefined,
     category: product.collection?.name || undefined,
     keywords: keywords.length ? keywords.join(", ") : undefined,
@@ -110,16 +116,12 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         </nav>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-16">
-          <div className="relative overflow-hidden rounded-3xl md:sticky md:top-28 md:self-start">
-            <Media src={product.imageUrl} alt={product.name} label={product.brandName} className="aspect-square w-full" />
-            {product.badges?.length ? (
-              <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
-                {product.badges.map((b) => (
-                  <Badge key={b}>{b}</Badge>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          <ProductImageGallery
+            images={product.images?.length ? product.images : product.imageUrl ? [product.imageUrl] : []}
+            alt={product.name}
+            label={product.brandName}
+            badges={product.badges}
+          />
 
           <div>
             {product.brandName && (

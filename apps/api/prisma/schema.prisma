@@ -173,8 +173,9 @@ model Product {
   salePrice   Decimal?  @db.Decimal(12, 2)
   badges      String[]
   tags        String[]  @default([])
-  /// Image URL; fresh uploads are renamed to brand-slug-tag-yyyymmdd-1.ext on save
+  /// Cover image URL (synced with images[0]); fresh uploads are renamed to brand-slug-tag-yyyymmdd-n.ext on save
   imageUrl    String    @default("")
+  images      String[]  @default([])
   sortOrder   Int       @default(0)
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())

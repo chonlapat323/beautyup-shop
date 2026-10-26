@@ -188,6 +188,7 @@ export const productInput = z.object({
   badges: z.array(z.string().trim().min(1)).default([]),
   tags: z.array(z.string().trim().min(1)).default([]),
   imageUrl: url,
+  images: z.array(url).default([]),
   sortOrder,
   isActive,
 });

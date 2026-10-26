@@ -81,6 +81,7 @@ export interface Product {
   badges?: string[];
   tags?: string[];
   imageUrl?: string;
+  images?: string[];
   description?: string;
 }
 
