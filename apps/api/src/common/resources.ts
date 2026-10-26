@@ -24,7 +24,7 @@ export interface ResourceConfig {
   /** Input id-array field -> many-to-many relation, e.g. brandIds -> brands */
   manyToMany?: Record<string, string>;
   /** Runs after a successful create/update; returns fields to write back, if any */
-  afterSave?: (row: Row) => Row | undefined;
+  afterSave?: (row: Row) => Promise<Row | undefined> | Row | undefined;
 }
 
 const byOrder = [{ sortOrder: 'asc' as const }];
@@ -73,7 +73,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
       categoryRel: { select: { id: true, slug: true, name: true } },
     },
     searchFields: ['slug'],
-    afterSave: (row) => {
+    afterSave: async (row) => {
       const imageUrl = (row.imageUrl as string | null) ?? '';
       if (!imageUrl) return undefined;
       const brandName = (row.brand as { name?: string } | undefined)?.name;
@@ -89,7 +89,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
         tags,
         (row.updatedAt as Date | null) ?? (row.createdAt as Date | null) ?? new Date(),
       );
-      const [renamed] = renameUploads([imageUrl], base);
+      const [renamed] = await renameUploads([imageUrl], base);
       return renamed && renamed !== imageUrl ? { imageUrl: renamed } : undefined;
     },
   },
@@ -110,11 +110,11 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     },
     searchFields: ['slug'],
     manyToMany: { brandIds: 'brands' },
-    afterSave: (row) => {
+    afterSave: async (row) => {
       const images = (row.images as string[] | null) ?? [];
       const brands = ((row.brands as { name: string }[] | undefined) ?? []).map((b) => b.name);
       const base = mediaFileBase(brands, String(row.slug), (row.tags as string[] | null) ?? [], (row.publishedAt as Date | null) ?? new Date());
-      const renamed = renameUploads(images, base);
+      const renamed = await renameUploads(images, base);
       return renamed.some((u, i) => u !== images[i]) ? { images: renamed } : undefined;
     },
   },

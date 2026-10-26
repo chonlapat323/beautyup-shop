@@ -1,6 +1,6 @@
 import { existsSync, renameSync } from 'node:fs';
 import { extname, join } from 'node:path';
-import { UPLOAD_DIR } from '../admin/admin-uploads.controller.js';
+import { UPLOAD_DIR, getS3Config, localRenameIfPresent, s3ObjectExists, s3RenameObject } from './storage.js';
 
 /** Fresh uploads keep a random name until a media item claims them. */
 const RANDOM_NAME = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.[a-z0-9]+$/i;
@@ -29,17 +29,42 @@ export function mediaFileBase(brands: string[], slug: string, tags: string[], da
 
 /**
  * Renames randomly named uploads to `${base}-${n}.ext` and returns the new URLs.
- * Already-named files and URLs that are not our uploads are left as they are.
+ * Supports both DigitalOcean Spaces / S3 URLs and local `/uploads/` files.
  */
-export function renameUploads(urls: string[], base: string) {
+export async function renameUploads(urls: string[], base: string): Promise<string[]> {
   let n = 0;
-  return urls.map((url) => {
+  const s3 = getS3Config();
+  const out: string[] = [];
+
+  for (const url of urls) {
     const name = url.split('/').pop() ?? '';
-    if (!url.includes('/uploads/') || !RANDOM_NAME.test(name) || !existsSync(join(UPLOAD_DIR, name))) return url;
+    if (!url.includes('/uploads/') || !RANDOM_NAME.test(name)) {
+      out.push(url);
+      continue;
+    }
+
+    if (s3 && (url.startsWith(s3.publicUrl) || url.includes('digitaloceanspaces.com'))) {
+      let target: string;
+      do target = `${base}-${++n}${extname(name).toLowerCase()}`;
+      while (await s3ObjectExists(s3, `uploads/${target}`));
+      const ok = await s3RenameObject(s3, `uploads/${name}`, `uploads/${target}`);
+      if (ok) {
+        await localRenameIfPresent(name, target);
+        out.push(url.slice(0, -name.length) + target);
+        continue;
+      }
+    }
+
+    if (!existsSync(join(UPLOAD_DIR, name))) {
+      out.push(url);
+      continue;
+    }
     let target: string;
     do target = `${base}-${++n}${extname(name).toLowerCase()}`;
     while (existsSync(join(UPLOAD_DIR, target)));
     renameSync(join(UPLOAD_DIR, name), join(UPLOAD_DIR, target));
-    return url.slice(0, -name.length) + target;
-  });
+    out.push(url.slice(0, -name.length) + target);
+  }
+
+  return out;
 }

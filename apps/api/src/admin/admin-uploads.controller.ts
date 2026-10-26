@@ -2,12 +2,12 @@ import { BadRequestException, Controller, Post, UploadedFile, UseGuards, UseInte
 import { FileInterceptor } from '@nestjs/platform-express';
 import heicConvert from 'heic-convert';
 import { randomUUID } from 'node:crypto';
-import { readFile, unlink, writeFile } from 'node:fs/promises';
-import { extname, join } from 'node:path';
-import { diskStorage } from 'multer';
+import { extname } from 'node:path';
+import { memoryStorage } from 'multer';
 import { AdminGuard } from '../auth/auth.guard.js';
+import { UPLOAD_DIR, storeUploadedFile } from '../common/storage.js';
 
-export const UPLOAD_DIR = 'uploads';
+export { UPLOAD_DIR };
 const ALLOWED = new Map([
   ['image/jpeg', '.jpg'],
   ['image/png', '.png'],
@@ -49,35 +49,22 @@ export class AdminUploadsController {
         ALLOWED.has(file.mimetype) || isHeicFile(file)
           ? cb(null, true)
           : cb(new BadRequestException('รองรับเฉพาะรูปภาพ (jpg, png, webp, avif, heic) และ PDF'), false),
-      storage: diskStorage({
-        destination: UPLOAD_DIR,
-        // Random names: never trust the client's filename
-        filename: (_req, file, cb) => {
-          const ext = isHeicFile(file) ? '.heic' : (ALLOWED.get(file.mimetype) ?? extname(file.originalname));
-          cb(null, `${randomUUID()}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
     }),
   )
   async upload(@UploadedFile() file?: Express.Multer.File) {
     if (!file) throw new BadRequestException('ไม่พบไฟล์');
-    const base = process.env.API_PUBLIC_URL ?? '';
 
-    if (isHeicFile(file)) {
-      const heicPath = join(UPLOAD_DIR, file.filename);
-      try {
-        const raw = await readFile(heicPath);
-        const jpgBuf = await convertHeicToJpg(raw);
-        const jpgFilename = file.filename.replace(/\.heic$/i, '.jpg');
-        await writeFile(join(UPLOAD_DIR, jpgFilename), jpgBuf);
-        await unlink(heicPath).catch(() => {});
-        return { url: `${base}/uploads/${jpgFilename}`, size: jpgBuf.byteLength, type: 'image/jpeg' };
-      } catch (err) {
-        await unlink(heicPath).catch(() => {});
-        throw err;
-      }
+    if (isHeicFile(file) || isHeicBuffer(file.buffer)) {
+      const jpgBuf = await convertHeicToJpg(file.buffer);
+      const jpgFilename = `${randomUUID()}.jpg`;
+      const url = await storeUploadedFile(jpgFilename, jpgBuf, 'image/jpeg');
+      return { url, size: jpgBuf.byteLength, type: 'image/jpeg' };
     }
 
-    return { url: `${base}/uploads/${file.filename}`, size: file.size, type: file.mimetype };
+    const ext = ALLOWED.get(file.mimetype) ?? extname(file.originalname).toLowerCase();
+    const filename = `${randomUUID()}${ext}`;
+    const url = await storeUploadedFile(filename, file.buffer, file.mimetype);
+    return { url, size: file.size, type: file.mimetype };
   }
 }

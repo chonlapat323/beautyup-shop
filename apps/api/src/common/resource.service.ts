@@ -107,7 +107,7 @@ export class ResourceService {
 
   private async afterSave(name: ResourceName, row: Row) {
     const cfg = resourceConfig[name];
-    const patch = cfg.afterSave?.(row);
+    const patch = await cfg.afterSave?.(row);
     return patch ? this.delegate(name).update({ where: { id: row.id }, data: patch, include: cfg.include }) : row;
   }
 

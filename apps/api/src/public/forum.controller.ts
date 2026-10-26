@@ -16,10 +16,9 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { FORUM_LIMITS, forumNewReply, forumNewTopic } from '@beautyup/types';
 import { randomUUID } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { memoryStorage } from 'multer';
-import { UPLOAD_DIR, convertHeicToJpg, isHeicBuffer } from '../admin/admin-uploads.controller.js';
+import { convertHeicToJpg, isHeicBuffer } from '../admin/admin-uploads.controller.js';
+import { storeUploadedFile } from '../common/storage.js';
 import { clientIp, throttle } from '../common/throttle.js';
 import { parseOrThrow } from '../common/zod-validation.pipe.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -45,6 +44,12 @@ function imageExt(buf: Buffer) {
   return null;
 }
 
+const MIME_BY_EXT: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+};
+
 async function saveImages(files: Express.Multer.File[] = []) {
   const typed = files.map((f) => ({ f, ext: imageExt(f.buffer) }));
   if (typed.some((t) => !t.ext)) throw new BadRequestException('รองรับเฉพาะรูป JPG, PNG, WebP หรือ HEIC');
@@ -52,10 +57,9 @@ async function saveImages(files: Express.Multer.File[] = []) {
     typed.map(async ({ f, ext }) => {
       const isHeic = ext === '.heic';
       const buf = isHeic ? await convertHeicToJpg(f.buffer) : f.buffer;
-      const finalExt = isHeic ? '.jpg' : ext;
+      const finalExt = isHeic ? '.jpg' : (ext as string);
       const name = `forum-${randomUUID()}${finalExt}`;
-      await writeFile(join(UPLOAD_DIR, name), buf);
-      return `${process.env.API_PUBLIC_URL ?? ''}/uploads/${name}`;
+      return storeUploadedFile(name, buf, MIME_BY_EXT[finalExt] ?? 'image/jpeg');
     }),
   );
 }
