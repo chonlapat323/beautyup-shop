@@ -7,12 +7,10 @@ import { LoadingImage } from "./loading-image";
 import { MockImagePlaceholder } from "./mock-image-placeholder";
 import {
   ArrowUpRight,
-  ExternalLink,
   Heart,
   LayoutGrid,
   Grid,
   Search,
-  Sparkles,
   X,
 } from "lucide-react";
 import type { BrandCategory, BrandMainCategory } from "@/lib/brand-categories";
@@ -49,7 +47,7 @@ export function CategoryGrid({
 
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [layoutMode, setLayoutMode] = useState<"masonry" | "grid">("masonry");
+  const [layoutMode, setLayoutMode] = useState<"masonry" | "grid">("grid");
   const [savedPins, setSavedPins] = useState<Record<string, boolean>>({});
 
   const toggleSavePin = (slug: string, e: React.MouseEvent) => {
@@ -60,12 +58,17 @@ export function CategoryGrid({
 
   // Dynamic filter pills strictly from DB MainCategories that have collections in this list
   const filterGroups = useMemo(() => {
-    const activeSlugs = new Set(categories.map((c) => c.mainCategorySlug).filter(Boolean));
+    const counts = new Map<string, number>();
+    for (const c of categories) {
+      if (c.mainCategorySlug) {
+        counts.set(c.mainCategorySlug, (counts.get(c.mainCategorySlug) ?? 0) + 1);
+      }
+    }
     const dbGroups = mainCategories
-      .filter((m) => activeSlugs.has(m.slug))
-      .map((m) => ({ id: m.slug, label: m.name }));
+      .filter((m) => (counts.get(m.slug) ?? 0) > 0)
+      .map((m) => ({ id: m.slug, label: m.name, count: counts.get(m.slug) ?? 0 }));
     if (dbGroups.length <= 1) return [];
-    return [{ id: "all", label: isThai ? "ทั้งหมด" : "All" }, ...dbGroups];
+    return [{ id: "all", label: isThai ? "ทั้งหมด" : "All", count: categories.length }, ...dbGroups];
   }, [categories, mainCategories, isThai]);
 
   // Filtered categories
@@ -111,83 +114,39 @@ export function CategoryGrid({
       />
 
       <div className="container-page">
-        {/* Pinterest-style Moodboard Header */}
-        <div className="mb-10 sm:mb-14 text-center max-w-3xl mx-auto">
-          {/* Chic Capsule Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-800 shadow-sm backdrop-blur-md">
-            <Sparkles className="size-3.5 text-brand-pink animate-pulse" />
-            <span>{eyebrow || (isThai ? "Visual Moodboard" : "Moodboard")}</span>
-          </div>
-
-          {/* Editorial Display Headline */}
-          <h2 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-ink">
-            {title ? (
-              title
-            ) : isThai ? (
-              <>
-                ค้นหาแรงบันดาลใจ &{" "}
-                <span className="bg-gradient-to-r from-brand-pink via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                  คอลเลกชันซาลอน
+        {/* Luxury Editorial Header + Search Row (Full Container Width) */}
+        <div className="mb-8 sm:mb-10 space-y-6">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="eyebrow flex items-center gap-2">
+                <span aria-hidden className="h-px w-6 bg-brand-pink" />
+                <span>{brandName || eyebrow || "Collections"}</span>
+              </p>
+              <div className="mt-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h2 className="font-display text-3xl leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl">
+                  {title || (isThai ? "คอลเลกชันผลิตภัณฑ์" : "Product Collections")}
+                </h2>
+                <span className="rounded-full bg-sand/80 px-3 py-0.5 text-xs font-medium text-muted">
+                  {isThai ? `${displayedCategories.length} คอลเลกชัน` : `${displayedCategories.length} collections`}
                 </span>
-              </>
-            ) : (
-              <>
-                Discover Inspiration &{" "}
-                <span className="bg-gradient-to-r from-brand-pink via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                  Salon Collections
-                </span>
-              </>
-            )}
-          </h2>
-
-          {/* Subtitle (only if provided from DB) */}
-          {subtitle && (
-            <p className="mt-3.5 text-sm sm:text-base text-muted leading-relaxed max-w-2xl mx-auto">
-              {subtitle}
-            </p>
-          )}
-
-          {/* Filter Pills (from DB MainCategories) & Search Controls */}
-          <div className={clsx("mt-8 flex flex-col md:flex-row items-center gap-4", filterGroups.length > 0 ? "justify-between" : "justify-end")}>
-            {filterGroups.length > 0 && (
-              <div
-                role="tablist"
-                className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
-              >
-                {filterGroups.map((group) => {
-                  const isSelected = activeFilter === group.id;
-                  return (
-                    <button
-                      key={group.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={isSelected}
-                      onClick={() => setActiveFilter(group.id)}
-                      className={clsx(
-                        "rounded-full px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300 shrink-0 border",
-                        isSelected
-                          ? "bg-neutral-900 text-white border-neutral-900 shadow-md scale-[1.02]"
-                          : "bg-white text-neutral-700 border-line hover:border-neutral-400 hover:bg-neutral-50 shadow-sm",
-                      )}
-                    >
-                      {group.label}
-                    </button>
-                  );
-                })}
               </div>
-            )}
+              {subtitle && (
+                <p className="mt-2.5 text-sm sm:text-base text-muted leading-relaxed max-w-2xl">
+                  {subtitle}
+                </p>
+              )}
+            </div>
 
             {/* Right Tools: Search Bar & View Mode Toggle */}
-            <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0 justify-end">
-              {/* Search Bar */}
-              <div className="relative flex-1 md:w-60">
+            <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0">
+              <div className="relative flex-1 md:w-64">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={isThai ? "ค้นหาไอเดียคอลเลกชัน..." : "Search collections..."}
-                  className="w-full rounded-full border border-line bg-white pl-9 pr-8 py-2 text-xs sm:text-sm text-ink placeholder:text-muted/70 focus:border-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900/10 shadow-sm transition-all"
+                  placeholder={isThai ? "ค้นหาชื่อคอลเลกชัน..." : "Search collections..."}
+                  className="w-full rounded-full border border-line bg-white pl-9 pr-8 py-2 text-xs sm:text-sm text-ink placeholder:text-muted/70 focus:border-brand-pink focus:outline-none focus:ring-2 focus:ring-brand-pink/15 shadow-2xs transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -201,37 +160,74 @@ export function CategoryGrid({
                 )}
               </div>
 
-              {/* Layout Mode Toggle (Pinterest Masonry vs Classic Grid) */}
-              <div className="hidden sm:flex items-center rounded-full border border-line bg-white p-1 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => setLayoutMode("masonry")}
-                  className={clsx(
-                    "rounded-full p-1.5 transition-all",
-                    layoutMode === "masonry"
-                      ? "bg-neutral-900 text-white shadow-sm"
-                      : "text-muted hover:text-ink",
-                  )}
-                  title={isThai ? "มุมมอง Pinterest Masonry" : "Masonry View"}
-                >
-                  <LayoutGrid className="size-4" />
-                </button>
+              <div className="hidden sm:flex items-center rounded-full border border-line bg-white p-1 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => setLayoutMode("grid")}
                   className={clsx(
                     "rounded-full p-1.5 transition-all",
                     layoutMode === "grid"
-                      ? "bg-neutral-900 text-white shadow-sm"
+                      ? "bg-ink text-white shadow-xs"
                       : "text-muted hover:text-ink",
                   )}
-                  title={isThai ? "มุมมองตาราง Grid" : "Grid View"}
+                  title={isThai ? "มุมมองตารางมาตรฐาน" : "Grid View"}
                 >
                   <Grid className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLayoutMode("masonry")}
+                  className={clsx(
+                    "rounded-full p-1.5 transition-all",
+                    layoutMode === "masonry"
+                      ? "bg-ink text-white shadow-xs"
+                      : "text-muted hover:text-ink",
+                  )}
+                  title={isThai ? "มุมมองแกลเลอรี" : "Masonry View"}
+                >
+                  <LayoutGrid className="size-4" />
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Single-Row Category Filter Pills (Full Width) */}
+          {filterGroups.length > 0 && (
+            <div
+              role="tablist"
+              aria-label={isThai ? "กรองตามหมวดหมู่หลัก" : "Filter by category"}
+              className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 border-t border-line/60 pt-4"
+            >
+              {filterGroups.map((group) => {
+                const isSelected = activeFilter === group.id;
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    onClick={() => setActiveFilter(group.id)}
+                    className={clsx(
+                      "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 shrink-0 border",
+                      isSelected
+                        ? "bg-ink text-white border-ink shadow-sm"
+                        : "bg-white text-ink/80 border-line hover:border-brand-pink/50 hover:text-brand-pink",
+                    )}
+                  >
+                    <span>{group.label}</span>
+                    <span
+                      className={clsx(
+                        "rounded-full px-1.5 py-0.2 text-[11px]",
+                        isSelected ? "bg-white/20 text-white" : "bg-sand text-muted",
+                      )}
+                    >
+                      {group.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Category Pins Container */}
