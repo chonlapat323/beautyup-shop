@@ -53,7 +53,7 @@ const DEDICATED_ROUTES: Record<string, DedicatedRouteInfo> = {
       { label: "1. แบนเนอร์ลูกค้า VIP (ส่วนบนสุด)", detail: "แก้ไขหัวข้อ คำพูดรีวิวลูกค้า VIP ชื่อร้าน และรูปพื้นหลัง", href: "/content/vipCustomer" },
       { label: "2. แบรนด์แอมบาสเดอร์", detail: "เพิ่ม/ลบ/แก้ไข รายชื่อแอมบาสเดอร์ รูปถ่าย และลิงก์โซเชียล", href: "/r/ambassadors" },
       { label: "3. ซาลอนพันธมิตร (รายชื่อร้าน)", detail: "เพิ่ม/แก้ไข รายชื่อร้านซาลอน จังหวัด แผนที่ และรูปหน้าร้าน", href: "/r/salons" },
-      { label: "4. จำนวนซาลอนแต่ละภาค", detail: "ตัวเลขจำนวนร้านรวม 6 ภูมิภาคที่แสดงในหน้าลูกค้า", href: "/settings?tab=regions" },
+      { label: "4. จำนวนซาลอนแต่ละภาค", detail: "ตัวเลขจำนวนร้านรวม 6 ภูมิภาคที่แสดงในหน้าลูกค้า", href: "/settings?tab=regionCounts" },
       { label: "5. แถบ Grow Your Vision (ท้ายหน้า)", detail: "แบนเนอร์และปุ่มชวนร่วมเป็นพาร์ทเนอร์ด้านล่างสุด", href: "/settings?tab=growVision" },
     ],
   },
@@ -62,7 +62,7 @@ const DEDICATED_ROUTES: Record<string, DedicatedRouteInfo> = {
     description: "หน้ารวมรายชื่อร้านซาลอนพันธมิตรทั้งหมด ดึงข้อมูลจากเมนูซาลอนพันธมิตรโดยตรง",
     links: [
       { label: "ซาลอนพันธมิตร (รายชื่อร้าน)", detail: "เพิ่ม/แก้ไข รายชื่อร้านซาลอน จังหวัด แผนที่ และรูปหน้าร้าน", href: "/r/salons" },
-      { label: "จำนวนซาลอนแต่ละภาค", detail: "ตัวเลขจำนวนร้านรวม 6 ภูมิภาค", href: "/settings?tab=regions" },
+      { label: "จำนวนซาลอนแต่ละภาค", detail: "ตัวเลขจำนวนร้านรวม 6 ภูมิภาค", href: "/settings?tab=regionCounts" },
     ],
   },
   "/about": {

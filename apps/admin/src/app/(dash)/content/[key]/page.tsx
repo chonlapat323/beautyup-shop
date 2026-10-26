@@ -25,7 +25,18 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
   const tabs = (Object.keys(PAGE_SETTINGS) as PageSettingKey[]).filter((k) => PAGE_SETTINGS[k].path === PAGE_SETTINGS[key].path);
   const value = (await api<Record<string, unknown>>("/admin/settings"))[key];
   // Bare-list settings are edited through a single unnamed field
-  const initial = ui.fields[0]?.name === "" ? { "": value ?? [] } : ((value as Record<string, unknown>) ?? {});
+  const rawInitial = ui.fields[0]?.name === "" ? { "": value ?? [] } : ((value as Record<string, unknown>) ?? {});
+  const initial =
+    key === "vipCustomer"
+      ? {
+          eyebrow: { th: "Our VIP Customer", en: "Our VIP Customer" },
+          quote: {
+            th: `ช่างผมประสบการณ์สูง\nความสามารถโดดเด่น\nวางใจผลิตภัณฑ์ของบิวตี้อัพ\nมาอย่างยาวนาน\nสร้างสรรค์เอกลักษณ์ผลงานเลอค่า\nให้กับลูกค้าทุกระดับ`,
+            en: `Experienced Master Stylists\nDistinctive Artistry & Vision\nTrusted Partners of Beauty Up Across the Years\nCrafting Exceptional & Timeless Hair Perfection\nFor Clients of Every Distinction`,
+          },
+          ...rawInitial,
+        }
+      : rawInitial;
 
   return (
     <>
