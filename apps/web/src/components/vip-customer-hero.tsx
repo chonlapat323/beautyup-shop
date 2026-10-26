@@ -41,6 +41,7 @@ export function VipCustomerHero({ data }: { data: VipCustomerData }) {
               </p>
             ))}
           </blockquote>
+          <Quote aria-hidden className="mx-auto mt-4 size-8 text-brand-pink/60" />
           {data.subtext && <p className="mx-auto mt-6 max-w-2xl text-base text-pretty text-muted sm:text-lg">{renderInlineRichText(data.subtext)}</p>}
         </div>
       </div>
