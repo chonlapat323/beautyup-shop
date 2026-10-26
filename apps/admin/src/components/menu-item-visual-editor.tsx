@@ -242,6 +242,7 @@ export function MenuItemVisualEditor({
   const dedicatedRoute = getDedicatedRoute(data.href);
   const currentTab = dedicatedRoute ? "general" : activeTab;
   const selectedBrand = brandOptions.find((b) => b.value === data.brandId);
+  const resolveImg = (u?: string) => (!u ? "" : u.startsWith("/") ? `${siteUrl}${u}` : u);
 
   const handleSave = () => {
     setSaveStatus(null);
@@ -1325,7 +1326,7 @@ export function MenuItemVisualEditor({
                           sIdx === activeSlideIdx ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0",
                         )}
                       >
-                        <img src={slide.imageUrl} alt="" className="size-full object-cover" />
+                        <img src={resolveImg(slide.imageUrl)} alt="" className="size-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-4 text-white">
                           <h3 className="font-display text-base sm:text-lg font-bold">
                             {slide.title?.[previewLang] || "Slide Headline"}
@@ -1382,7 +1383,7 @@ export function MenuItemVisualEditor({
                                 key={cIdx}
                                 className="group relative shrink-0 w-28 aspect-[1/1.55] rounded-[9999px] border border-neutral-800 bg-neutral-950 overflow-hidden shadow-md"
                               >
-                                <img src={c.imageUrl || "/slides/1.jpg"} alt="" className="size-full object-cover" />
+                                <img src={resolveImg(c.imageUrl || "/slides/1.jpg")} alt="" className="size-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end items-center text-center p-2">
                                   {c.description?.[previewLang] && (
                                     <span className="mb-1 rounded-full border border-amber-400/50 bg-black/85 px-1 py-0.2 font-mono text-[7px] text-amber-300">
@@ -1421,7 +1422,7 @@ export function MenuItemVisualEditor({
                                 key={cIdx}
                                 className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-line bg-white flex flex-col justify-end p-2.5"
                               >
-                                <img src={c.imageUrl || "/slides/1.jpg"} alt="" className="absolute inset-0 size-full object-cover" />
+                                <img src={resolveImg(c.imageUrl || "/slides/1.jpg")} alt="" className="absolute inset-0 size-full object-cover" />
                                 <div className="relative z-10 rounded-lg bg-white/95 p-2 backdrop-blur shadow-xs text-center">
                                   <h5 className="text-[11px] font-bold text-ink line-clamp-1">{c.title?.[previewLang] || "การ์ด"}</h5>
                                   <p className="text-[9px] text-muted line-clamp-1">{c.description?.[previewLang]}</p>
@@ -1439,7 +1440,7 @@ export function MenuItemVisualEditor({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                           <div className={clsx("aspect-[4/3] rounded-xl bg-sand/60 overflow-hidden", sec.layout === "right-image" && "sm:order-2")}>
                             {sec.imageUrl ? (
-                              <img src={sec.imageUrl} alt="" className="size-full object-cover" />
+                              <img src={resolveImg(sec.imageUrl)} alt="" className="size-full object-cover" />
                             ) : (
                               <div className="size-full grid place-items-center text-muted text-xs">รูปภาพประกอบ</div>
                             )}
