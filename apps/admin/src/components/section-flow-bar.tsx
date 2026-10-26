@@ -94,12 +94,24 @@ const FLOWS: MenuFlow[] = [
 
 export function SectionFlowBar({
   currentKey,
+  menuHref,
   trail = [],
 }: {
   currentKey: string;
+  menuHref?: string;
   trail?: BreadcrumbItem[];
 }) {
-  const flow = FLOWS.find((f) => f.steps.some((s) => s.key === currentKey));
+  const cleanHref = menuHref?.trim().replace(/\/+$/, "") || "/";
+  const flow =
+    FLOWS.find((f) => f.steps.some((s) => s.key === currentKey)) ??
+    (currentKey === "menu-items" && menuHref
+      ? FLOWS.find(
+          (f) =>
+            f.menuPath === cleanHref ||
+            (f.menuPath === "/products" && (cleanHref.startsWith("/products/") || cleanHref === "/shop")) ||
+            (f.menuPath === "/contact" && cleanHref === "/policy"),
+        )
+      : undefined);
   const currentStep = flow?.steps.find((s) => s.key === currentKey);
 
   // Also render a clean breadcrumb for /r/menu-items itself

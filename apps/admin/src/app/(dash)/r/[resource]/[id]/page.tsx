@@ -29,7 +29,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
     menuTrail.push({ label: `${title} (${String(row.href ?? "")})` });
     return (
       <>
-        <SectionFlowBar currentKey="menu-items" trail={menuTrail} />
+        <SectionFlowBar currentKey="menu-items" menuHref={String(row.href ?? "")} trail={menuTrail} />
         <MenuItemVisualEditor
           id={id}
           title={title}

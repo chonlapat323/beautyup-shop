@@ -239,6 +239,7 @@ export function MenuItemVisualEditor({
   const parentOptions = relations["menu-items"] || [];
   // Brand pages take their title, description and products from the brand in the URL
   const isBrandPage = /^\/products\/[^/]+\/?$/.test(data.href ?? "");
+  const isProductsRoot = (data.href ?? "").trim().replace(/\/+$/, "") === "/products";
   const dedicatedRoute = getDedicatedRoute(data.href);
   const currentTab = dedicatedRoute ? "general" : activeTab;
   const selectedBrand = brandOptions.find((b) => b.value === data.brandId);
@@ -533,6 +534,32 @@ export function MenuItemVisualEditor({
                           </label>
                         )}
                       </div>
+
+                      {isProductsRoot && (
+                        <div className="mt-3 rounded-xl border border-brand/25 bg-brand-soft/40 p-3.5 space-y-2.5 text-xs">
+                          <p className="font-semibold text-brand">ลำดับการจัดการ แบรนด์ → หมวดหมู่หลัก → คอลเลกชัน → สินค้า</p>
+                          <p className="text-muted">
+                            กดปุ่มตามลำดับด้านล่างนี้เพื่อเพิ่มหรือแก้ไขแบรนด์ หมวดหมู่หลัก คอลเลกชัน และสินค้าทั้งหมดครับ
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            {[
+                              { label: "1. แบรนด์ (เพิ่ม/แก้ไขแบรนด์)", href: "/r/brands" },
+                              { label: "2. หมวดหมู่หลัก (เช่น ฟอกสีผม / ทรีตเมนต์)", href: "/r/main-categories" },
+                              { label: "3. คอลเลกชัน (เช่น No Yellow / Oro Therapy)", href: "/r/categories" },
+                              { label: "4. สินค้า (รายการสินค้าทั้งหมด)", href: "/r/products" },
+                            ].map((bLink) => (
+                              <Link
+                                key={bLink.href}
+                                href={bLink.href}
+                                className="flex items-center justify-between rounded-lg border border-line bg-white px-3 py-2 font-medium text-ink transition-colors hover:border-brand hover:text-brand"
+                              >
+                                <span>{bLink.label}</span>
+                                <ChevronRight className="size-3.5 text-muted" />
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Page Hero Header Inputs (brand pages show the brand's own name and description) */}
                       {isBrandPage ? (
