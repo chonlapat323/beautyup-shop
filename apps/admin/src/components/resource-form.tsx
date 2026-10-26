@@ -46,8 +46,8 @@ export function ResourceForm({
       const next = { ...s, [name]: v };
       for (const f of fields) {
         if (f.type === "text" && f.slugFrom === name && !slugTouched) next[f.name] = slugify(v);
-        // A dependent dropdown is cleared when what it depends on changes (collection after brand)
-        if (f.type === "relation" && f.filterBy === name && s[name] !== v) next[f.name] = f.nullable ? null : "";
+        // A dependent dropdown is cleared when what it depends on changes (brand -> mainCategory -> collection)
+        if (f.type === "relation" && f.filterBy && s[f.filterBy] !== next[f.filterBy]) next[f.name] = f.nullable ? null : "";
       }
       return next;
     });

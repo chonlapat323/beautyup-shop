@@ -159,7 +159,7 @@ export const mainCategoryInput = z.object({
 
 export const categoryInput = z.object({
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
-  mainCategoryId: z.string().nullable().optional().default(null),
+  mainCategoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่หลัก"),
   slug,
   name: localized,
   subtitle: localizedOptional,
@@ -180,7 +180,8 @@ export const productInput = z.object({
   name: localized,
   description: localizedOptional,
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
-  /** The product's collection (e.g. No Yellow Care); the only grouping a product has */
+  mainCategoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่หลัก"),
+  /** The product's collection (optional — some brands/categories do not use collections) */
   categoryId: z.string().nullable().optional().default(null),
   price: z.coerce.number().nonnegative(),
   salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),

@@ -62,9 +62,11 @@ function extractFilters(name: ResourceName, rows: Row[], activeFilter: string) {
         const mc = r.mainCategory as { slug?: string; name?: unknown } | undefined;
         if (mc?.slug) bump(subMap, mc.slug, localizedLabel(mc.name) || mc.slug);
       } else if (matchesPrimary && name === "products") {
-        subLabel = "คอลเลกชัน";
+        subLabel = "หมวดหมู่หลัก / คอลเลกชัน";
+        const mc = r.mainCategory as { slug?: string; name?: unknown } | undefined;
+        if (mc?.slug) bump(subMap, mc.slug, `หมวด: ${localizedLabel(mc.name) || mc.slug}`);
         const c = r.categoryRel as { slug?: string; name?: unknown } | undefined;
-        if (c?.slug) bump(subMap, c.slug, localizedLabel(c.name) || c.slug);
+        if (c?.slug) bump(subMap, c.slug, `คอลเลกชัน: ${localizedLabel(c.name) || c.slug}`);
       }
     } else if (name === "salons") {
       primaryLabel = "ภูมิภาค";
@@ -140,8 +142,11 @@ function rowMatchesFilters(name: ResourceName, r: Row, filter: string, sub: stri
       const mc = r.mainCategory as { id?: string; slug?: string } | undefined;
       if (mc?.slug !== sub && mc?.id !== sub && String(r.mainCategoryId ?? "") !== sub) return false;
     } else if (name === "products") {
+      const mc = r.mainCategory as { id?: string; slug?: string } | undefined;
       const c = r.categoryRel as { id?: string; slug?: string } | undefined;
-      if (c?.slug !== sub && c?.id !== sub && String(r.categoryId ?? "") !== sub) return false;
+      const matchesMc = mc?.slug === sub || mc?.id === sub || String(r.mainCategoryId ?? "") === sub;
+      const matchesCat = c?.slug === sub || c?.id === sub || String(r.categoryId ?? "") === sub;
+      if (!matchesMc && !matchesCat) return false;
     } else if (name === "media") {
       const cat = r.category as { id?: string; slug?: string } | undefined;
       if (cat?.slug !== sub && cat?.id !== sub && String(r.categoryId ?? "") !== sub) return false;

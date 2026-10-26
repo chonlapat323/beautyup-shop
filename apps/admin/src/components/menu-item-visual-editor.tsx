@@ -537,15 +537,15 @@ export function MenuItemVisualEditor({
 
                       {isProductsRoot && (
                         <div className="mt-3 rounded-xl border border-brand/25 bg-brand-soft/40 p-3.5 space-y-2.5 text-xs">
-                          <p className="font-semibold text-brand">ลำดับการจัดการ แบรนด์ → หมวดหมู่หลัก → คอลเลกชัน → สินค้า</p>
+                          <p className="font-semibold text-brand">ลำดับการจัดการ: แบรนด์ (บังคับ) → หมวดหมู่หลัก (บังคับ) → คอลเลกชัน (ไม่บังคับ) → สินค้า</p>
                           <p className="text-muted">
-                            กดปุ่มตามลำดับด้านล่างนี้เพื่อเพิ่มหรือแก้ไขแบรนด์ หมวดหมู่หลัก คอลเลกชัน และสินค้าทั้งหมดครับ
+                            สินค้าทุกชิ้นต้องเลือก <b>แบรนด์</b> และ <b>หมวดหมู่หลัก</b> เสมอ ส่วน <b>คอลเลกชัน</b> สร้างเฉพาะกรณีที่หมวดนั้นมีการแบ่งคอลเลกชันย่อยครับ
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                             {[
-                              { label: "1. แบรนด์ (เพิ่ม/แก้ไขแบรนด์)", href: "/r/brands" },
-                              { label: "2. หมวดหมู่หลัก (เช่น ฟอกสีผม / ทรีตเมนต์)", href: "/r/main-categories" },
-                              { label: "3. คอลเลกชัน (เช่น No Yellow / Oro Therapy)", href: "/r/categories" },
+                              { label: "1. แบรนด์ (บังคับ)", href: "/r/brands" },
+                              { label: "2. หมวดหมู่หลัก (บังคับ)", href: "/r/main-categories" },
+                              { label: "3. คอลเลกชัน (ไม่บังคับ)", href: "/r/categories" },
                               { label: "4. สินค้า (รายการสินค้าทั้งหมด)", href: "/r/products" },
                             ].map((bLink) => (
                               <Link

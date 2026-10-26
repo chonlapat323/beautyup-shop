@@ -24,8 +24,13 @@ export async function loadRelations(fields: readonly Field[], excludeId?: string
       let rows = await listResource(r);
       // Menus only nest one level: offer top-level items as parents, never itself
       if (r === "menu-items") rows = rows.filter((x) => !x.parentId && x.id !== excludeId);
-      // Collections and main categories remember their brand, so dependent dropdowns list only that brand's
-      const parent = (x: Row) => (r === "categories" || r === "main-categories" ? { parent: String(x.brandId) } : {});
+      // Main categories belong to a brand; collections belong to a mainCategory (falling back to brandId)
+      const parent = (x: Row) =>
+        r === "main-categories"
+          ? { parent: String(x.brandId) }
+          : r === "categories"
+            ? { parent: String(x.mainCategoryId || x.brandId) }
+            : {};
       return [r, rows.map((x) => ({ value: x.id, label: rowTitle(r, x), ...parent(x) }))] as const;
     }),
   );

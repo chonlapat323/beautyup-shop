@@ -72,7 +72,9 @@ export interface Product {
   brandSlug: string;
   brandName?: string;
   brandType?: BrandType;
-  /** The collection the product belongs to (Admin → คอลเลกชัน) */
+  /** The main category the product belongs to (Admin → หมวดหมู่หลัก) */
+  mainCategory?: { slug: string; name: string };
+  /** The collection the product belongs to (Admin → คอลเลกชัน, optional) */
   collection?: { slug: string; name: string };
   price: number;
   salePrice?: number;

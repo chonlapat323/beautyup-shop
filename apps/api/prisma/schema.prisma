@@ -125,6 +125,7 @@ model MainCategory {
   brandId     String
   brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
   collections Category[]
+  products    Product[]
 
   @@unique([brandId, slug])
   @@index([brandId])
@@ -158,14 +159,16 @@ model Category {
 }
 
 model Product {
-  id          String    @id @default(cuid())
-  slug        String    @unique
-  name        Json
-  description Json
-  categoryId  String?
-  categoryRel Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  brandId     String
-  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  name           Json
+  description    Json
+  mainCategoryId String?
+  mainCategory   MainCategory? @relation(fields: [mainCategoryId], references: [id], onDelete: SetNull)
+  categoryId     String?
+  categoryRel    Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brandId        String
+  brand          Brand         @relation(fields: [brandId], references: [id], onDelete: Restrict)
   price       Decimal   @db.Decimal(12, 2)
   salePrice   Decimal?  @db.Decimal(12, 2)
   badges      String[]
@@ -178,6 +181,7 @@ model Product {
   updatedAt   DateTime  @updatedAt
 
   @@index([brandId])
+  @@index([mainCategoryId])
   @@index([categoryId])
 }
 

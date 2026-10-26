@@ -54,7 +54,7 @@ const FLOWS: MenuFlow[] = [
     steps: [
       { key: "brands", label: "1. แบรนด์", href: "/r/brands" },
       { key: "main-categories", label: "2. หมวดหมู่หลัก", href: "/r/main-categories" },
-      { key: "categories", label: "3. คอลเลกชัน", href: "/r/categories" },
+      { key: "categories", label: "3. คอลเลกชัน (ไม่บังคับ)", href: "/r/categories" },
       { key: "products", label: "4. สินค้า", href: "/r/products" },
     ],
   },

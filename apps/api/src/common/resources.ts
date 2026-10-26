@@ -70,6 +70,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     decimals: ['price', 'salePrice'],
     include: {
       brand: { select: { id: true, slug: true, name: true, type: true } },
+      mainCategory: { select: { id: true, slug: true, name: true } },
       categoryRel: { select: { id: true, slug: true, name: true } },
     },
     searchFields: ['slug'],
@@ -77,8 +78,10 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
       const imageUrl = (row.imageUrl as string | null) ?? '';
       if (!imageUrl) return undefined;
       const brandName = (row.brand as { name?: string } | undefined)?.name;
+      const mainCategorySlug = (row.mainCategory as { slug?: string } | undefined)?.slug;
       const collectionSlug = (row.categoryRel as { slug?: string } | undefined)?.slug;
       const tags = [
+        ...(mainCategorySlug ? [mainCategorySlug] : []),
         ...(collectionSlug ? [collectionSlug] : []),
         ...((row.tags as string[] | null) ?? []),
         ...((row.badges as string[] | null) ?? []),

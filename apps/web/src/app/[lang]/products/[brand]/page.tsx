@@ -83,13 +83,18 @@ export default async function BrandPage({
       />
     );
 
-  // Products under their collection headings, in the collections' order
+  // Products under their collection headings (or main category headings when a product has no collection)
   const productList = (list: Product[], cats: BrandCategory[]) => {
     const groups = cats
       .map((c) => ({ title: c.name, items: list.filter((p) => p.collection?.slug === c.slug) }))
       .filter((g) => g.items.length > 0);
     const rest = list.filter((p) => !groups.some((g) => g.items.includes(p)));
-    if (rest.length && groups.length) groups.push({ title: th ? "ผลิตภัณฑ์เพิ่มเติม" : "Additional Products", items: rest });
+    for (const m of mainCategories) {
+      const mItems = rest.filter((p) => p.mainCategory?.slug === m.slug);
+      if (mItems.length > 0) groups.push({ title: m.name, items: mItems });
+    }
+    const ungrouped = rest.filter((p) => !groups.some((g) => g.items.includes(p)));
+    if (ungrouped.length && groups.length) groups.push({ title: th ? "ผลิตภัณฑ์เพิ่มเติม" : "Additional Products", items: ungrouped });
     return (
       <section id="products" className="container-page scroll-mt-24 py-12 md:py-20">
         {list.length === 0 ? (
@@ -152,10 +157,13 @@ export default async function BrandPage({
     );
   }
 
-  // 2. One main category: its collections and their products
+  // 2. One main category: its collections (if any) and its products (with or without collections)
   if (currentMain) {
     const cats = categories.filter((c) => c.mainCategorySlug === currentMain.slug);
     const slugs = new Set(cats.map((c) => c.slug));
+    const mainProducts = products.filter(
+      (p) => p.mainCategory?.slug === currentMain.slug || (p.collection && slugs.has(p.collection.slug)),
+    );
     return (
       <>
         <CategoryHero
@@ -173,15 +181,17 @@ export default async function BrandPage({
           lang={lang}
           back={{ href: `/products/${slug}`, label: th ? `กลับไปหน้า ${brand.name}` : `Back to ${brand.name}` }}
         />
-        <CategoryGrid
-          id="collections"
-          categories={cats}
-          brandSlug={slug}
-          brandName={brand.name}
-          title={th ? `คอลเลกชันในหมวด ${currentMain.name}` : `${currentMain.name} Collections`}
-          eyebrow="Collections"
-        />
-        {showProducts && productList(products.filter((p) => p.collection && slugs.has(p.collection.slug)), cats)}
+        {cats.length > 0 && (
+          <CategoryGrid
+            id="collections"
+            categories={cats}
+            brandSlug={slug}
+            brandName={brand.name}
+            title={th ? `คอลเลกชันในหมวด ${currentMain.name}` : `${currentMain.name} Collections`}
+            eyebrow="Collections"
+          />
+        )}
+        {showProducts && productList(mainProducts, cats)}
         {mainCards(mainCategories.filter((m) => m.slug !== currentMain.slug), th ? "หมวดหมู่อื่น ๆ" : "Other Categories")}
         <GrowYourVision data={growVision} />
       </>
