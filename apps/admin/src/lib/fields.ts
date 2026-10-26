@@ -132,6 +132,7 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
   products: {
     title: "สินค้า",
     noun: "สินค้า",
+    description: "รายการสินค้า พร้อมข้อมูลคำค้นหา (แท็ก) และตั้งชื่อไฟล์รูปอัตโนมัติเพื่อให้ Google และ AI ค้นหาเจอ",
     titleField: "name",
     searchable: true,
     fields: [
@@ -142,7 +143,13 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "number", name: "price", label: "ราคา (บาท)", step: "0.01", required: true },
       { type: "number", name: "salePrice", label: "ราคาลด (บาท)", step: "0.01", help: "เว้นว่างถ้าไม่มีส่วนลด" },
       { type: "tags", name: "badges", label: "ป้าย", suggestions: ["New", "Hot", "Best Seller", "Soft hair"] },
-      { type: "image", name: "imageUrl", label: "รูปสินค้า" },
+      { type: "tags", name: "tags", label: "คำค้นหา (แท็ก SEO / AI)", help: "พิมพ์แล้วกด Enter เช่น shampoo, แชมพูม่วง, ลดประกายเหลือง, ทำสีผม เพื่อให้ Google และ AI ค้นหาเจอ" },
+      {
+        type: "image",
+        name: "imageUrl",
+        label: "รูปสินค้า",
+        help: "ตอนบันทึก ระบบตั้งชื่อไฟล์รูปใหม่ให้บอกว่าเป็นรูปของอะไร (แบรนด์-slug-tag-วันที่-1) เช่น fanola-no-yellow-shampoo-1000ml-20261026-1.jpg ให้ Google และ AI อ่านเข้าใจ",
+      },
       { type: "localizedTextarea", name: "description", label: "รายละเอียด" },
       sortOrder,
       isActive,

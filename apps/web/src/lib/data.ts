@@ -406,7 +406,7 @@ export async function getBrand(lang: Locale, slug: string) {
 /* ------------------------------------------------------------- products */
 
 interface ProductRow extends Row {
-  slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; imageUrl: string;
+  slug: string; name: L; description: L; price: number; salePrice: number | null; badges: string[]; tags?: string[]; imageUrl: string;
   categoryRel?: { slug: string; name: L } | null;
   brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
 }
@@ -441,6 +441,7 @@ const toProduct = (p: ProductRow, lang: Locale): Product => ({
   price: p.price,
   salePrice: p.salePrice ?? undefined,
   badges: p.badges,
+  tags: p.tags ?? [],
   imageUrl: s(p.imageUrl) || productFallbacks[p.slug] || "",
   description: s(t(p.description, lang)),
 });

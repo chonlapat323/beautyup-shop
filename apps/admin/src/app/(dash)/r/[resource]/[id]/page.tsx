@@ -41,6 +41,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
         actions={<DeleteButton label={`ลบ${ui.noun}`} confirmText={`ลบ "${title}" ใช่หรือไม่? การลบย้อนกลับไม่ได้`} action={deleteResource.bind(null, name, id)} />}
       />
       {name === "media" && <MediaSharePanel slug={String(row.slug)} publishedAt={row.publishedAt as string | null} />}
+      {name === "products" && <ProductSharePanel slug={String(row.slug)} isActive={Boolean(row.isActive)} />}
       <ResourceForm key={id} fields={ui.fields} initial={row} relations={relations} onSave={saveResource.bind(null, name, id)} />
     </>
   );
@@ -51,4 +52,10 @@ async function MediaSharePanel({ slug, publishedAt }: { slug: string; publishedA
   const qr = await QRCode.toDataURL(url, { width: 600, margin: 2 });
   const published = !!publishedAt && new Date(publishedAt) <= new Date();
   return <MediaShare url={url} qr={qr} fileName={`${slug}-qr.png`} published={published} />;
+}
+
+async function ProductSharePanel({ slug, isActive }: { slug: string; isActive: boolean }) {
+  const url = `${siteUrl()}/th/product/${slug}`;
+  const qr = await QRCode.toDataURL(url, { width: 600, margin: 2 });
+  return <MediaShare url={url} qr={qr} fileName={`${slug}-qr.png`} published={isActive} />;
 }

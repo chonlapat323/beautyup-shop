@@ -185,6 +185,7 @@ export const productInput = z.object({
   price: z.coerce.number().nonnegative(),
   salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),
   badges: z.array(z.string().trim().min(1)).default([]),
+  tags: z.array(z.string().trim().min(1)).default([]),
   imageUrl: url,
   sortOrder,
   isActive,

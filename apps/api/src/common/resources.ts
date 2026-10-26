@@ -73,6 +73,20 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
       categoryRel: { select: { id: true, slug: true, name: true } },
     },
     searchFields: ['slug'],
+    afterSave: (row) => {
+      const imageUrl = (row.imageUrl as string | null) ?? '';
+      if (!imageUrl) return undefined;
+      const brandName = (row.brand as { name?: string } | undefined)?.name;
+      const collectionSlug = (row.categoryRel as { slug?: string } | undefined)?.slug;
+      const tags = [
+        ...(collectionSlug ? [collectionSlug] : []),
+        ...((row.tags as string[] | null) ?? []),
+        ...((row.badges as string[] | null) ?? []),
+      ];
+      const base = mediaFileBase(brandName ? [brandName] : [], String(row.slug), tags, (row.createdAt as Date | null) ?? new Date());
+      const [renamed] = renameUploads([imageUrl], base);
+      return renamed && renamed !== imageUrl ? { imageUrl: renamed } : undefined;
+    },
   },
   videos: { model: 'video', orderBy: byOrder, hasActive: true },
   ambassadors: { model: 'ambassador', orderBy: byOrder, hasActive: true, searchFields: ['name'] },

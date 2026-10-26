@@ -77,6 +77,7 @@ export interface Product {
   price: number;
   salePrice?: number;
   badges?: string[];
+  tags?: string[];
   imageUrl?: string;
   description?: string;
 }
