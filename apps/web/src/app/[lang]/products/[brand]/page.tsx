@@ -234,6 +234,7 @@ export default async function BrandPage({
       <CategoryGrid
         id="collections"
         categories={categories}
+        mainCategories={mainCategories}
         brandSlug={slug}
         brandName={brand.name}
         title={th ? "คอลเลกชันผลิตภัณฑ์" : "Product Collections"}

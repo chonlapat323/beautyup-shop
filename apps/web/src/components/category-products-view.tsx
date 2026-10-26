@@ -25,48 +25,38 @@ export function CategoryProductsView({
   const dict = useDict();
   const isThai = dict.common.loading === "กำลังโหลด";
 
-  // Subcategories from category data or defaults
+  // Subcategories strictly from DB (category.subCategories or product tags/badges)
   const subCategories = useMemo(() => {
-    if (category.subCategories && category.subCategories.length > 0) {
-      return category.subCategories;
+    const dbSubs = (category.subCategories ?? []).map((s) => s.trim()).filter(Boolean);
+    if (dbSubs.length > 0) {
+      const allLabel = isThai ? "ทั้งหมด" : "All";
+      return dbSubs[0] === allLabel ? dbSubs : [allLabel, ...dbSubs];
     }
-    return [
-      isThai ? "ทั้งหมด" : "All",
-      isThai ? "แชมพู" : "Shampoo",
-      isThai ? "มาส์ค&ทรีทเมนท์" : "Mask & Treatment",
-      isThai ? "ลีฟอิน" : "Leave In",
-    ];
-  }, [category.subCategories, isThai]);
+    const tagSet = new Set<string>();
+    for (const p of products) {
+      for (const t of p.tags ?? []) if (t.trim()) tagSet.add(t.trim());
+      for (const b of p.badges ?? []) if (b.trim()) tagSet.add(b.trim());
+    }
+    if (tagSet.size === 0) return [];
+    return [isThai ? "ทั้งหมด" : "All", ...tagSet];
+  }, [category.subCategories, products, isThai]);
 
-  const [activeSub, setActiveSub] = useState<string>(subCategories[0] || (isThai ? "ทั้งหมด" : "All"));
+  const [activeSub, setActiveSub] = useState<string>(isThai ? "ทั้งหมด" : "All");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
   const [showAll, setShowAll] = useState<boolean>(false);
 
-  // Filter products by the selected subcategory keyword in their name
+  // Filter products by the selected DB subcategory / tag / badge
   const filteredProducts = useMemo(() => {
-    if (activeSub === "ทั้งหมด" || activeSub === "All") {
+    if (!activeSub || activeSub === "ทั้งหมด" || activeSub === "All") {
       return products;
     }
     const q = activeSub.toLowerCase();
     return products.filter((p) => {
-      const name = p.name.toLowerCase();
-      if (q.includes("แชมพู") || q.includes("shampoo")) {
-        return name.includes("shampoo") || name.includes("แชมพู");
-      }
-      if (q.includes("มาส์ค") || q.includes("mask") || q.includes("ทรีทเมนท์") || q.includes("treatment")) {
-        return name.includes("mask") || name.includes("มาส์ค") || name.includes("treatment");
-      }
-      if (q.includes("ลีฟอิน") || q.includes("leave in")) {
-        return name.includes("leave in") || name.includes("ลีฟอิน") || name.includes("potion");
-      }
-      if (q.includes("บลูโฟม") || q.includes("foam")) {
-        return name.includes("foam") || name.includes("โฟม");
-      }
-      if (q.includes("สเปรย์") || q.includes("spray") || q.includes("mist")) {
-        return name.includes("mist") || name.includes("สเปรย์") || name.includes("cream");
-      }
-      return name.includes(q);
+      const inTags = (p.tags ?? []).some((t) => t.toLowerCase() === q);
+      const inBadges = (p.badges ?? []).some((b) => b.toLowerCase() === q);
+      const inName = p.name.toLowerCase().includes(q);
+      return inTags || inBadges || inName;
     });
   }, [products, activeSub]);
 
@@ -111,58 +101,60 @@ export function CategoryProductsView({
 
   return (
     <div className="container-page py-10 sm:py-16" id="products-view">
-      <div className="grid grid-cols-1 lg:grid-cols-[15rem_1fr] gap-8 lg:gap-12 items-start">
-        {/* Left Filter Sidebar */}
-        <aside className="lg:sticky lg:top-28 space-y-6">
-          <div className="border-b border-line pb-4">
-            <h3 className="font-display text-xl font-bold text-ink flex items-center gap-2">
-              <Filter className="size-4 text-brand-pink" />
-              <span>{isThai ? "กรองตาม" : "Filter by"}</span>
-            </h3>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between pb-2 mb-3 border-b border-line/60">
-              <span className="text-sm font-semibold text-ink">
-                {isThai ? "หมวดหมู่" : "Category"}
-              </span>
-              <span className="text-xs text-muted">—</span>
+      <div className={clsx("grid grid-cols-1 gap-8 lg:gap-12 items-start", subCategories.length > 0 && "lg:grid-cols-[15rem_1fr]")}>
+        {/* Left Filter Sidebar (only shown when DB tags/subcategories exist) */}
+        {subCategories.length > 0 && (
+          <aside className="lg:sticky lg:top-28 space-y-6">
+            <div className="border-b border-line pb-4">
+              <h3 className="font-display text-xl font-bold text-ink flex items-center gap-2">
+                <Filter className="size-4 text-brand-pink" />
+                <span>{isThai ? "กรองตาม" : "Filter by"}</span>
+              </h3>
             </div>
 
-            {/* Subcategory List (Vertical on Desktop, Horizontal scroll on Mobile) */}
-            <div
-              role="tablist"
-              className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:flex-col lg:space-y-1"
-            >
-              {subCategories.map((sub) => {
-                const isSelected = activeSub === sub;
-                return (
-                  <button
-                    key={sub}
-                    type="button"
-                    role="tab"
-                    aria-selected={isSelected}
-                    onClick={() => {
-                      setActiveSub(sub);
-                      setCurrentPage(1);
-                    }}
-                    className={clsx(
-                      "rounded-xl px-3.5 py-2 text-left text-xs sm:text-sm font-medium transition-all duration-200 shrink-0 lg:w-full flex items-center justify-between",
-                      isSelected
-                        ? "bg-brand-pink text-white shadow-sm"
-                        : "text-muted hover:bg-sand/40 hover:text-ink",
-                    )}
-                  >
-                    <span>{sub}</span>
-                    {isSelected && (
-                      <span className="hidden lg:inline-block size-1.5 rounded-full bg-white" />
-                    )}
-                  </button>
-                );
-              })}
+            <div>
+              <div className="flex items-center justify-between pb-2 mb-3 border-b border-line/60">
+                <span className="text-sm font-semibold text-ink">
+                  {isThai ? "หมวดหมู่ / แท็ก" : "Category / Tag"}
+                </span>
+                <span className="text-xs text-muted">—</span>
+              </div>
+
+              {/* Subcategory List (Vertical on Desktop, Horizontal scroll on Mobile) */}
+              <div
+                role="tablist"
+                className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:flex-col lg:space-y-1"
+              >
+                {subCategories.map((sub) => {
+                  const isSelected = activeSub === sub;
+                  return (
+                    <button
+                      key={sub}
+                      type="button"
+                      role="tab"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        setActiveSub(sub);
+                        setCurrentPage(1);
+                      }}
+                      className={clsx(
+                        "rounded-xl px-3.5 py-2 text-left text-xs sm:text-sm font-medium transition-all duration-200 shrink-0 lg:w-full flex items-center justify-between",
+                        isSelected
+                          ? "bg-brand-pink text-white shadow-sm"
+                          : "text-muted hover:bg-sand/40 hover:text-ink",
+                      )}
+                    >
+                      <span>{sub}</span>
+                      {isSelected && (
+                        <span className="hidden lg:inline-block size-1.5 rounded-full bg-white" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        )}
 
         {/* Right Products Area */}
         <div className="space-y-6">

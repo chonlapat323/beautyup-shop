@@ -15,11 +15,12 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import type { BrandCategory } from "@/lib/brand-categories";
+import type { BrandCategory, BrandMainCategory } from "@/lib/brand-categories";
 import { useDict } from "@/i18n/client";
 
 interface CategoryGridProps {
   categories: BrandCategory[];
+  mainCategories?: BrandMainCategory[];
   brandSlug: string;
   brandName?: string;
   activeCategory?: string;
@@ -33,6 +34,7 @@ interface CategoryGridProps {
 
 export function CategoryGrid({
   categories,
+  mainCategories = [],
   brandSlug,
   brandName,
   activeCategory,
@@ -56,47 +58,22 @@ export function CategoryGrid({
     setSavedPins((prev) => ({ ...prev, [slug]: !prev[slug] }));
   };
 
-  // Pinterest topic pills
-  const filterGroups = useMemo(
-    () => [
-      { id: "all", label: isThai ? "✨ ทั้งหมด" : "✨ All" },
-      {
-        id: "color",
-        label: isThai ? "🟣 ทำสี & หักล้างไรสี" : "🟣 Blonde & Toning",
-        keywords: ["yellow", "orange", "red", "colour", "color"],
-      },
-      {
-        id: "care",
-        label: isThai ? "💧 กู้ผมเสีย & บำรุงลึก" : "💧 Repair & Care",
-        keywords: ["nutri", "botugen", "fiber", "keraterm", "oro", "keratin"],
-      },
-      {
-        id: "scalp",
-        label: isThai ? "🌿 หนังศีรษะ & สุขภาพผม" : "🌿 Scalp & Wellness",
-        keywords: ["sensi", "daily", "purity", "rebalance", "energy", "hygiene"],
-      },
-      {
-        id: "style",
-        label: isThai ? "✨ ลอนดัด & จัดทรง" : "✨ Curl & Styling",
-        keywords: ["curly", "volume", "more"],
-      },
-    ],
-    [isThai],
-  );
+  // Dynamic filter pills strictly from DB MainCategories that have collections in this list
+  const filterGroups = useMemo(() => {
+    const activeSlugs = new Set(categories.map((c) => c.mainCategorySlug).filter(Boolean));
+    const dbGroups = mainCategories
+      .filter((m) => activeSlugs.has(m.slug))
+      .map((m) => ({ id: m.slug, label: m.name }));
+    if (dbGroups.length <= 1) return [];
+    return [{ id: "all", label: isThai ? "ทั้งหมด" : "All" }, ...dbGroups];
+  }, [categories, mainCategories, isThai]);
 
   // Filtered categories
   const displayedCategories = useMemo(() => {
     let result = categories;
 
     if (activeFilter !== "all") {
-      const selectedGroup = filterGroups.find((g) => g.id === activeFilter);
-      if (selectedGroup && selectedGroup.keywords) {
-        result = result.filter((cat) => {
-          const s = cat.slug.toLowerCase();
-          const n = cat.name.toLowerCase();
-          return selectedGroup.keywords!.some((kw) => s.includes(kw) || n.includes(kw));
-        });
-      }
+      result = result.filter((cat) => cat.mainCategorySlug === activeFilter);
     }
 
     if (searchQuery.trim()) {
@@ -111,7 +88,7 @@ export function CategoryGrid({
     }
 
     return result;
-  }, [categories, activeFilter, searchQuery, filterGroups]);
+  }, [categories, activeFilter, searchQuery]);
 
   // Pinterest-style varied aspect ratios for dynamic masonry waterfall rhythm
   const getMasonryAspect = (idx: number) => {
@@ -163,43 +140,42 @@ export function CategoryGrid({
             )}
           </h2>
 
-          {/* Subtitle */}
-          <p className="mt-3.5 text-sm sm:text-base text-muted leading-relaxed max-w-2xl mx-auto">
-            {subtitle
-              ? subtitle
-              : isThai
-                ? `รวมซีรีส์ผลิตภัณฑ์ซาลอนระดับพรีเมียมจาก ${brandName || "อิตาลี"} ในรูปแบบ Moodboard แกลเลอรี ให้คุณเลือกชมและสัมผัสความงามอย่างเพลิดเพลิน`
-                : `A curated visual moodboard of salon-grade hair care series by ${brandName || "Italian masters"}, crafted for visual inspiration and professional beauty.`}
-          </p>
+          {/* Subtitle (only if provided from DB) */}
+          {subtitle && (
+            <p className="mt-3.5 text-sm sm:text-base text-muted leading-relaxed max-w-2xl mx-auto">
+              {subtitle}
+            </p>
+          )}
 
-          {/* Pinterest Topic Filter Pills & Search Controls */}
-          <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Topic Filter Pills */}
-            <div
-              role="tablist"
-              className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
-            >
-              {filterGroups.map((group) => {
-                const isSelected = activeFilter === group.id;
-                return (
-                  <button
-                    key={group.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={isSelected}
-                    onClick={() => setActiveFilter(group.id)}
-                    className={clsx(
-                      "rounded-full px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300 shrink-0 border",
-                      isSelected
-                        ? "bg-neutral-900 text-white border-neutral-900 shadow-md scale-[1.02]"
-                        : "bg-white text-neutral-700 border-line hover:border-neutral-400 hover:bg-neutral-50 shadow-sm",
-                    )}
-                  >
-                    {group.label}
-                  </button>
-                );
-              })}
-            </div>
+          {/* Filter Pills (from DB MainCategories) & Search Controls */}
+          <div className={clsx("mt-8 flex flex-col md:flex-row items-center gap-4", filterGroups.length > 0 ? "justify-between" : "justify-end")}>
+            {filterGroups.length > 0 && (
+              <div
+                role="tablist"
+                className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
+              >
+                {filterGroups.map((group) => {
+                  const isSelected = activeFilter === group.id;
+                  return (
+                    <button
+                      key={group.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isSelected}
+                      onClick={() => setActiveFilter(group.id)}
+                      className={clsx(
+                        "rounded-full px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300 shrink-0 border",
+                        isSelected
+                          ? "bg-neutral-900 text-white border-neutral-900 shadow-md scale-[1.02]"
+                          : "bg-white text-neutral-700 border-line hover:border-neutral-400 hover:bg-neutral-50 shadow-sm",
+                      )}
+                    >
+                      {group.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Right Tools: Search Bar & View Mode Toggle */}
             <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0 justify-end">
