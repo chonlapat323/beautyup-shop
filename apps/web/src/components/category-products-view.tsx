@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "@/components/link";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight, ExternalLink, Filter, MessageCircle, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink, Filter } from "lucide-react";
 import type { Product } from "@/lib/types";
 import type { BrandCategory } from "@/lib/brand-categories";
 import { LoadingImage } from "./loading-image";
@@ -21,8 +21,6 @@ interface CategoryProductsViewProps {
 export function CategoryProductsView({
   category,
   products,
-  brandName,
-  brandSlug,
 }: CategoryProductsViewProps) {
   const dict = useDict();
   const isThai = dict.common.loading === "กำลังโหลด";
@@ -41,11 +39,9 @@ export function CategoryProductsView({
   }, [category.subCategories, isThai]);
 
   const [activeSub, setActiveSub] = useState<string>(subCategories[0] || (isThai ? "ทั้งหมด" : "All"));
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
   const [showAll, setShowAll] = useState<boolean>(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
 
   // Filter products by the selected subcategory keyword in their name
   const filteredProducts = useMemo(() => {
@@ -73,11 +69,6 @@ export function CategoryProductsView({
       return name.includes(q);
     });
   }, [products, activeSub]);
-
-  const openQuickView = (p: Product) => {
-    setSelectedProduct(p);
-    dialogRef.current?.showModal();
-  };
 
   const PAGE_SIZE_DEFAULT = 12;
   const totalItems = filteredProducts.length;
@@ -236,8 +227,9 @@ export function CategoryProductsView({
                   const primaryBadge = p.badges && p.badges.length > 0 ? p.badges[0] : null;
 
                   return (
-                    <div
+                    <Link
                       key={p.slug}
+                      href={`/product/${p.slug}`}
                       className="group flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-line bg-white p-3.5 sm:p-5 transition-all duration-300 hover:border-brand-pink/50 hover:shadow-xl hover:shadow-brand-pink/10"
                     >
                       <div>
@@ -282,16 +274,14 @@ export function CategoryProductsView({
                           {formatPrice(p.price)}
                         </span>
 
-                        <button
-                          type="button"
-                          onClick={() => openQuickView(p)}
-                          className="rounded-lg p-1.5 text-muted hover:bg-sand/40 hover:text-brand-pink transition-colors"
-                          title={isThai ? "ดูรายละเอียดด่วน" : "Quick View"}
+                        <span
+                          className="rounded-lg p-1.5 text-muted group-hover:bg-sand/40 group-hover:text-brand-pink transition-colors"
+                          title={dict.product.viewDetails}
                         >
                           <ExternalLink className="size-4" />
-                        </button>
+                        </span>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -381,50 +371,6 @@ export function CategoryProductsView({
           )}
         </div>
       </div>
-
-      {/* Quick View Modal */}
-      {/* Same quick view as the product grid elsewhere on the site */}
-      <dialog
-        ref={dialogRef}
-        onClick={(e) => e.target === dialogRef.current && dialogRef.current?.close()}
-        className="m-auto w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-3xl bg-white p-0 text-ink shadow-2xl backdrop:bg-ink/50 backdrop:backdrop-blur-sm"
-      >
-        {selectedProduct && (
-          <div className="grid max-h-[85dvh] grid-cols-1 overflow-y-auto sm:grid-cols-2">
-            <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 sm:aspect-auto sm:h-full">
-              {selectedProduct.imageUrl ? (
-                <LoadingImage src={selectedProduct.imageUrl} alt={selectedProduct.name} className="size-full object-cover object-center" />
-              ) : (
-                <MockImagePlaceholder label={selectedProduct.name} />
-              )}
-            </div>
-            <div className="relative p-6 sm:p-8">
-              <button
-                type="button"
-                aria-label={dict.common.close}
-                onClick={() => dialogRef.current?.close()}
-                className="absolute top-3 right-3 grid size-11 place-items-center rounded-full text-muted transition-colors hover:bg-sand hover:text-ink"
-              >
-                <X className="size-5" />
-              </button>
-              <p className="eyebrow text-brand-pink">{brandName || "Brand"}</p>
-              <h3 className="mt-2 pr-10 font-display text-xl leading-snug font-bold text-ink sm:text-2xl">{selectedProduct.name}</h3>
-              <p className="mt-4 font-display text-2xl font-extrabold text-brand-pink">{formatPrice(selectedProduct.price)}</p>
-              {selectedProduct.description && <p className="mt-4 text-sm text-muted">{selectedProduct.description}</p>}
-              <Link
-                href={`/contact/salon-partner?product=${encodeURIComponent(selectedProduct.name)}`}
-                className="btn btn-primary mt-8 w-full"
-              >
-                <MessageCircle className="size-4" />
-                {dict.common.contactToOrder}
-              </Link>
-              <Link href={`/product/${selectedProduct.slug}`} className="btn btn-outline mt-2 w-full">
-                {dict.product.viewDetails}
-              </Link>
-            </div>
-          </div>
-        )}
-      </dialog>
     </div>
   );
 }
