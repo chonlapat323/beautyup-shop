@@ -10,8 +10,11 @@ import { saveMenuItem, saveResource } from "../../actions";
 
 export const metadata: Metadata = { title: "เพิ่มข้อมูล" };
 
-export default async function NewResourcePage({ params }: PageProps<"/r/[resource]/new">) {
+export default async function NewResourcePage({ params, searchParams }: PageProps<"/r/[resource]/new">) {
   const name = resolveResource((await params).resource);
+  const sp = await searchParams;
+  const presetPostType =
+    name === "posts" && (sp.type === "ARTICLE" || sp.type === "ACTIVITY") ? sp.type : undefined;
   const ui = resourceUi[name];
   const relations = await loadRelations(ui.fields);
 
@@ -39,11 +42,28 @@ export default async function NewResourcePage({ params }: PageProps<"/r/[resourc
     );
   }
 
+  const flowKey = presetPostType ? `posts:${presetPostType}` : name;
+  const noun =
+    presetPostType === "ARTICLE" ? "บทความ" : presetPostType === "ACTIVITY" ? "กิจกรรม" : ui.noun;
+  const backHref = presetPostType ? `/r/posts?filter=${presetPostType}` : `/r/${name}`;
+  const backLabel =
+    presetPostType === "ARTICLE"
+      ? "บทความ (Articles)"
+      : presetPostType === "ACTIVITY"
+        ? "กิจกรรม (Activities)"
+        : ui.title;
+
   return (
     <>
-      <SectionFlowBar currentKey={name} trail={[{ label: `เพิ่ม${ui.noun}` }]} />
-      <PageHeader title={`เพิ่ม${ui.noun}`} back={{ href: `/r/${name}`, label: ui.title }} />
-      <ResourceForm fields={ui.fields} relations={relations} onSave={saveResource.bind(null, name, null)} redirectTo={`/r/${name}`} />
+      <SectionFlowBar currentKey={flowKey} trail={[{ label: `เพิ่ม${noun}` }]} />
+      <PageHeader title={`เพิ่ม${noun}`} back={{ href: backHref, label: backLabel }} />
+      <ResourceForm
+        fields={ui.fields}
+        initial={presetPostType ? { type: presetPostType } : undefined}
+        relations={relations}
+        onSave={saveResource.bind(null, name, null)}
+        redirectTo={backHref}
+      />
     </>
   );
 }

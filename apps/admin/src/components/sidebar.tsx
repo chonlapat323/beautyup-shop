@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import {
   Building2,
+  CalendarHeart,
   Film,
   Inbox,
   LayoutDashboard,
@@ -10,6 +11,7 @@ import {
   Menu,
   MenuSquare,
   MessagesSquare,
+  Newspaper,
   Package,
   Settings,
   UserCog,
@@ -57,7 +59,6 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
           "/r/ambassadors",
           "/r/salons",
           "/r/courses",
-          "/r/posts",
           "/r/pages",
           "/r/team",
         ],
@@ -73,6 +74,11 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         label: "มีเดีย",
         icon: Film,
         also: ["/r/media-categories"],
+      },
+      {
+        href: "/r/posts",
+        label: "บทความและกิจกรรม",
+        icon: Newspaper,
       },
       {
         href: "/r/forum-topics",

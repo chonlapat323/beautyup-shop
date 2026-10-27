@@ -199,10 +199,26 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
   };
 
   // Breadcrumb trail for active filters
+  const isPostTypeTab = name === "posts" && (filter === "ARTICLE" || filter === "ACTIVITY");
+  const flowCurrentKey = isPostTypeTab ? `posts:${filter}` : name;
+  const pageTitle =
+    name === "posts" && filter === "ARTICLE"
+      ? "บทความ (Articles)"
+      : name === "posts" && filter === "ACTIVITY"
+        ? "กิจกรรม (Activities)"
+        : ui.title;
+  const pageNoun =
+    name === "posts" && filter === "ARTICLE"
+      ? "บทความ"
+      : name === "posts" && filter === "ACTIVITY"
+        ? "กิจกรรม"
+        : ui.noun;
+  const newHref = isPostTypeTab ? `/r/posts/new?type=${filter}` : `/r/${name}/new`;
+
   const activePrimary = primaryOptions.find((o) => o.value === filter);
   const activeSub = subOptions.find((o) => o.value === sub);
   const trail: BreadcrumbItem[] = [];
-  if (activePrimary) {
+  if (activePrimary && !isPostTypeTab) {
     trail.push({
       label: `${primaryLabel}: ${activePrimary.label}`,
       href: activeSub ? buildHref({ sub: "", page: 1 }) : undefined,
@@ -231,14 +247,14 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
 
   return (
     <>
-      <SectionFlowBar currentKey={name} trail={trail} />
+      <SectionFlowBar currentKey={flowCurrentKey} trail={trail} />
 
       <PageHeader
-        title={ui.title}
+        title={pageTitle}
         description={ui.description ?? `แสดง ${total} จากทั้งหมด ${allRows.length} รายการ`}
         actions={
-          <Link href={`/r/${name}/new`} className="btn btn-primary">
-            <Plus className="size-4" /> เพิ่ม{ui.noun}
+          <Link href={newHref} className="btn btn-primary">
+            <Plus className="size-4" /> เพิ่ม{pageNoun}
           </Link>
         }
       />

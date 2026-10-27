@@ -71,12 +71,22 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
   }
   trail.push({ label: `แก้ไข: ${title}` });
 
+  const postType = name === "posts" && (row.type === "ARTICLE" || row.type === "ACTIVITY") ? row.type : undefined;
+  const flowKey = postType ? `posts:${postType}` : name;
+  const backHref = postType ? `/r/posts?filter=${postType}` : `/r/${name}`;
+  const backLabel =
+    postType === "ARTICLE"
+      ? "บทความ (Articles)"
+      : postType === "ACTIVITY"
+        ? "กิจกรรม (Activities)"
+        : ui.title;
+
   return (
     <>
-      <SectionFlowBar currentKey={name} trail={trail} />
+      <SectionFlowBar currentKey={flowKey} trail={trail} />
       <PageHeader
         title={title}
-        back={{ href: `/r/${name}`, label: ui.title }}
+        back={{ href: backHref, label: backLabel }}
         actions={<DeleteButton label={`ลบ${ui.noun}`} confirmText={`ลบ "${title}" ใช่หรือไม่? การลบย้อนกลับไม่ได้`} action={deleteResource.bind(null, name, id)} />}
       />
       {name === "media" && <MediaSharePanel slug={String(row.slug)} publishedAt={row.publishedAt as string | null} />}

@@ -76,18 +76,19 @@ const FLOWS: MenuFlow[] = [
     menuLabel: "มุมสมาชิก / มีเดีย (Members & Media)",
     menuPath: "/members",
     steps: [
-      { key: "media", label: "1. คลังมีเดีย", href: "/r/media" },
-      { key: "media-categories", label: "2. หมวดหมู่มีเดีย", href: "/r/media-categories" },
-      { key: "posts", label: "3. บทความ / กิจกรรม", href: "/r/posts" },
+      { key: "media-categories", label: "1. หมวดหมู่มีเดีย", href: "/r/media-categories" },
+      { key: "media", label: "2. คลังมีเดีย", href: "/r/media" },
+      { key: "posts:ARTICLE", label: "3. บทความ (Articles)", href: "/r/posts?filter=ARTICLE" },
+      { key: "posts:ACTIVITY", label: "4. กิจกรรม (Activities)", href: "/r/posts?filter=ACTIVITY" },
     ],
   },
   {
     menuLabel: "ฟอรั่ม (Forum)",
     menuPath: "/forum",
     steps: [
-      { key: "forum-topics", label: "1. กระทู้ฟอรั่ม", href: "/r/forum-topics" },
-      { key: "forum-replies", label: "2. ความคิดเห็น", href: "/r/forum-replies" },
-      { key: "forum-categories", label: "3. หมวดหมู่ฟอรั่ม", href: "/r/forum-categories" },
+      { key: "forum-categories", label: "1. หมวดหมู่ฟอรั่ม", href: "/r/forum-categories" },
+      { key: "forum-topics", label: "2. กระทู้ฟอรั่ม", href: "/r/forum-topics" },
+      { key: "forum-replies", label: "3. ความคิดเห็น", href: "/r/forum-replies" },
     ],
   },
 ];
@@ -103,7 +104,9 @@ export function SectionFlowBar({
 }) {
   const cleanHref = menuHref?.trim().replace(/\/+$/, "") || "/";
   const flow =
-    FLOWS.find((f) => f.steps.some((s) => s.key === currentKey)) ??
+    FLOWS.find((f) =>
+      f.steps.some((s) => s.key === currentKey || (currentKey === "posts" && s.key.startsWith("posts:"))),
+    ) ??
     (currentKey === "menu-items" && menuHref
       ? FLOWS.find(
           (f) =>

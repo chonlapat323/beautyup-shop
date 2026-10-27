@@ -83,20 +83,21 @@ const DEDICATED_ROUTES: Record<string, DedicatedRouteInfo> = {
   },
   "/members": {
     pageTitle: "หน้ามุมสมาชิก / มีเดีย",
-    description: "หน้ามุมสมาชิกและคลังมีเดียดึงข้อมูลจากเมนูมีเดียและบทความโดยตรง",
+    description: "หน้ามุมสมาชิกและคลังมีเดียดึงข้อมูลจากหมวดหมู่มีเดีย คลังมีเดีย บทความ และกิจกรรมตามลำดับ",
     links: [
-      { label: "มีเดีย (รูปภาพ/วิดีโอ/แคตตาล็อก)", detail: "จัดการคลังมีเดีย แบรนด์ และแท็ก SEO", href: "/r/media" },
-      { label: "หมวดหมู่มีเดีย", detail: "จัดการหมวดหมู่ของคลังมีเดีย", href: "/r/media-categories" },
-      { label: "บทความ / กิจกรรม", detail: "จัดการข่าวสาร บทความ และกิจกรรม", href: "/r/posts" },
+      { label: "1. หมวดหมู่มีเดีย", detail: "สร้างและจัดการหมวดหมู่ของคลังมีเดียก่อนเพิ่มไฟล์", href: "/r/media-categories" },
+      { label: "2. คลังมีเดีย (รูปภาพ/วิดีโอ/แคตตาล็อก)", detail: "จัดการคลังมีเดีย แบรนด์ และแท็ก SEO", href: "/r/media" },
+      { label: "3. บทความ (Articles)", detail: "จัดการบทความและความรู้สำหรับสมาชิก", href: "/r/posts?filter=ARTICLE" },
+      { label: "4. กิจกรรม (Activities)", detail: "จัดการข่าวสารและกิจกรรมของบริษัท", href: "/r/posts?filter=ACTIVITY" },
     ],
   },
   "/forum": {
     pageTitle: "หน้าฟอรั่ม (Forum)",
-    description: "หน้าฟอรั่มดึงข้อมูลกระทู้และหมวดหมู่จากระบบฟอรั่มโดยตรง",
+    description: "หน้าฟอรั่มดึงข้อมูลหมวดหมู่ กระทู้ และความคิดเห็นจากระบบฟอรั่มโดยตรง",
     links: [
-      { label: "กระทู้ฟอรั่ม", detail: "ดู ปักหมุด ล็อก หรือลบกระทู้ในฟอรั่ม", href: "/r/forum-topics" },
-      { label: "ความคิดเห็น", detail: "จัดการความคิดเห็นในกระทู้", href: "/r/forum-replies" },
-      { label: "หมวดหมู่ฟอรั่ม", detail: "เพิ่ม/แก้ไขหมวดหมู่ของฟอรั่ม", href: "/r/forum-categories" },
+      { label: "1. หมวดหมู่ฟอรั่ม", detail: "สร้างและแก้ไขหมวดหมู่ของฟอรั่ม", href: "/r/forum-categories" },
+      { label: "2. กระทู้ฟอรั่ม", detail: "ดู ปักหมุด ล็อก หรือลบกระทู้ในฟอรั่ม", href: "/r/forum-topics" },
+      { label: "3. ความคิดเห็น", detail: "จัดการความคิดเห็นในกระทู้", href: "/r/forum-replies" },
     ],
   },
   "/contact": {
