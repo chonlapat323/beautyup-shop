@@ -1,8 +1,8 @@
 "use client";
 
 import clsx from "clsx";
-import { ExternalLink, Eye, FileText, Globe, Laptop, Smartphone, Sparkles, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Eye, ImageOff, Laptop, Smartphone, X } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { Locale } from "./fields";
 
 type L = { th?: string; en?: string };
@@ -38,6 +38,78 @@ function resolveImgs(src: unknown, fallback?: unknown): string[] {
   if (arr.length > 0) return arr;
   const fb = resolveImg(fallback);
   return fb ? [fb] : [];
+}
+
+const SOCIAL_ICONS: Record<string, { label: string; icon: ReactNode }> = {
+  facebook: {
+    label: "Facebook",
+    icon: (
+      <svg className="size-4 fill-current" viewBox="0 0 24 24">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    ),
+  },
+  instagram: {
+    label: "Instagram",
+    icon: (
+      <svg className="size-4 fill-current" viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      </svg>
+    ),
+  },
+  tiktok: {
+    label: "TikTok",
+    icon: (
+      <svg className="size-4 fill-current" viewBox="0 0 24 24">
+        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+      </svg>
+    ),
+  },
+  youtube: {
+    label: "YouTube",
+    icon: (
+      <svg className="size-4 fill-current" viewBox="0 0 24 24">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+  line: {
+    label: "LINE",
+    icon: (
+      <svg className="size-4 fill-current" viewBox="0 0 24 24">
+        <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.019 9.572.391.084.922.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.589-3.844 2.589-5.956zm-15.011 2.378h-2.136a.669.669 0 0 1-.669-.669V7.987a.669.669 0 0 1 .669-.669h2.136a.669.669 0 1 1 0 1.338H7.523v1.025h1.466a.669.669 0 1 1 0 1.338H7.523v1.025h1.466a.669.669 0 1 1 0 1.338zm3.328 0h-1.338a.669.669 0 0 1-.669-.669V7.987a.669.669 0 0 1 1.338 0v4.026a.669.669 0 0 1-.669.669zm4.675 0a.669.669 0 0 1-.502-.227l-2.007-2.615v2.173a.669.669 0 1 1-1.338 0V7.987a.669.669 0 0 1 .502-.227.669.669 0 0 1 .502.227l2.007 2.615V8.428a.669.669 0 1 1 1.338 0v4.253a.669.669 0 0 1-.669.669zm3.328 0h-2.136a.669.669 0 0 1-.669-.669V7.987a.669.669 0 0 1 1.338 0v3.357h1.467a.669.669 0 1 1 0 1.338z" />
+      </svg>
+    ),
+  },
+};
+
+function SocialLinksPreview({ socials, className }: { socials?: Record<string, string>; className?: string }) {
+  if (!socials) return null;
+  const entries = Object.entries(socials).filter(([, href]) => Boolean(href && href.trim()));
+  if (entries.length === 0) return null;
+
+  return (
+    <ul className={clsx("flex flex-wrap items-center gap-1.5", className)}>
+      {entries.map(([key, href]) => {
+        const item = SOCIAL_ICONS[key];
+        if (!item) return null;
+        return (
+          <li key={key}>
+            <a
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              title={item.label}
+              aria-label={item.label}
+              className="flex size-8 items-center justify-center rounded-full border border-[#e8e6e1] bg-white text-stone-700 shadow-xs"
+            >
+              {item.icon}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 export function ResourcePreviewModal({
@@ -80,7 +152,7 @@ export function ResourcePreviewModal({
     const country = pick(values.country, locale);
     const importedLabel = country ? (th ? `นำเข้าจาก${country}` : `Imported from ${country}`) : "";
     const tagline = pick(values.tagline, locale);
-    const description = pick(values.description, locale) || (th ? "ยังไม่ได้กรอกคำอธิบายแบรนด์..." : "No brand description yet...");
+    const description = pick(values.description, locale);
     const logoUrl = resolveImg(values.logoUrl);
     const website = String(values.website ?? "").trim();
     const catalogUrl = String(values.catalogUrl ?? "").trim();
@@ -88,128 +160,156 @@ export function ResourcePreviewModal({
     const highlightsRaw = Array.isArray(values.highlights) ? values.highlights : [];
     const highlights = highlightsRaw.map((h) => pick(h, locale)).filter(Boolean);
     const socials = (values.socials as Record<string, string> | undefined) ?? {};
-    const activeSocials = Object.entries(socials).filter(([, v]) => v && v.trim());
 
     return (
-      <div className="space-y-10">
-        {/* Section 1: หน้าแบรนด์เต็ม (/products/[brand]) */}
+      <div className="space-y-10 text-[#1c1917]">
+        {/* Section 1: หน้ารวมแบรนด์ (/products) — ตรงตาม new.beautyup-enterprise.com/th/products ทุกประการ */}
         {brandType === "SALON" && (
-          <div className="overflow-hidden rounded-3xl border border-line bg-[#FAF7F5] shadow-sm">
-            <div className="border-b border-line bg-white/80 px-5 py-2.5 flex items-center justify-between text-xs text-muted">
-              <span className="font-semibold text-ink">1. ตัวอย่างส่วนหัวหน้าแบรนด์ (/products/{String(values.slug || "brand-slug")})</span>
-              <span className="rounded-full bg-brand-soft px-2.5 py-0.5 text-[11px] font-medium text-brand">หน้าแบรนด์ (Brand Hero)</span>
+          <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+            <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-5 py-2.5 flex items-center justify-between text-xs text-[#6b6762]">
+              <span className="font-semibold text-[#1c1917]">1. การแสดงผลในหน้ารวมแบรนด์ (/{locale}/products)</span>
+              <span className="rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+                ตรงกับหน้าเว็บจริง 100%
+              </span>
             </div>
-            <div className="px-6 py-12 md:px-14 md:py-16">
-              {importedLabel ? (
-                <p className="text-xs font-semibold tracking-widest text-brand uppercase">{importedLabel}</p>
-              ) : (
-                <p className="text-xs italic text-muted/60">(ไม่ได้ระบุประเทศ — ไม่แสดงข้อความนำเข้าจาก...)</p>
-              )}
-              <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-ink sm:text-5xl">
-                {localName} <span className="font-normal text-muted">{name}</span>
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg whitespace-pre-line">{description}</p>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-                {website && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-white px-5 py-2.5 text-sm font-medium text-ink">
-                    <Globe className="size-4" />
-                    {th ? "เว็บไซต์แบรนด์" : "Brand Website"}
-                  </span>
-                )}
-                {catalogUrl && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-white px-5 py-2.5 text-sm font-medium text-ink">
-                    <FileText className="size-4" />
-                    {th ? "ดาวน์โหลดแคตตาล็อก" : "Catalog PDF"}
-                  </span>
-                )}
-                {activeSocials.map(([k]) => (
-                  <span key={k} className="inline-flex items-center rounded-full bg-white border border-line px-3 py-1.5 text-xs font-medium uppercase text-muted">
-                    {k}
-                  </span>
-                ))}
-              </div>
+
+            <div className="bg-white px-6 sm:px-10">
+              <section className="grid grid-cols-1 items-center gap-8 py-14 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20">
+                {/* โลโก้พื้นหลังสีขาวล้วน ไม่มีกรอบสีเทา/ครีม ตาม apps/web/src/app/[lang]/products/page.tsx */}
+                <div className="flex items-center justify-center overflow-hidden rounded-3xl bg-white p-8 sm:p-12">
+                  {logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logoUrl} alt={name} className="aspect-[4/3] w-full object-contain" />
+                  ) : (
+                    <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#e8e6e1] text-[#6b6762]">
+                      <ImageOff className="size-6 opacity-50" />
+                      <span className="text-xs">ยังไม่ได้อัปโหลดโลโก้แบรนด์</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">{importedLabel}</p>
+                  <h2 className="mt-3 font-serif text-4xl leading-tight text-[#1c1917] sm:text-5xl">
+                    {localName}
+                    <span className="mt-1 block text-2xl text-[#6b6762] sm:text-3xl">{name}</span>
+                  </h2>
+                  {description && <p className="mt-5 text-lg text-[#6b6762] whitespace-pre-line">{description}</p>}
+                  {highlights.length > 0 && (
+                    <ul className="mt-6 flex flex-wrap gap-2">
+                      {highlights.map((h, i) => (
+                        <li key={i} className="rounded-full bg-[#f3e6dd] px-3 py-1 text-sm text-[#7c4630]">
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {tagline && <p className="mt-6 font-serif text-xl italic text-[#1c1917]">“{tagline}”</p>}
+                  <div className="mt-8 flex flex-col gap-2 sm:flex-row">
+                    <span className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#1c1917] px-6 text-[15px] font-medium text-white">
+                      {th ? "ชมสินค้า" : "View Products"}
+                    </span>
+                    {catalogUrl && (
+                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                        {th ? "แคตตาล็อก" : "Catalog"}
+                      </span>
+                    )}
+                  </div>
+                  <SocialLinksPreview socials={socials} className="mt-6" />
+                </div>
+              </section>
             </div>
           </div>
         )}
 
-        {/* Section 2: หน้ารวมแบรนด์ (/products) */}
+        {/* Section 2: ส่วนหัวหน้าแบรนด์เดี่ยว (/products/[brand]) — PageHero */}
         {brandType === "SALON" && (
-          <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-sm">
-            <div className="border-b border-line bg-mist/60 px-5 py-2.5 flex items-center justify-between text-xs text-muted">
-              <span className="font-semibold text-ink">2. ตัวอย่างในหน้ารวมแบรนด์ (/products)</span>
-              <span className="rounded-full bg-sand px-2.5 py-0.5 text-[11px] font-medium text-ink">แถวแสดงรายละเอียดแบรนด์</span>
+          <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+            <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-5 py-2.5 flex items-center justify-between text-xs text-[#6b6762]">
+              <span className="font-semibold text-[#1c1917]">
+                2. ส่วนหัวเมื่อคลิกเข้าหน้าแบรนด์ (/{locale}/products/{String(values.slug || "brand")})
+              </span>
+              <span className="rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+                PageHero
+              </span>
             </div>
-            <div className="grid grid-cols-1 items-center gap-8 p-6 md:grid-cols-2 md:gap-12 md:p-12">
-              <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-3xl border border-line/60 bg-[#FAF7F5] p-8">
-                {logoUrl ? (
-                  <img src={logoUrl} alt={name} className="max-h-full max-w-full object-contain" />
-                ) : (
-                  <span className="text-sm text-muted">ยังไม่ได้อัปโหลดโลโก้แบรนด์</span>
+
+            <section className="relative overflow-hidden bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)] px-6 py-12 sm:px-10 sm:py-16 lg:py-20">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.15),transparent_70%)] blur-3xl"
+              />
+              <div className="relative">
+                {importedLabel && (
+                  <p className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">
+                    <span aria-hidden className="h-px w-6 bg-[#d6297f]" />
+                    {importedLabel}
+                  </p>
+                )}
+                <h1 className="mt-3 max-w-4xl font-serif text-4xl leading-[1.15] text-[#1c1917] sm:text-5xl lg:text-6xl">
+                  {localName} <span className="text-[#6b6762]">{name}</span>
+                </h1>
+                {description && (
+                  <p className="mt-5 max-w-2xl text-base text-[#6b6762] sm:text-lg whitespace-pre-line">{description}</p>
+                )}
+                {(website || catalogUrl || Object.values(socials).some(Boolean)) && (
+                  <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                    {website && (
+                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                        {th ? "เว็บไซต์แบรนด์" : "Brand Website"}
+                      </span>
+                    )}
+                    {catalogUrl && (
+                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                        {th ? "แคตตาล็อก" : "Catalog"}
+                      </span>
+                    )}
+                    <SocialLinksPreview socials={socials} />
+                  </div>
                 )}
               </div>
-              <div>
-                {importedLabel && <p className="text-xs font-semibold tracking-widest text-brand uppercase">{importedLabel}</p>}
-                <h2 className="mt-2 font-serif text-3xl font-semibold text-ink sm:text-4xl">
-                  {localName}
-                  <span className="mt-1 block text-xl font-normal text-muted sm:text-2xl">{name}</span>
-                </h2>
-                <p className="mt-4 text-base leading-relaxed text-muted whitespace-pre-line">{description}</p>
-                {highlights.length > 0 && (
-                  <ul className="mt-5 flex flex-wrap gap-2">
-                    {highlights.map((h, i) => (
-                      <li key={i} className="rounded-full bg-brand-soft px-3.5 py-1 text-xs font-medium text-brand">
-                        {h}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {tagline && <p className="mt-5 font-serif text-lg italic text-ink">“{tagline}”</p>}
-                <div className="mt-6 flex flex-wrap gap-2.5">
-                  <span className="inline-flex items-center rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white">
-                    {th ? "ดูผลิตภัณฑ์" : "View Products"}
-                  </span>
-                  {catalogUrl && (
-                    <span className="inline-flex items-center rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink">
-                      {th ? "แคตตาล็อก" : "Catalog"}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+            </section>
           </div>
         )}
 
         {/* Section 3: การ์ดแบรนด์บนหน้าแรก (/) */}
-        <div className="overflow-hidden rounded-3xl border border-line bg-[#FAF7F5] shadow-sm">
-          <div className="border-b border-line bg-white/80 px-5 py-2.5 flex items-center justify-between text-xs text-muted">
-            <span className="font-semibold text-ink">
-              3. ตัวอย่างการ์ดแบรนด์บนหน้าแรก (/) — {brandType === "SALON" ? "แบรนด์ซาลอน" : "เคาน์เตอร์แบรนด์"}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-5 py-2.5 flex items-center justify-between text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">
+              {brandType === "SALON" ? "3" : "1"}. การ์ดแบรนด์บนหน้าแรก (/{locale}) —{" "}
+              {brandType === "SALON" ? "ผลิตภัณฑ์ซาลอน" : "เคาน์เตอร์แบรนด์"}
             </span>
-            <span className="rounded-full bg-sand px-2.5 py-0.5 text-[11px] font-medium text-ink">Brand Card (1 ใน 3 คอลัมน์)</span>
+            <span className="rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              การ์ดหน้าแรก (1 ใน 3 คอลัมน์)
+            </span>
           </div>
-          <div className="p-6 md:p-10">
-            <div className="mx-auto max-w-sm overflow-hidden rounded-3xl border border-line bg-white shadow-xs">
-              <div className="flex aspect-[16/10] items-center justify-center bg-white p-6 border-b border-line/40">
+          <div className="bg-white p-6 md:p-10">
+            <div className="mx-auto max-w-sm flex flex-col overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white">
+              <div className="flex items-center justify-center overflow-hidden bg-white p-6 sm:p-8">
                 {logoUrl ? (
-                  <img src={logoUrl} alt={name} className="max-h-full max-w-full object-contain" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoUrl} alt={name} className="aspect-[16/10] w-full object-contain" />
                 ) : (
-                  <span className="text-xs text-muted">ยังไม่มีโลโก้</span>
+                  <div className="flex aspect-[16/10] w-full items-center justify-center rounded-xl border border-dashed border-[#e8e6e1] text-xs text-[#6b6762]">
+                    ยังไม่มีโลโก้
+                  </div>
                 )}
               </div>
-              <div className="p-6">
-                {importedLabel && <p className="text-xs tracking-wide text-muted uppercase">{importedLabel}</p>}
-                <p className="mt-1.5 font-serif text-2xl font-semibold text-ink">
-                  {localName} <span className="font-normal text-muted">({name})</span>
+              <div className="flex flex-1 flex-col p-6">
+                <p className="text-xs tracking-wide text-[#6b6762] uppercase">{importedLabel}</p>
+                <p className="mt-2 font-serif text-2xl text-[#1c1917]">
+                  {localName} <span className="text-[#6b6762]">({name})</span>
                 </p>
-                <p className="mt-2.5 line-clamp-3 text-sm text-muted">{description}</p>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-brand">
+                {description && <p className="mt-3 flex-1 text-[#6b6762]">{description}</p>}
+                <span className="mt-6 inline-flex items-center gap-2 font-medium text-[#1c1917]">
                   {brandType === "COUNTER" && website
                     ? th
-                      ? "เยี่ยมชมเว็บไซต์ →"
-                      : "Visit Website →"
+                      ? "ไปที่เว็บไซต์แบรนด์"
+                      : "Visit Brand Website"
                     : th
-                      ? "ดูผลิตภัณฑ์ →"
-                      : "View Products →"}
+                      ? "ดูผลิตภัณฑ์"
+                      : "View Products"}{" "}
+                  <span>→</span>
                 </span>
               </div>
             </div>
@@ -232,14 +332,15 @@ export function ResourcePreviewModal({
     const tags = Array.isArray(values.tags) ? values.tags.map(String).filter(Boolean) : [];
 
     return (
-      <div className="overflow-hidden rounded-3xl border border-line bg-white p-6 md:p-12 shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white p-6 md:p-12 shadow-sm text-[#1c1917]">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
           <div>
-            <div className="aspect-square overflow-hidden rounded-3xl border border-line bg-[#FAF7F5] flex items-center justify-center">
+            <div className="aspect-square overflow-hidden rounded-3xl bg-white flex items-center justify-center">
               {currentImg ? (
-                <img src={currentImg} alt={name} className="h-full w-full object-cover" />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={currentImg} alt={name} className="h-full w-full object-contain" />
               ) : (
-                <span className="text-sm text-muted">ยังไม่มีรูปสินค้า</span>
+                <span className="text-sm text-[#6b6762]">ยังไม่มีรูปสินค้า</span>
               )}
             </div>
             {images.length > 1 && (
@@ -250,11 +351,12 @@ export function ResourcePreviewModal({
                     type="button"
                     onClick={() => setActiveImgIdx(idx)}
                     className={clsx(
-                      "size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-all",
-                      idx === activeImgIdx ? "border-brand shadow-xs" : "border-line opacity-70 hover:opacity-100",
+                      "size-16 shrink-0 overflow-hidden rounded-xl border-2 bg-white transition-all",
+                      idx === activeImgIdx ? "border-[#d6297f] shadow-xs" : "border-[#e8e6e1] opacity-70 hover:opacity-100",
                     )}
                   >
-                    <img src={img} alt="" className="h-full w-full object-cover" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img} alt="" className="h-full w-full object-contain" />
                   </button>
                 ))}
               </div>
@@ -264,36 +366,36 @@ export function ResourcePreviewModal({
             {badges.length > 0 && (
               <div className="mb-3 flex flex-wrap gap-1.5">
                 {badges.map((b, i) => (
-                  <span key={i} className="rounded-full bg-brand-soft px-3 py-0.5 text-xs font-semibold text-brand">
+                  <span key={i} className="rounded-full bg-[#1c1917] px-2.5 py-1 text-[11px] font-medium tracking-wide text-white">
                     {b}
                   </span>
                 ))}
               </div>
             )}
-            <h1 className="font-serif text-3xl font-semibold text-ink sm:text-4xl">{name}</h1>
-            {size && <p className="mt-2 text-sm text-muted">{size}</p>}
+            <h1 className="font-serif text-3xl text-[#1c1917] sm:text-4xl">{name}</h1>
+            {size && <p className="mt-2 text-sm text-[#6b6762]">{size}</p>}
             <div className="mt-5 flex items-baseline gap-3">
               {salePrice != null ? (
                 <>
-                  <span className="text-3xl font-semibold text-brand">฿{salePrice.toLocaleString("th-TH")}</span>
-                  <span className="text-lg text-muted line-through">฿{price.toLocaleString("th-TH")}</span>
+                  <span className="text-3xl font-semibold text-[#9a5b3f]">฿{salePrice.toLocaleString("th-TH")}</span>
+                  <span className="text-lg text-[#6b6762] line-through">฿{price.toLocaleString("th-TH")}</span>
                 </>
               ) : (
-                <span className="text-3xl font-semibold text-ink">฿{price.toLocaleString("th-TH")}</span>
+                <span className="text-3xl font-semibold text-[#1c1917]">฿{price.toLocaleString("th-TH")}</span>
               )}
             </div>
-            {description && <p className="mt-6 text-base leading-relaxed text-ink/85 whitespace-pre-line">{description}</p>}
+            {description && <p className="mt-6 text-base leading-relaxed text-[#6b6762] whitespace-pre-line">{description}</p>}
             {howToUse && (
-              <div className="mt-6 rounded-2xl bg-[#FAF7F5] p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">{th ? "วิธีใช้" : "How to use"}</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink/80 whitespace-pre-line">{howToUse}</p>
+              <div className="mt-6 rounded-2xl border border-[#e8e6e1] bg-[#f7f7f5] p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#6b6762]">{th ? "วิธีใช้" : "How to use"}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-[#1c1917] whitespace-pre-line">{howToUse}</p>
               </div>
             )}
             {tags.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-1.5">
                 {tags.map((t, i) => (
-                  <span key={i} className="rounded-full border border-line px-2.5 py-0.5 text-xs text-muted">
-                    #{t}
+                  <span key={i} className="rounded-full bg-[#f3e6dd] px-3 py-1 text-xs text-[#7c4630]">
+                    {t}
                   </span>
                 ))}
               </div>
@@ -314,18 +416,20 @@ export function ResourcePreviewModal({
     const images = resolveImgs(values.images, values.imageUrl ?? values.coverUrl ?? values.logoUrl ?? values.photoUrl);
 
     return (
-      <div className="overflow-hidden rounded-3xl border border-line bg-white p-6 md:p-12 shadow-sm space-y-6">
-        <h1 className="font-serif text-3xl font-semibold text-ink sm:text-4xl">{title}</h1>
-        {subtitle && <p className="text-lg text-muted whitespace-pre-line">{subtitle}</p>}
+      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white p-6 md:p-12 shadow-sm space-y-6 text-[#1c1917]">
+        <h1 className="font-serif text-3xl text-[#1c1917] sm:text-4xl">{title}</h1>
+        {subtitle && <p className="text-lg text-[#6b6762] whitespace-pre-line">{subtitle}</p>}
         {images.length > 0 && (
           <div className="space-y-3">
-            <div className="overflow-hidden rounded-3xl border border-line bg-[#FAF7F5] max-h-[460px] flex items-center justify-center">
-              <img src={images[0]} alt={title} className="max-h-[460px] w-full object-cover" />
+            <div className="overflow-hidden rounded-3xl bg-white max-h-[460px] flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={images[0]} alt={title} className="max-h-[460px] w-full object-contain" />
             </div>
             {images.length > 1 && (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {images.slice(1).map((img, idx) => (
-                  <div key={idx} className="aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-[#FAF7F5]">
+                  <div key={idx} className="aspect-[4/3] overflow-hidden rounded-2xl border border-[#e8e6e1] bg-white">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img} alt="" className="h-full w-full object-cover" />
                   </div>
                 ))}
@@ -333,7 +437,7 @@ export function ResourcePreviewModal({
             )}
           </div>
         )}
-        {body && <div className="text-base leading-relaxed text-ink/85 whitespace-pre-line">{body}</div>}
+        {body && <div className="text-base leading-relaxed text-[#1c1917] whitespace-pre-line">{body}</div>}
       </div>
     );
   };
