@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { GrowYourVision } from "@/components/grow-your-vision";
+import { MenuContentRenderer } from "@/components/menu-content-renderer";
 import { ProductGrid } from "@/components/product-grid";
 import { Media, PageHero, SectionHeading } from "@/components/ui";
 import { resolveLang } from "@/i18n";
-import { getBrands, getGrowVision, getProducts, getShopPageData } from "@/lib/data";
+import { getBrands, getGrowVision, getMenuItemByHref, getProducts, getShopPageData } from "@/lib/data";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/shop">): Promise<Metadata> {
   return { title: (await resolveLang(params)).dict.shop.title };
@@ -11,27 +12,39 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/shop">): P
 
 export default async function ShopPage({ params }: PageProps<"/[lang]/shop">) {
   const { lang } = await resolveLang(params);
-  const [brands, products, growVision, shopPage] = await Promise.all([
+  const [brands, products, growVision, shopPage, menuItem] = await Promise.all([
     getBrands(lang, "COUNTER"),
     getProducts(lang, { brandType: "COUNTER" }),
     getGrowVision(lang),
     getShopPageData(lang),
+    getMenuItemByHref(lang, "/shop"),
   ]);
-  const brandNames = Object.fromEntries(brands.map((b) => [b.slug, b.name]));
+  const brandNames = Object.fromEntries([
+    ...products.map((p) => [p.brandSlug, p.brandName ?? p.brandSlug]),
+    ...brands.map((b) => [b.slug, b.name]),
+  ]);
 
   return (
     <>
       <PageHero
-        eyebrow={shopPage.eyebrow}
-        title={shopPage.headline}
-        description={shopPage.lead}
+        eyebrow={shopPage.eyebrow || menuItem?.hero?.eyebrow}
+        title={shopPage.headline || menuItem?.hero?.headline || ""}
+        description={shopPage.lead || menuItem?.hero?.lead}
       />
+
+      {menuItem && <MenuContentRenderer menu={menuItem} lang={lang} />}
 
       <section className="container-page py-12 md:py-16">
         <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-3 lg:grid-cols-7">
           {brands.map((b) => (
-            <li key={b.slug} className="grid min-h-24 place-items-center bg-white p-4 text-center font-display text-base text-ink/80 transition-colors hover:bg-mist hover:text-accent sm:min-h-28 sm:text-lg">
-              {b.name}
+            <li
+              key={b.slug}
+              className="flex min-h-24 flex-col items-center justify-center gap-2 bg-white p-4 text-center font-display text-base text-ink/80 transition-colors hover:bg-mist hover:text-accent sm:min-h-28 sm:text-lg"
+            >
+              {b.logoUrl ? (
+                <img src={b.logoUrl} alt={b.name} className="max-h-12 w-auto object-contain" />
+              ) : null}
+              <span>{b.name}</span>
             </li>
           ))}
         </ul>
