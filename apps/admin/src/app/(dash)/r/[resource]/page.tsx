@@ -76,10 +76,6 @@ function extractFilters(name: ResourceName, rows: Row[], activeFilter: string) {
       primaryLabel = "ฝ่าย";
       const dep = String(r.department ?? "");
       bump(primaryMap, dep, departmentLabels[dep] ?? dep);
-    } else if (name === "posts") {
-      primaryLabel = "ประเภท";
-      const pt = String(r.type ?? "");
-      bump(primaryMap, pt, postTypeLabels[pt] ?? pt);
     } else if (name === "media") {
       primaryLabel = "แบรนด์";
       const brands = (r.brands as { slug?: string; name?: string }[] | undefined) ?? [];
@@ -160,7 +156,8 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
   const name = resolveResource((await params).resource);
   const sp = await searchParams;
   const query = typeof sp.q === "string" ? sp.q : "";
-  const filter = typeof sp.filter === "string" ? sp.filter : (typeof sp.brand === "string" ? sp.brand : "");
+  const rawFilter = typeof sp.filter === "string" ? sp.filter : (typeof sp.brand === "string" ? sp.brand : "");
+  const filter = name === "posts" && !rawFilter ? "ARTICLE" : rawFilter;
   const sub = typeof sp.sub === "string" ? sp.sub : "";
   const status = typeof sp.status === "string" ? sp.status : "";
   const page = Math.max(1, Number(sp.page) || 1);
