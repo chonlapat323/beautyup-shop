@@ -132,15 +132,15 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
   products: {
     title: "สินค้า",
     noun: "สินค้า",
-    description: "รายการสินค้า (บังคับเลือก แบรนด์ → หมวดหมู่หลัก ส่วนคอลเลกชันเลือกเฉพาะกรณีที่มี) พร้อมคำค้นหา SEO / AI",
+    description: "รายการสินค้า (เลือก แบรนด์ และหมวดหมู่หลัก/คอลเลกชันหากมี) พร้อมคำค้นหา SEO / AI",
     titleField: "name",
     searchable: true,
     fields: [
       { type: "localized", name: "name", label: "ชื่อสินค้า", required: true },
       slugField("name"),
       { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
-      { type: "relation", name: "mainCategoryId", label: "หมวดหมู่หลัก", resource: "main-categories", required: true, filterBy: "brandId", help: "บังคับเลือกหมวดหมู่หลักของสินค้า (แสดงเฉพาะหมวดของแบรนด์ที่เลือก)" },
-      { type: "relation", name: "categoryId", label: "คอลเลกชัน (ไม่บังคับ)", resource: "categories", nullable: true, filterBy: "mainCategoryId", help: "ถ้าหมวดนี้ไม่มีคอลเลกชันย่อย ให้เว้นว่างไว้เป็น — ไม่ระบุ — ได้เลย" },
+      { type: "relation", name: "mainCategoryId", label: "หมวดหมู่หลัก (ไม่บังคับ)", resource: "main-categories", nullable: true, filterBy: "brandId", help: "เลือกหมวดหมู่หลักของสินค้า (ไม่บังคับ สามารถเว้นว่างได้)" },
+      { type: "relation", name: "categoryId", label: "คอลเลกชัน (ไม่บังคับ)", resource: "categories", nullable: true, filterBy: "mainCategoryId", help: "ถ้าไม่มีคอลเลกชันย่อย ให้เว้นว่างไว้เป็น — ไม่ระบุ — ได้เลย" },
       { type: "number", name: "price", label: "ราคา (บาท)", step: "0.01", required: true },
       { type: "number", name: "salePrice", label: "ราคาลด (บาท)", step: "0.01", help: "เว้นว่างถ้าไม่มีส่วนลด" },
       { type: "tags", name: "badges", label: "ป้าย", suggestions: ["New", "Hot", "Best Seller", "Soft hair"] },

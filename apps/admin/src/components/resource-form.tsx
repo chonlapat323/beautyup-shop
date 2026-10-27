@@ -128,7 +128,14 @@ export function ResourceForm({
           if (f.showIf && values[f.showIf.field] !== f.showIf.equals) return null;
           const filterBy = f.type === "relation" ? f.filterBy : undefined;
           const own = filterBy
-            ? { ...relations, [(f as { resource: string }).resource]: (relations[(f as { resource: string }).resource] ?? []).filter((o) => o.parent === values[filterBy]) }
+            ? {
+                ...relations,
+                [(f as { resource: string }).resource]: (relations[(f as { resource: string }).resource] ?? []).filter(
+                  (o) =>
+                    o.parent === values[filterBy] ||
+                    (f.name === "categoryId" && !values[filterBy] && o.parent === values["brandId"]),
+                ),
+              }
             : relations;
           return (
             <FieldInput

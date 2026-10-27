@@ -180,7 +180,7 @@ export const productInput = z.object({
   name: localized,
   description: localizedOptional,
   brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
-  mainCategoryId: z.string().min(1, "กรุณาเลือกหมวดหมู่หลัก"),
+  mainCategoryId: z.string().nullable().optional().default(null),
   /** The product's collection (optional — some brands/categories do not use collections) */
   categoryId: z.string().nullable().optional().default(null),
   price: z.coerce.number().nonnegative(),
