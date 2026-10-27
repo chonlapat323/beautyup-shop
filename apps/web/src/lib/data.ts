@@ -53,7 +53,7 @@ async function fetchApi(url: string): Promise<Response> {
 async function get<T>(path: string): Promise<T> {
   "use cache";
   cacheTag(CONTENT_TAG);
-  cacheLife("hours");
+  cacheLife("minutes");
   const res = await fetchApi(`${API_URL}/public${path}`);
   if (res.status === 404) return null as T;
   if (!res.ok) throw new Error(`API ${path} responded ${res.status}`);

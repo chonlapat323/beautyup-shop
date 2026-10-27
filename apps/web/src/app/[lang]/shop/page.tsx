@@ -52,7 +52,12 @@ export default async function ShopPage({ params }: PageProps<"/[lang]/shop">) {
 
       <section className="section">
         <div className="container-page grid grid-cols-1 items-center gap-10 md:grid-cols-2 lg:gap-16">
-          <Media src={shopPage.ceoImageUrl || undefined} label="I'm Amy" tone={1} className="aspect-[4/5] w-full rounded-3xl" />
+          <Media
+            src={shopPage.ceoImageUrl || menuItem?.sections?.[0]?.imageUrl || menuItem?.slides?.[0]?.imageUrl || undefined}
+            label="I'm Amy"
+            tone={1}
+            className="aspect-[4/5] w-full rounded-3xl"
+          />
           <div>
             <p className="eyebrow">{shopPage.ceoEyebrow}</p>
             <p className="mt-4 font-display text-3xl leading-snug sm:text-4xl whitespace-pre-line">
