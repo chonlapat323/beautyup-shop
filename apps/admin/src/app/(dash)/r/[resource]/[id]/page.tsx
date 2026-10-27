@@ -91,7 +91,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
       />
       {name === "media" && <MediaSharePanel slug={String(row.slug)} publishedAt={row.publishedAt as string | null} />}
       {name === "products" && <ProductSharePanel slug={String(row.slug)} isActive={Boolean(row.isActive)} />}
-      <ResourceForm key={id} fields={ui.fields} initial={row} relations={relations} onSave={saveResource.bind(null, name, id)} />
+      <ResourceForm key={id} resourceName={name} fields={ui.fields} initial={row} relations={relations} onSave={saveResource.bind(null, name, id)} />
     </>
   );
 }

@@ -58,6 +58,7 @@ export default async function NewResourcePage({ params, searchParams }: PageProp
       <SectionFlowBar currentKey={flowKey} trail={[{ label: `เพิ่ม${noun}` }]} />
       <PageHeader title={`เพิ่ม${noun}`} back={{ href: backHref, label: backLabel }} />
       <ResourceForm
+        resourceName={name}
         fields={ui.fields}
         initial={presetPostType ? { type: presetPostType } : undefined}
         relations={relations}

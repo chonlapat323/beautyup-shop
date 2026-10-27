@@ -1,11 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { Loader2 } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { Field, Option } from "@/lib/fields";
 import { FieldInput, defaults, missingEnglish, toPayload, type Errors, type Locale } from "./fields";
+import { ResourcePreviewModal } from "./resource-preview-modal";
 
 export interface SaveResult {
   ok: boolean;
@@ -22,6 +23,7 @@ export function ResourceForm({
   redirectTo,
   submitLabel = "บันทึก",
   rootPath = "",
+  resourceName,
 }: {
   fields: readonly Field[];
   initial?: Record<string, unknown>;
@@ -31,10 +33,12 @@ export function ResourceForm({
   submitLabel?: string;
   /** For settings whose value is a bare list (field name "") */
   rootPath?: string;
+  resourceName?: string;
 }) {
   const router = useRouter();
   const [values, setValues] = useState<Record<string, unknown>>(() => ({ ...defaults(fields), ...initial }));
   const [locale, setLocale] = useState<Locale>("th");
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
@@ -79,33 +83,45 @@ export function ResourceForm({
 
   return (
     <form onSubmit={submit} noValidate className="space-y-6">
-      {hasLocalized && (
-        <div className="sticky top-14 z-10 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-mist/95 px-4 py-3 backdrop-blur sm:top-0 sm:mx-0 sm:rounded-xl sm:border sm:bg-white sm:px-3 sm:py-2">
-          <div role="tablist" aria-label="ภาษาที่กำลังแก้ไข" className="flex rounded-lg bg-sand p-1">
-            {(["th", "en"] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                role="tab"
-                aria-selected={locale === l}
-                onClick={() => setLocale(l)}
-                className={clsx(
-                  "relative min-h-8 rounded-md px-4 text-sm font-medium transition-colors",
-                  locale === l ? "bg-white text-ink shadow-sm" : "text-muted hover:text-ink",
-                )}
-              >
-                {l === "th" ? "ภาษาไทย" : "English"}
-                {errorIn(l) && <span className="absolute top-1 right-1 size-1.5 rounded-full bg-red-500" aria-label="มีข้อผิดพลาด" />}
-              </button>
-            ))}
-          </div>
-          {missing > 0 ? (
-            <span className="text-xs text-amber-700">ยังไม่แปลภาษาอังกฤษ {missing} ช่อง</span>
-          ) : (
-            <span className="text-xs text-emerald-700">แปลครบทุกช่อง</span>
+      <div className="sticky top-14 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-mist/95 px-4 py-3 backdrop-blur sm:top-0 sm:mx-0 sm:rounded-xl sm:border sm:bg-white sm:px-3 sm:py-2">
+        <div className="flex flex-wrap items-center gap-3">
+          {hasLocalized && (
+            <>
+              <div role="tablist" aria-label="ภาษาที่กำลังแก้ไข" className="flex rounded-lg bg-sand p-1">
+                {(["th", "en"] as const).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    role="tab"
+                    aria-selected={locale === l}
+                    onClick={() => setLocale(l)}
+                    className={clsx(
+                      "relative min-h-8 rounded-md px-4 text-sm font-medium transition-colors",
+                      locale === l ? "bg-white text-ink shadow-sm" : "text-muted hover:text-ink",
+                    )}
+                  >
+                    {l === "th" ? "ภาษาไทย" : "English"}
+                    {errorIn(l) && <span className="absolute top-1 right-1 size-1.5 rounded-full bg-red-500" aria-label="มีข้อผิดพลาด" />}
+                  </button>
+                ))}
+              </div>
+              {missing > 0 ? (
+                <span className="text-xs text-amber-700">ยังไม่แปลภาษาอังกฤษ {missing} ช่อง</span>
+              ) : (
+                <span className="text-xs text-emerald-700">แปลครบทุกช่อง</span>
+              )}
+            </>
           )}
         </div>
-      )}
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-brand/30 bg-brand-soft/60 px-3.5 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
+        >
+          <Eye className="size-3.5" />
+          Preview ดูตัวอย่างหน้าเว็บ
+        </button>
+      </div>
 
       <div className="card grid gap-5 p-4 sm:p-6">
         {fields.map((f) => {
@@ -139,10 +155,14 @@ export function ResourceForm({
         </p>
       )}
 
-      <div className="sticky bottom-0 -mx-4 flex gap-2 border-t border-line bg-mist/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0">
+      <div className="sticky bottom-0 -mx-4 flex flex-wrap gap-2 border-t border-line bg-mist/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0">
         <button type="submit" className="btn btn-primary min-w-32 flex-1 sm:flex-none" disabled={pending}>
           {pending && <Loader2 className="size-4 animate-spin" />}
           {submitLabel}
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={() => setPreviewOpen(true)}>
+          <Eye className="size-4" />
+          Preview ดูตัวอย่าง
         </button>
         {redirectTo && (
           <button type="button" className="btn btn-secondary" onClick={() => router.push(redirectTo)}>
@@ -150,6 +170,14 @@ export function ResourceForm({
           </button>
         )}
       </div>
+
+      <ResourcePreviewModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        resourceName={resourceName}
+        values={values}
+        initialLocale={locale}
+      />
     </form>
   );
 }
