@@ -22,12 +22,13 @@ function resolveImg(src: unknown): string {
   const raw = Array.isArray(src) ? String(src[0] ?? "") : String(src);
   const s = raw.trim();
   if (!s) return "";
-  if (s.startsWith("/uploads/")) return `/api/upload/${s.slice("/uploads/".length)}`;
   try {
     const u = new URL(s);
-    if (u.pathname.startsWith("/uploads/")) return `/api/upload/${u.pathname.slice("/uploads/".length)}`;
+    if ((u.hostname === "localhost" || u.hostname === "127.0.0.1") && u.pathname.startsWith("/uploads/")) {
+      return u.pathname;
+    }
   } catch {
-    // ignore
+    // relative path such as /uploads/... works directly via Next.js rewrite
   }
   return s;
 }
