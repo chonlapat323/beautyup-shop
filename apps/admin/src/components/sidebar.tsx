@@ -26,7 +26,13 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { logout } from "@/app/login/actions";
-import { roleLabels, type Role } from "@beautyup/types";
+import {
+  hasPermission,
+  roleLabels,
+  type AdminModuleKey,
+  type Role,
+  type RolePermissions,
+} from "@beautyup/types";
 
 /** `also`: other pages that belong to this top-level entry */
 type Item = {
@@ -34,6 +40,7 @@ type Item = {
   label: string;
   icon: LucideIcon;
   badge?: number;
+  moduleKey?: AdminModuleKey;
   allowedRoles?: Role[];
   also?: string[];
   matchBrandType?: "SALON" | "COUNTER";
@@ -43,7 +50,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
     items: [
       { href: "/", label: "ภาพรวม", icon: LayoutDashboard },
-      { href: "/inquiries", label: "กล่องข้อความ", icon: Inbox, badge: newInquiries, allowedRoles: ["ADMIN", "MANAGER", "STAFF"] },
+      { href: "/inquiries", label: "กล่องข้อความ", icon: Inbox, badge: newInquiries, moduleKey: "inquiries" },
     ],
   },
   {
@@ -53,7 +60,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/menu-items",
         label: "เมนูและหน้าเว็บ",
         icon: MenuSquare,
-        allowedRoles: ["ADMIN", "MANAGER", "EDITOR"],
+        moduleKey: "menu-items",
         also: [
           "/r/hero-slides",
           "/r/videos",
@@ -72,7 +79,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/products?type=SALON",
         label: "ผลิตภัณฑ์ซาลอน (/products)",
         icon: Package,
-        allowedRoles: ["ADMIN", "MANAGER", "STAFF"],
+        moduleKey: "salon-products",
         also: ["/r/brands", "/r/main-categories", "/r/categories", "/r/products"],
         matchBrandType: "SALON",
       },
@@ -80,7 +87,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/products?type=COUNTER",
         label: "เคาน์เตอร์แบรนด์ (/shop)",
         icon: Gem,
-        allowedRoles: ["ADMIN", "MANAGER", "STAFF"],
+        moduleKey: "counter-products",
         also: ["/content/shopPage", "/r/brands", "/r/main-categories", "/r/products"],
         matchBrandType: "COUNTER",
       },
@@ -88,20 +95,20 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/media",
         label: "มีเดีย",
         icon: Film,
-        allowedRoles: ["ADMIN", "MANAGER", "EDITOR"],
+        moduleKey: "media",
         also: ["/r/media-categories"],
       },
       {
         href: "/r/posts",
         label: "บทความและกิจกรรม",
         icon: Newspaper,
-        allowedRoles: ["ADMIN", "MANAGER", "EDITOR"],
+        moduleKey: "posts",
       },
       {
         href: "/r/forum-topics",
         label: "ฟอรั่ม",
         icon: MessagesSquare,
-        allowedRoles: ["ADMIN", "MANAGER", "EDITOR", "STAFF"],
+        moduleKey: "forum",
         also: ["/r/forum-replies", "/r/forum-categories"],
       },
     ],
@@ -109,20 +116,34 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
     title: "ระบบและสมาชิก",
     items: [
-      { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound, allowedRoles: ["ADMIN", "MANAGER"] },
-      { href: "/settings", label: "ตั้งค่าเว็บไซต์", icon: Settings, allowedRoles: ["ADMIN", "MANAGER"] },
-      { href: "/users", label: "ผู้ใช้หลังบ้าน", icon: UserCog, allowedRoles: ["ADMIN"] },
+      { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound, moduleKey: "members" },
+      { href: "/settings", label: "ตั้งค่าเว็บไซต์", icon: Settings, moduleKey: "settings" },
+      { href: "/users", label: "ผู้ใช้หลังบ้าน", icon: UserCog, moduleKey: "users" },
       { href: "/profile", label: "เปลี่ยนรหัสผ่าน / บัญชี", icon: KeyRound },
     ],
   },
 ];
 
-function SidebarInner({ user, newInquiries }: { user: { name: string; email: string; role: string }; newInquiries: number }) {
+function SidebarInner({
+  user,
+  newInquiries,
+  rolePermissions,
+}: {
+  user: { name: string; email: string; role: string };
+  newInquiries: number;
+  rolePermissions?: RolePermissions;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
 
   const currentType = searchParams.get("type");
+
+  const isVisible = (it: Item) => {
+    if (user.role === "ADMIN") return true;
+    if (!it.moduleKey) return true;
+    return hasPermission(rolePermissions, user.role as Role, it.moduleKey, "view");
+  };
 
   // Whole-segment match, so /r/media does not also light up on /r/media-categories unless in `also`
   const isActive = (it: Item) => {
@@ -145,13 +166,14 @@ function SidebarInner({ user, newInquiries }: { user: { name: string; email: str
       className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin]"
       onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
     >
-      {groups(newInquiries).map((g, i) => (
-        <div key={i} className="mb-5">
-          {g.title && <p className="mb-1.5 px-3 text-xs font-medium tracking-wide text-muted">{g.title}</p>}
-          <ul className="space-y-1">
-            {g.items
-              .filter((it) => !it.allowedRoles || it.allowedRoles.includes(user.role as Role))
-              .map((it) => {
+      {groups(newInquiries).map((g, i) => {
+        const visibleItems = g.items.filter(isVisible);
+        if (visibleItems.length === 0) return null;
+        return (
+          <div key={i} className="mb-5">
+            {g.title && <p className="mb-1.5 px-3 text-xs font-medium tracking-wide text-muted">{g.title}</p>}
+            <ul className="space-y-1">
+              {visibleItems.map((it) => {
                 const { href, label, icon: Icon, badge } = it;
                 const active = isActive(it);
                 return (
@@ -171,9 +193,10 @@ function SidebarInner({ user, newInquiries }: { user: { name: string; email: str
                   </li>
                 );
               })}
-          </ul>
-        </div>
-      ))}
+            </ul>
+          </div>
+        );
+      })}
     </nav>
   );
 
@@ -253,7 +276,11 @@ function SidebarInner({ user, newInquiries }: { user: { name: string; email: str
   );
 }
 
-export function Sidebar(props: { user: { name: string; email: string; role: string }; newInquiries: number }) {
+export function Sidebar(props: {
+  user: { name: string; email: string; role: string };
+  newInquiries: number;
+  rolePermissions?: RolePermissions;
+}) {
   return (
     <Suspense fallback={null}>
       <SidebarInner {...props} />

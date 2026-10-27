@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/page-header";
 import { ResourceForm } from "@/components/resource-form";
 import { SectionFlowBar, type BreadcrumbItem } from "@/components/section-flow-bar";
 import { resourceUi } from "@/lib/fields";
+import { getResourceModuleKey, getUserPermissions } from "@/lib/permissions";
 import { getResource, loadRelations, resolveResource, rowTitle } from "@/lib/resources";
 import { siteUrl } from "@/lib/site";
 import { deleteResource, saveMenuItem, saveResource } from "../../actions";
@@ -109,13 +110,25 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
             ? "สินค้าเคาน์เตอร์แบรนด์"
             : ui.title;
 
+  const { can } = await getUserPermissions();
+  const moduleKey = getResourceModuleKey(name, detectedBrandScope);
+  const canDelete = can(moduleKey, "delete");
+
   return (
     <>
       <SectionFlowBar currentKey={flowKey} trail={trail} />
       <PageHeader
         title={title}
         back={{ href: backHref, label: backLabel }}
-        actions={<DeleteButton label={`ลบ${ui.noun}`} confirmText={`ลบ "${title}" ใช่หรือไม่? การลบย้อนกลับไม่ได้`} action={deleteResource.bind(null, name, id)} />}
+        actions={
+          canDelete ? (
+            <DeleteButton
+              label={`ลบ${ui.noun}`}
+              confirmText={`ลบ "${title}" ใช่หรือไม่? การลบย้อนกลับไม่ได้`}
+              action={deleteResource.bind(null, name, id)}
+            />
+          ) : undefined
+        }
       />
       {name === "media" && <MediaSharePanel slug={String(row.slug)} publishedAt={row.publishedAt as string | null} />}
       {name === "products" && <ProductSharePanel slug={String(row.slug)} isActive={Boolean(row.isActive)} />}

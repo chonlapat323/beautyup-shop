@@ -504,6 +504,91 @@ export const shopPageSetting = z.object({
 });
 export type ShopPageSetting = z.infer<typeof shopPageSetting>;
 
+/* ----------------------------------------------------------------------------
+ * Role & Permissions Matrix
+ * ------------------------------------------------------------------------- */
+
+export const ADMIN_MODULES = [
+  { key: "inquiries", label: "กล่องข้อความ", desc: "ข้อความติดต่อและแบบฟอร์มสั่งซื้อ" },
+  { key: "menu-items", label: "เมนูและหน้าเว็บ", desc: "เมนู สไลด์ แบนเนอร์ เนื้อหาหน้าเกี่ยวกับเราและซาลอน" },
+  { key: "salon-products", label: "ผลิตภัณฑ์ซาลอน (/products)", desc: "แบรนด์ หมวดหมู่ และสินค้าซาลอน" },
+  { key: "counter-products", label: "เคาน์เตอร์แบรนด์ (/shop)", desc: "เนื้อหาหน้าร้าน แบรนด์ และสินค้าเคาน์เตอร์" },
+  { key: "media", label: "มีเดีย", desc: "คลังภาพและวิดีโอ หมวดหมู่มีเดีย" },
+  { key: "posts", label: "บทความและกิจกรรม", desc: "บทความ ข่าวสาร และกิจกรรม" },
+  { key: "forum", label: "ฟอรั่ม", desc: "กระทู้ฟอรั่ม และความคิดเห็น" },
+  { key: "members", label: "สมาชิกเว็บไซต์", desc: "รายชื่อสมาชิกและการจัดการบัญชีสมาชิก" },
+  { key: "settings", label: "ตั้งค่าเว็บไซต์", desc: "ข้อมูลบริษัท ช่องทางติดต่อ และการตั้งค่าระบบ" },
+  { key: "users", label: "ผู้ใช้หลังบ้านและการกำหนดสิทธิ์", desc: "จัดการบัญชีทีมงานและสิทธิ์การเข้าถึง" },
+] as const;
+export type AdminModuleKey = (typeof ADMIN_MODULES)[number]["key"];
+
+export const permissionActionSchema = z.object({
+  view: z.boolean().default(true),
+  create: z.boolean().default(false),
+  update: z.boolean().default(false),
+  delete: z.boolean().default(false),
+});
+export type PermissionAction = z.infer<typeof permissionActionSchema>;
+
+export const rolePermissionsSchema = z.record(
+  z.string(),
+  z.record(z.string(), permissionActionSchema),
+);
+export type RolePermissions = z.infer<typeof rolePermissionsSchema>;
+
+export const DEFAULT_ROLE_PERMISSIONS: RolePermissions = {
+  ADMIN: Object.fromEntries(
+    ADMIN_MODULES.map((m) => [m.key, { view: true, create: true, update: true, delete: true }]),
+  ),
+  MANAGER: {
+    inquiries: { view: true, create: true, update: true, delete: true },
+    "menu-items": { view: true, create: true, update: true, delete: true },
+    "salon-products": { view: true, create: true, update: true, delete: true },
+    "counter-products": { view: true, create: true, update: true, delete: true },
+    media: { view: true, create: true, update: true, delete: true },
+    posts: { view: true, create: true, update: true, delete: true },
+    forum: { view: true, create: true, update: true, delete: true },
+    members: { view: true, create: false, update: true, delete: false },
+    settings: { view: true, create: false, update: true, delete: false },
+    users: { view: false, create: false, update: false, delete: false },
+  },
+  EDITOR: {
+    inquiries: { view: false, create: false, update: false, delete: false },
+    "menu-items": { view: true, create: true, update: true, delete: false },
+    "salon-products": { view: false, create: false, update: false, delete: false },
+    "counter-products": { view: false, create: false, update: false, delete: false },
+    media: { view: true, create: true, update: true, delete: true },
+    posts: { view: true, create: true, update: true, delete: true },
+    forum: { view: true, create: true, update: true, delete: false },
+    members: { view: false, create: false, update: false, delete: false },
+    settings: { view: false, create: false, update: false, delete: false },
+    users: { view: false, create: false, update: false, delete: false },
+  },
+  STAFF: {
+    inquiries: { view: true, create: true, update: true, delete: false },
+    "menu-items": { view: false, create: false, update: false, delete: false },
+    "salon-products": { view: true, create: false, update: false, delete: false },
+    "counter-products": { view: true, create: false, update: false, delete: false },
+    media: { view: false, create: false, update: false, delete: false },
+    posts: { view: false, create: false, update: false, delete: false },
+    forum: { view: true, create: false, update: false, delete: false },
+    members: { view: false, create: false, update: false, delete: false },
+    settings: { view: false, create: false, update: false, delete: false },
+    users: { view: false, create: false, update: false, delete: false },
+  },
+};
+
+export function hasPermission(
+  permissions: RolePermissions | undefined,
+  role: Role,
+  module: AdminModuleKey,
+  action: "view" | "create" | "update" | "delete",
+): boolean {
+  if (role === "ADMIN") return true;
+  const current = permissions?.[role]?.[module] ?? DEFAULT_ROLE_PERMISSIONS[role]?.[module];
+  return Boolean(current?.[action]);
+}
+
 export const SETTING_KEYS = [
   "company",
   "about",
@@ -513,6 +598,7 @@ export const SETTING_KEYS = [
   "growVision",
   "timeline",
   "regionCounts",
+  "rolePermissions",
 ] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
@@ -526,6 +612,7 @@ export const settingSchemas = {
   timeline: z.array(z.object({ year: z.string(), text: localized })),
   /** Optional override for the salon directory counts until all salons are imported */
   regionCounts: z.record(z.enum(REGIONS), z.coerce.number().int().nonnegative()),
+  rolePermissions: rolePermissionsSchema,
 } satisfies Record<SettingKey, z.ZodType>;
 
 /* ----------------------------------------------------------------------------

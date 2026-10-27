@@ -7,6 +7,7 @@ import { DataTable } from "@/components/data-table";
 import { PageHeader } from "@/components/page-header";
 import { SectionFlowBar, type BreadcrumbItem } from "@/components/section-flow-bar";
 import { brandTypeLabels, departmentLabels, postTypeLabels, regionLabels, resourceUi } from "@/lib/fields";
+import { getResourceModuleKey, getUserPermissions } from "@/lib/permissions";
 import { listResource, resolveResource, type Row } from "@/lib/resources";
 
 export async function generateMetadata({ params }: PageProps<"/r/[resource]">): Promise<Metadata> {
@@ -257,6 +258,10 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
                 ? "สินค้าซาลอน"
                 : ui.noun
             : ui.noun;
+  const { can } = await getUserPermissions();
+  const moduleKey = getResourceModuleKey(name, brandScope);
+  const canCreate = can(moduleKey, "create");
+
   const newHref = isPostTypeTab
     ? `/r/posts/new?type=${filter}`
     : brandScope
@@ -301,9 +306,11 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
         title={pageTitle}
         description={ui.description ?? `แสดง ${total} จากทั้งหมด ${allRows.length} รายการ`}
         actions={
-          <Link href={newHref} className="btn btn-primary">
-            <Plus className="size-4" /> เพิ่ม{pageNoun}
-          </Link>
+          canCreate ? (
+            <Link href={newHref} className="btn btn-primary">
+              <Plus className="size-4" /> เพิ่ม{pageNoun}
+            </Link>
+          ) : undefined
         }
       />
 
