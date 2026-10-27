@@ -18,6 +18,7 @@ type FlowTab = {
 type MenuFlow = {
   menuLabel: string;
   menuPath: string;
+  sidebarSection?: { label: string; href: string };
   tabs?: FlowTab[];
   steps: FlowStep[];
 };
@@ -59,6 +60,7 @@ const FLOWS: MenuFlow[] = [
   {
     menuLabel: "ผลิตภัณฑ์ผม / สินค้า (Products)",
     menuPath: "/products",
+    sidebarSection: { label: "สินค้าและแบรนด์", href: "/r/products" },
     steps: [
       { key: "brands", label: "1. แบรนด์", href: "/r/brands" },
       { key: "main-categories", label: "2. หมวดหมู่หลัก", href: "/r/main-categories" },
@@ -81,18 +83,19 @@ const FLOWS: MenuFlow[] = [
     ],
   },
   {
-    menuLabel: "มุมสมาชิก / มีเดีย (Members & Media)",
+    menuLabel: "มีเดีย (Media)",
+    menuPath: "/members/media",
+    sidebarSection: { label: "มีเดีย", href: "/r/media" },
+    steps: [
+      { key: "media-categories", label: "1. หมวดหมู่มีเดีย", href: "/r/media-categories" },
+      { key: "media", label: "2. คลังมีเดีย", href: "/r/media" },
+    ],
+  },
+  {
+    menuLabel: "บทความและกิจกรรม (Articles & Activities)",
     menuPath: "/members",
+    sidebarSection: { label: "บทความและกิจกรรม", href: "/r/posts" },
     tabs: [
-      {
-        key: "media-tab",
-        label: "มีเดีย (Media)",
-        href: "/r/media-categories",
-        steps: [
-          { key: "media-categories", label: "1. หมวดหมู่มีเดีย", href: "/r/media-categories" },
-          { key: "media", label: "2. คลังมีเดีย", href: "/r/media" },
-        ],
-      },
       {
         key: "posts:ARTICLE",
         label: "บทความ (Articles)",
@@ -105,8 +108,6 @@ const FLOWS: MenuFlow[] = [
       },
     ],
     steps: [
-      { key: "media-categories", label: "1. หมวดหมู่มีเดีย", href: "/r/media-categories" },
-      { key: "media", label: "2. คลังมีเดีย", href: "/r/media" },
       { key: "posts:ARTICLE", label: "บทความ (Articles)", href: "/r/posts?filter=ARTICLE" },
       { key: "posts:ACTIVITY", label: "กิจกรรม (Activities)", href: "/r/posts?filter=ACTIVITY" },
     ],
@@ -114,6 +115,7 @@ const FLOWS: MenuFlow[] = [
   {
     menuLabel: "ฟอรั่ม (Forum)",
     menuPath: "/forum",
+    sidebarSection: { label: "ฟอรั่ม", href: "/r/forum-topics" },
     steps: [
       { key: "forum-categories", label: "1. หมวดหมู่ฟอรั่ม", href: "/r/forum-categories" },
       { key: "forum-topics", label: "2. กระทู้ฟอรั่ม", href: "/r/forum-topics" },
@@ -151,13 +153,15 @@ export function SectionFlowBar({
   // Also render a clean breadcrumb for /r/menu-items itself
   if (!flow && normalizedKey !== "menu-items") return null;
 
-  const crumbs: BreadcrumbItem[] = [
-    { label: "ภาพรวม", href: "/" },
-    { label: "เมนูและหน้าเว็บ", href: "/r/menu-items" },
-  ];
+  const crumbs: BreadcrumbItem[] = [{ label: "ภาพรวม", href: "/" }];
 
-  if (flow) {
-    crumbs.push({ label: `เมนู: ${flow.menuLabel} (${flow.menuPath})`, href: "/r/menu-items" });
+  if (flow?.sidebarSection && normalizedKey !== "menu-items") {
+    crumbs.push({ label: flow.sidebarSection.label, href: flow.sidebarSection.href });
+  } else {
+    crumbs.push({ label: "เมนูและหน้าเว็บ", href: "/r/menu-items" });
+    if (flow) {
+      crumbs.push({ label: `เมนู: ${flow.menuLabel} (${flow.menuPath})`, href: "/r/menu-items" });
+    }
   }
   if (activeTab && activeTab.steps?.length) {
     crumbs.push({ label: activeTab.label, href: activeTab.href });
