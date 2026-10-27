@@ -1,8 +1,22 @@
 "use client";
 
 import clsx from "clsx";
-import { Eye, ImageOff, Laptop, Smartphone, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Heart,
+  ImageOff,
+  Laptop,
+  MessageCircle,
+  Phone,
+  Smartphone,
+  X,
+} from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import type { Option } from "@/lib/fields";
 import type { Locale } from "./fields";
 
 type L = { th?: string; en?: string };
@@ -117,12 +131,14 @@ export function ResourcePreviewModal({
   onClose,
   resourceName,
   values,
+  relations = {},
   initialLocale = "th",
 }: {
   open: boolean;
   onClose: () => void;
   resourceName?: string;
   values: Record<string, unknown>;
+  relations?: Record<string, Option[]>;
   initialLocale?: Locale;
 }) {
   const [locale, setLocale] = useState<Locale>(initialLocale);
@@ -147,6 +163,15 @@ export function ResourcePreviewModal({
   const th = locale === "th";
   const isMobile = device === "mobile";
 
+  const lookupRelation = (res: string, id: unknown, fallback: string) => {
+    if (!id) return fallback;
+    const found = relations[res]?.find((o) => o.value === String(id));
+    return found?.label || fallback;
+  };
+
+  /* -------------------------------------------------------------------------
+   * 1. BRAND PREVIEW (brands)
+   * ----------------------------------------------------------------------- */
   const renderBrandPreview = () => {
     const name = String(values.name ?? "").trim() || "Brand Name";
     const localName = pick(values.localName, locale) || name;
@@ -164,7 +189,7 @@ export function ResourcePreviewModal({
 
     return (
       <div className="space-y-10 text-[#1c1917]">
-        {/* Section 1: หน้ารวมแบรนด์ (/products) — ตรงตาม new.beautyup-enterprise.com/th/products ทุกประการ */}
+        {/* Section 1: หน้ารวมแบรนด์ (/products) */}
         {brandType === "SALON" && (
           <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
             <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
@@ -181,7 +206,6 @@ export function ResourcePreviewModal({
                   isMobile ? "grid-cols-1 py-10" : "grid-cols-1 py-14 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20",
                 )}
               >
-                {/* โลโก้พื้นหลังสีขาวล้วน ไม่มีกรอบสีเทา/ครีม ตาม apps/web/src/app/[lang]/products/page.tsx */}
                 <div className={clsx("flex items-center justify-center overflow-hidden rounded-3xl bg-white", isMobile ? "p-6" : "p-8 sm:p-12")}>
                   {logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -228,7 +252,7 @@ export function ResourcePreviewModal({
           </div>
         )}
 
-        {/* Section 2: ส่วนหัวหน้าแบรนด์เดี่ยว (/products/[brand]) — PageHero */}
+        {/* Section 2: ส่วนหัวหน้าแบรนด์เดี่ยว (/products/[brand]) */}
         {brandType === "SALON" && (
           <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
             <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
@@ -337,93 +361,520 @@ export function ResourcePreviewModal({
     );
   };
 
-  const renderProductPreview = () => {
-    const name = pick(values.name, locale) || (th ? "ชื่อสินค้า" : "Product Name");
-    const size = String(values.size ?? "").trim();
+  /* -------------------------------------------------------------------------
+   * 2. MAIN CATEGORY PREVIEW (main-categories)
+   *    - 1. การ์ดหมวดหมู่ผลิตภัณฑ์หลักบนหน้าแบรนด์ (MenuContentRenderer layout="columns")
+   *    - 2. ส่วนหัวเมื่อคลิกเข้าหมวดหมู่หลัก (/products/[brand]?group=[slug] -> CategoryHero)
+   * ----------------------------------------------------------------------- */
+  const renderMainCategoryPreview = () => {
+    const name = pick(values.name, locale) || (th ? "ชื่อหมวดหมู่หลัก" : "Main Category Name");
     const description = pick(values.description, locale);
-    const howToUse = pick(values.howToUse, locale);
-    const price = Number(values.price ?? 0);
-    const salePrice = values.salePrice != null && values.salePrice !== "" ? Number(values.salePrice) : null;
-    const images = resolveImgs(values.images, values.imageUrl);
-    const currentImg = images[activeImgIdx] || images[0] || "";
-    const badges = Array.isArray(values.badges) ? values.badges.map(String).filter(Boolean) : [];
-    const tags = Array.isArray(values.tags) ? values.tags.map(String).filter(Boolean) : [];
+    const imageUrl = resolveImg(values.imageUrl);
+    const brandName = lookupRelation("brands", values.brandId, "Fanola");
+    const slug = String(values.slug || "main-category");
 
     return (
-      <div className={clsx("overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm text-[#1c1917]", isMobile ? "p-4" : "p-6 md:p-12")}>
-        <div className={clsx("grid gap-8", isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 md:gap-12")}>
-          <div>
-            <div className="aspect-square overflow-hidden rounded-3xl bg-white flex items-center justify-center">
-              {currentImg ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={currentImg} alt={name} className="h-full w-full object-contain" />
-              ) : (
-                <span className="text-sm text-[#6b6762]">ยังไม่มีรูปสินค้า</span>
-              )}
-            </div>
-            {images.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-                {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setActiveImgIdx(idx)}
-                    className={clsx(
-                      "size-16 shrink-0 overflow-hidden rounded-xl border-2 bg-white transition-all",
-                      idx === activeImgIdx ? "border-[#d6297f] shadow-xs" : "border-[#e8e6e1] opacity-70 hover:opacity-100",
-                    )}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img} alt="" className="h-full w-full object-contain" />
-                  </button>
-                ))}
-              </div>
-            )}
+      <div className="space-y-10 text-[#1c1917]">
+        {/* Section 1: การ์ดหมวดหมู่หลักบนหน้าแบรนด์ (MenuContentRenderer layout="columns") */}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">
+              1. การ์ดในส่วน “หมวดหมู่ผลิตภัณฑ์หลัก” บนหน้าแบรนด์ ({brandName})
+            </span>
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              การ์ดหมวดหมู่หลัก
+            </span>
           </div>
-          <div>
-            {badges.length > 0 && (
-              <div className="mb-3 flex flex-wrap gap-1.5">
-                {badges.map((b, i) => (
-                  <span key={i} className="rounded-full bg-[#1c1917] px-2.5 py-1 text-[11px] font-medium tracking-wide text-white">
-                    {b}
-                  </span>
-                ))}
-              </div>
-            )}
-            <h1 className="font-serif text-3xl text-[#1c1917] sm:text-4xl">{name}</h1>
-            {size && <p className="mt-2 text-sm text-[#6b6762]">{size}</p>}
-            <div className="mt-5 flex items-baseline gap-3">
-              {salePrice != null ? (
-                <>
-                  <span className="text-3xl font-semibold text-[#9a5b3f]">฿{salePrice.toLocaleString("th-TH")}</span>
-                  <span className="text-lg text-[#6b6762] line-through">฿{price.toLocaleString("th-TH")}</span>
-                </>
-              ) : (
-                <span className="text-3xl font-semibold text-[#1c1917]">฿{price.toLocaleString("th-TH")}</span>
-              )}
+
+          <section className={clsx("relative overflow-hidden bg-gradient-to-b from-[#f7f7f5]/50 via-[#fcebf3]/20 to-[#f7f7f5]/30", isMobile ? "p-5" : "p-8 md:p-12")}>
+            <div className="mb-8 text-center">
+              <h2 className={clsx("font-sans font-bold tracking-tight text-[#1c1917]", isMobile ? "text-2xl" : "text-3xl sm:text-4xl")}>
+                {th ? "หมวดหมู่ผลิตภัณฑ์หลัก" : "Main Product Categories"}
+              </h2>
             </div>
-            {description && <p className="mt-6 text-base leading-relaxed text-[#6b6762] whitespace-pre-line">{description}</p>}
-            {howToUse && (
-              <div className="mt-6 rounded-2xl border border-[#e8e6e1] bg-[#f7f7f5] p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#6b6762]">{th ? "วิธีใช้" : "How to use"}</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#1c1917] whitespace-pre-line">{howToUse}</p>
+
+            <div className="mx-auto max-w-xs">
+              <div className="group flex flex-col justify-between overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f7f7f5]">
+                  {imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={imageUrl} alt={name} className="h-full w-full object-cover object-top" />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-[#d6297f]/20 to-[#f7f7f5] p-4 text-center text-sm text-[#6b6762]">
+                      <ImageOff className="size-6 opacity-50" />
+                      <span>{name}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-1 flex-col justify-between bg-white p-5 sm:p-6 min-w-0">
+                  <div>
+                    <h3 className="font-sans text-xl font-bold leading-snug text-[#1c1917] sm:text-2xl wrap-break-word">
+                      {name}
+                    </h3>
+                    {description && (
+                      <p className="mt-3 line-clamp-5 text-xs leading-relaxed text-[#6b6762] sm:text-sm whitespace-pre-line wrap-break-word">
+                        {description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-5 border-t border-[#e8e6e1]/60 pt-3.5">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[#e8e6e1] bg-white px-4 py-1.5 text-xs font-medium text-[#1c1917] shadow-2xs sm:text-sm">
+                      <span>{th ? "ดูสินค้า" : "View products"}</span>
+                      <span>→</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* Section 2: ส่วนหัวหน้าหมวดหมู่หลักเมื่อคลิกเข้ามา (?group=[slug] -> CategoryHero) */}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">
+              2. ส่วนหัวเมื่อคลิกเข้าหมวดหมู่หลัก (?group={slug})
+            </span>
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              CategoryHero
+            </span>
+          </div>
+
+          <section
+            className={clsx(
+              "relative overflow-hidden bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)]",
+              isMobile ? "px-5 py-10" : "px-6 py-10 sm:px-10 sm:py-14 lg:py-20",
+            )}
+          >
+            {imageUrl && (
+              <div aria-hidden className="absolute inset-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imageUrl} alt="" className="h-full w-full object-cover object-top opacity-15" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#fdf2f8]/70 via-[#fdfcfb]/80 to-[#fdfcfb]" />
               </div>
             )}
-            {tags.length > 0 && (
-              <div className="mt-6 flex flex-wrap gap-1.5">
-                {tags.map((t, i) => (
-                  <span key={i} className="rounded-full bg-[#f3e6dd] px-3 py-1 text-xs text-[#7c4630]">
-                    {t}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-3xl"
+              style={{ background: "radial-gradient(circle, #d6297f26, transparent 70%)" }}
+            />
+
+            <div className="relative min-w-0">
+              <span className="inline-flex items-center gap-2 text-sm text-[#6b6762]">
+                <ArrowLeft className="size-4" />
+                {th ? `กลับไปหน้า ${brandName}` : `Back to ${brandName}`}
+              </span>
+
+              <div className="mt-8 max-w-3xl">
+                <p className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">
+                  <span aria-hidden className="h-px w-6 bg-[#d6297f]" />
+                  {brandName}
+                </p>
+                <h1 className={clsx("mt-3 font-serif leading-[1.15] text-[#1c1917] wrap-break-word", isMobile ? "text-4xl" : "text-4xl sm:text-5xl lg:text-6xl")}>
+                  <span className="text-[#d6297f]">{name.slice(0, 2)}</span>
+                  {name.slice(2)}
+                </h1>
+                {description && (
+                  <p className={clsx("mt-5 max-w-2xl text-[#6b6762] whitespace-pre-line wrap-break-word", isMobile ? "text-base" : "text-base sm:text-lg")}>
+                    {description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
+  /* -------------------------------------------------------------------------
+   * 3. COLLECTION PREVIEW (categories)
+   *    - 1. การ์ดคอลเลกชันแบบ Pinterest Pin ใน CategoryGrid
+   *    - 2. ส่วนหัวเมื่อคลิกเข้าคอลเลกชัน (?category=[slug] -> CategoryHero)
+   * ----------------------------------------------------------------------- */
+  const renderCollectionPreview = () => {
+    const name = pick(values.name, locale) || (th ? "ชื่อคอลเลกชัน" : "Collection Name");
+    const subtitle = pick(values.subtitle, locale);
+    const description = pick(values.description, locale);
+    const highlights = pick(values.highlights, locale);
+    const imageUrl = resolveImg(values.imageUrl);
+    const bannerUrl = resolveImg(values.bannerUrl) || imageUrl;
+    const accent = String(values.accentColor || "#d6297f").trim() || "#d6297f";
+    const brandName = lookupRelation("brands", values.brandId, "Fanola");
+    const mainCategoryName = lookupRelation("main-categories", values.mainCategoryId, th ? "หมวดหมู่หลัก" : "Main Category");
+    const slug = String(values.slug || "collection");
+
+    return (
+      <div className="space-y-10 text-[#1c1917]">
+        {/* Section 1: การ์ดคอลเลกชันใน CategoryGrid (Pinterest Pin Card) */}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">
+              1. การ์ดคอลเลกชันในตาราง “คอลเลกชันผลิตภัณฑ์” (หมวด: {mainCategoryName})
+            </span>
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              CategoryGrid Pin
+            </span>
+          </div>
+
+          <div className={clsx("bg-[#f7f7f5]/60", isMobile ? "p-5" : "p-8 md:p-12")}>
+            <div className="mx-auto max-w-[260px]">
+              <div className="group relative">
+                {/* Pinterest Pin Image Box */}
+                <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-[#e8e6e1]/60 bg-neutral-100 shadow-sm">
+                  {imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={imageUrl} alt={name} className="size-full object-cover object-center" />
+                  ) : (
+                    <div className="flex size-full flex-col items-center justify-center gap-2 bg-neutral-100 p-4 text-center text-xs text-[#6b6762]">
+                      <ImageOff className="size-6 opacity-50" />
+                      <span>ยังไม่มีรูปการ์ดคอลเลกชัน</span>
+                    </div>
+                  )}
+
+                  {/* Subtle gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
+
+                  {/* Top Right: Explore Pill */}
+                  <div className="absolute top-3 right-3 z-20">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#d6297f] px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg">
+                      <span>{th ? "ดูคอลเลกชัน" : "Explore"}</span>
+                      <ArrowUpRight className="size-3.5" />
+                    </span>
+                  </div>
+
+                  {/* Bottom Right: Heart Button */}
+                  <div className="absolute bottom-3 right-3 z-20">
+                    <span className="inline-flex rounded-full bg-white/90 p-2 text-neutral-800 shadow-md">
+                      <Heart className="size-3.5" />
+                    </span>
+                  </div>
+
+                  {/* Bottom Caption */}
+                  <div className="absolute inset-x-0 bottom-0 z-10 p-3.5 text-left">
+                    <p className="line-clamp-1 text-[11px] font-medium text-white/90">
+                      {subtitle || (th ? "คลิกเพื่อดูผลิตภัณฑ์ในซีรีส์นี้" : "Click to view series")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Under Image Details */}
+                <div className="mt-2.5 px-1 text-left min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="line-clamp-1 font-serif text-base font-semibold text-[#1c1917]">
+                      {name}
+                    </h4>
+                    <span
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: accent }}
+                      title={accent}
+                    />
+                  </div>
+                  {subtitle ? (
+                    <p className="mt-0.5 line-clamp-1 text-xs text-[#6b6762]">{subtitle}</p>
+                  ) : (
+                    <p className="mt-0.5 text-xs font-medium text-[#d6297f]/90">{brandName} Professional</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: ส่วนหัวเมื่อคลิกเข้าคอลเลกชัน (?category=[slug] -> CategoryHero) */}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">
+              2. ส่วนหัวหน้าคอลเลกชันเมื่อคลิกเข้ามา (?category={slug})
+            </span>
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              CategoryHero
+            </span>
+          </div>
+
+          <section
+            className={clsx(
+              "relative overflow-hidden bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)]",
+              isMobile ? "px-5 py-10" : "px-6 py-10 sm:px-10 sm:py-14 lg:py-20",
+            )}
+          >
+            {bannerUrl && (
+              <div aria-hidden className="absolute inset-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={bannerUrl} alt="" className="h-full w-full object-cover object-top opacity-15" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#fdf2f8]/70 via-[#fdfcfb]/80 to-[#fdfcfb]" />
+              </div>
+            )}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full blur-3xl"
+              style={{ background: `radial-gradient(circle, ${accent}26, transparent 70%)` }}
+            />
+
+            <div className="relative min-w-0">
+              <span className="inline-flex items-center gap-2 text-sm text-[#6b6762]">
+                <ArrowLeft className="size-4" />
+                {th ? `กลับไปหมวด ${mainCategoryName}` : `Back to ${mainCategoryName}`}
+              </span>
+
+              <div className="mt-8 max-w-3xl">
+                <p className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">
+                  <span aria-hidden className="h-px w-6 bg-[#d6297f]" />
+                  {brandName}
+                </p>
+                <h1 className={clsx("mt-3 font-serif leading-[1.15] text-[#1c1917] wrap-break-word", isMobile ? "text-4xl" : "text-4xl sm:text-5xl lg:text-6xl")}>
+                  <span style={{ color: accent }}>{name.slice(0, 2)}</span>
+                  {name.slice(2)}
+                </h1>
+                {subtitle && (
+                  <p className={clsx("mt-3 font-medium wrap-break-word", isMobile ? "text-base" : "text-base sm:text-lg")} style={{ color: accent }}>
+                    {subtitle}
+                  </p>
+                )}
+                {description && (
+                  <p className={clsx("mt-5 max-w-2xl text-[#6b6762] whitespace-pre-line wrap-break-word", isMobile ? "text-base" : "text-base sm:text-lg")}>
+                    {description}
+                  </p>
+                )}
+                {highlights && (
+                  <p
+                    className="mt-6 max-w-2xl rounded-2xl border p-4 text-sm leading-relaxed text-[#1c1917] sm:p-5 whitespace-pre-line wrap-break-word"
+                    style={{ borderColor: `${accent}40`, backgroundColor: `${accent}0c` }}
+                  >
+                    {highlights}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
+  /* -------------------------------------------------------------------------
+   * 4. PRODUCT PREVIEW (products)
+   *    - 1. หน้ารายละเอียดสินค้า (/product/[slug] -> ProductPage + ProductImageGallery)
+   *    - 2. การ์ดสินค้าในตารางรวมสินค้า (ProductGrid)
+   * ----------------------------------------------------------------------- */
+  const renderProductPreview = () => {
+    const name = pick(values.name, locale) || (th ? "ชื่อสินค้า" : "Product Name");
+    const description = pick(values.description, locale);
+    const price = Number(values.price ?? 0);
+    const salePrice =
+      values.salePrice != null && values.salePrice !== "" && Number(values.salePrice) > 0
+        ? Number(values.salePrice)
+        : null;
+    const effectivePrice = salePrice ?? price;
+    const images = resolveImgs(values.images, values.imageUrl);
+    const safeIdx = activeImgIdx < images.length ? activeImgIdx : 0;
+    const currentImg = images[safeIdx] || "";
+    const badges = Array.isArray(values.badges) ? values.badges.map(String).filter(Boolean) : [];
+    const tags = Array.isArray(values.tags) ? values.tags.map(String).filter(Boolean) : [];
+    const brandName = lookupRelation("brands", values.brandId, "Fanola");
+    const mainCategoryName = lookupRelation("main-categories", values.mainCategoryId, "");
+    const collectionName = lookupRelation("categories", values.categoryId, "");
+
+    return (
+      <div className="space-y-10 text-[#1c1917]">
+        {/* Section 1: หน้ารายละเอียดสินค้า (/product/[slug]) */}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">
+              1. หน้ารายละเอียดสินค้า (/{locale}/product/{String(values.slug || "product-slug")})
+            </span>
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              {mainCategoryName ? `${brandName} · ${mainCategoryName}${collectionName ? ` · ${collectionName}` : ""}` : brandName}
+            </span>
+          </div>
+
+          <article className={clsx("bg-white", isMobile ? "p-5" : "p-6 sm:p-10 md:p-12")}>
+            {/* Breadcrumb */}
+            <nav className="mb-6 flex flex-wrap items-center gap-x-2 text-sm text-[#6b6762]">
+              <span>{th ? "ผลิตภัณฑ์ผม" : "Hair Products"}</span>
+              <span>/</span>
+              <span>{brandName}</span>
+              <span>/</span>
+              <span className="text-[#1c1917] wrap-break-word">{name}</span>
+            </nav>
+
+            <div className={clsx("grid gap-8", isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:gap-14")}>
+              {/* Left: ProductImageGallery */}
+              <div className="space-y-3">
+                <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-[#f7f7f5]">
+                  {currentImg ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={currentImg} alt={name} className="size-full object-cover" />
+                  ) : (
+                    <div className="flex size-full flex-col items-center justify-center gap-2 text-[#6b6762]">
+                      <ImageOff className="size-8 opacity-40" />
+                      <span className="text-xs">ยังไม่มีรูปสินค้า</span>
+                    </div>
+                  )}
+
+                  {badges.length > 0 && (
+                    <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
+                      {badges.map((b, i) => (
+                        <span key={i} className="rounded-full bg-[#1c1917] px-2.5 py-1 text-[11px] font-medium tracking-wide text-white">
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="รูปก่อนหน้า"
+                        onClick={() => setActiveImgIdx((i) => (i > 0 ? i - 1 : images.length - 1))}
+                        className="absolute top-1/2 left-3 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-white/90 text-[#1c1917] shadow-md transition hover:bg-white"
+                      >
+                        <ChevronLeft className="size-5" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="รูปถัดไป"
+                        onClick={() => setActiveImgIdx((i) => (i < images.length - 1 ? i + 1 : 0))}
+                        className="absolute top-1/2 right-3 -translate-y-1/2 grid size-10 place-items-center rounded-full bg-white/90 text-[#1c1917] shadow-md transition hover:bg-white"
+                      >
+                        <ChevronRight className="size-5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {images.length > 1 && (
+                  <div className="flex gap-2.5 overflow-x-auto pb-1">
+                    {images.map((src, idx) => (
+                      <button
+                        key={src + idx}
+                        type="button"
+                        onClick={() => setActiveImgIdx(idx)}
+                        className={clsx(
+                          "relative size-20 shrink-0 overflow-hidden rounded-2xl border-2 bg-white transition",
+                          idx === safeIdx ? "border-[#9a5b3f] ring-2 ring-[#9a5b3f]/25" : "border-[#e8e6e1] opacity-75 hover:opacity-100",
+                        )}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={src} alt="" className="size-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Product Info */}
+              <div className="min-w-0">
+                <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">{brandName}</p>
+                <h1 className={clsx("mt-3 font-serif leading-tight text-[#1c1917] wrap-break-word", isMobile ? "text-3xl" : "text-3xl sm:text-5xl")}>
+                  {name}
+                </h1>
+
+                <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
+                  <span className={clsx("font-serif text-3xl sm:text-4xl", salePrice ? "text-[#9a5b3f]" : "text-[#1c1917]")}>
+                    ฿{effectivePrice.toLocaleString("th-TH")}
                   </span>
-                ))}
+                  {salePrice && <span className="text-lg text-[#6b6762] line-through">฿{price.toLocaleString("th-TH")}</span>}
+                </p>
+
+                {description && (
+                  <div className="mt-6 space-y-3 text-base leading-relaxed text-[#6b6762] whitespace-pre-line wrap-break-word">
+                    {description}
+                  </div>
+                )}
+
+                {/* Order CTA Box */}
+                <div className="mt-8 rounded-3xl border border-[#e8e6e1] bg-[#f7f7f5] p-6">
+                  <p className="font-medium text-[#1c1917]">{th ? "สนใจสั่งซื้อสินค้านี้" : "Order this product"}</p>
+                  <p className="mt-1 text-sm text-[#6b6762]">
+                    {th
+                      ? "สนใจสั่งซื้อหรือสอบถามราคาส่งสำหรับร้านซาลอน ติดต่อทีมงานบิวตี้อัพได้เลย"
+                      : "Contact BeautyUp team for salon wholesale or retail inquiries."}
+                  </p>
+                  <div className={clsx("mt-5 flex gap-2", isMobile ? "flex-col" : "flex-col sm:flex-row")}>
+                    <span className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#1c1917] px-6 text-[15px] font-medium text-white">
+                      <MessageCircle className="size-4" />
+                      {th ? "ติดต่อสั่งซื้อ" : "Contact to Order"}
+                    </span>
+                    <span className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                      <Phone className="size-4" />
+                      {th ? "โทรติดต่อฝ่ายขาย" : "Call Sales"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* SEO / AI Tags */}
+                {tags.length > 0 && (
+                  <div className="mt-8 border-t border-[#e8e6e1] pt-6">
+                    <p className="text-xs font-medium tracking-wide text-[#6b6762] uppercase">{th ? "แท็ก" : "Tags"}</p>
+                    <ul className="mt-2 flex flex-wrap gap-2 text-sm text-[#6b6762]">
+                      {tags.map((tag, i) => (
+                        <li key={i} className="rounded-full bg-[#f0efec] px-3 py-1">
+                          #{tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+          </article>
+        </div>
+
+        {/* Section 2: การ์ดสินค้าในหน้ารวมสินค้า (ProductGrid) */}
+        <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+            <span className="font-semibold text-[#1c1917]">2. การ์ดสินค้าในตารางรวมสินค้า (ProductGrid)</span>
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              การ์ดสินค้า (1 ใน 4 คอลัมน์)
+            </span>
+          </div>
+
+          <div className={clsx("bg-white", isMobile ? "p-5" : "p-8 md:p-10")}>
+            <div className="mx-auto max-w-[240px]">
+              <div className="group relative">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#f7f7f5]">
+                  {images[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={images[0]} alt={name} className="size-full object-cover" />
+                  ) : (
+                    <div className="flex size-full items-center justify-center text-xs text-[#6b6762]">ยังไม่มีรูปปก</div>
+                  )}
+                  {badges.length > 0 && (
+                    <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+                      {badges.map((b, i) => (
+                        <span key={i} className="rounded-full bg-[#1c1917] px-2.5 py-1 text-[11px] font-medium tracking-wide text-white">
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <p className="mt-3 text-xs tracking-wide text-[#6b6762] uppercase">{brandName}</p>
+                <p className="mt-1 line-clamp-2 text-sm leading-snug text-[#1c1917] sm:text-base wrap-break-word">{name}</p>
+                <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
+                  {salePrice ? (
+                    <>
+                      <span className="font-medium text-[#9a5b3f]">฿{salePrice.toLocaleString("th-TH")}</span>
+                      <span className="text-sm text-[#6b6762] line-through">฿{price.toLocaleString("th-TH")}</span>
+                    </>
+                  ) : (
+                    <span className="font-medium text-[#1c1917]">฿{price.toLocaleString("th-TH")}</span>
+                  )}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     );
   };
 
+  /* -------------------------------------------------------------------------
+   * 5. GENERIC PREVIEW (posts, media, courses, etc.)
+   * ----------------------------------------------------------------------- */
   const renderGenericPreview = () => {
     const title =
       pick(values.title, locale) ||
@@ -435,8 +886,8 @@ export function ResourcePreviewModal({
 
     return (
       <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white p-6 md:p-12 shadow-sm space-y-6 text-[#1c1917]">
-        <h1 className="font-serif text-3xl text-[#1c1917] sm:text-4xl">{title}</h1>
-        {subtitle && <p className="text-lg text-[#6b6762] whitespace-pre-line">{subtitle}</p>}
+        <h1 className="font-serif text-3xl text-[#1c1917] sm:text-4xl wrap-break-word">{title}</h1>
+        {subtitle && <p className="text-lg text-[#6b6762] whitespace-pre-line wrap-break-word">{subtitle}</p>}
         {images.length > 0 && (
           <div className="space-y-3">
             <div className="overflow-hidden rounded-3xl bg-white max-h-[460px] flex items-center justify-center">
@@ -455,7 +906,7 @@ export function ResourcePreviewModal({
             )}
           </div>
         )}
-        {body && <div className="text-base leading-relaxed text-[#1c1917] whitespace-pre-line">{body}</div>}
+        {body && <div className="text-base leading-relaxed text-[#1c1917] whitespace-pre-line wrap-break-word">{body}</div>}
       </div>
     );
   };
@@ -549,9 +1000,13 @@ export function ResourcePreviewModal({
         >
           {resourceName === "brands"
             ? renderBrandPreview()
-            : resourceName === "products"
-              ? renderProductPreview()
-              : renderGenericPreview()}
+            : resourceName === "main-categories"
+              ? renderMainCategoryPreview()
+              : resourceName === "categories"
+                ? renderCollectionPreview()
+                : resourceName === "products"
+                  ? renderProductPreview()
+                  : renderGenericPreview()}
         </div>
       </div>
     </div>

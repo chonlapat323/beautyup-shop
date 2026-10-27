@@ -176,6 +176,7 @@ export function ResourceForm({
         onClose={() => setPreviewOpen(false)}
         resourceName={resourceName}
         values={values}
+        relations={relations}
         initialLocale={locale}
       />
     </form>
