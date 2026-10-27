@@ -5,6 +5,7 @@ import {
   Building2,
   CalendarHeart,
   Film,
+  Gem,
   Inbox,
   LayoutDashboard,
   LogOut,
@@ -21,8 +22,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { logout } from "@/app/login/actions";
 
 /** `also`: other pages that belong to this top-level entry */
@@ -33,6 +34,7 @@ type Item = {
   badge?: number;
   adminOnly?: boolean;
   also?: string[];
+  matchBrandType?: "SALON" | "COUNTER";
 };
 
 const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
@@ -64,10 +66,18 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         ],
       },
       {
-        href: "/r/products",
-        label: "สินค้าและแบรนด์",
+        href: "/r/products?type=SALON",
+        label: "ผลิตภัณฑ์ซาลอน (/products)",
         icon: Package,
-        also: ["/r/brands", "/r/main-categories", "/r/categories"],
+        also: ["/r/brands", "/r/main-categories", "/r/categories", "/r/products"],
+        matchBrandType: "SALON",
+      },
+      {
+        href: "/r/products?type=COUNTER",
+        label: "เคาน์เตอร์แบรนด์ (/shop)",
+        icon: Gem,
+        also: ["/content/shopPage", "/r/brands", "/r/main-categories", "/r/products"],
+        matchBrandType: "COUNTER",
       },
       {
         href: "/r/media",
@@ -98,13 +108,27 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   },
 ];
 
-export function Sidebar({ user, newInquiries }: { user: { name: string; email: string; role: string }; newInquiries: number }) {
+function SidebarInner({ user, newInquiries }: { user: { name: string; email: string; role: string }; newInquiries: number }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
 
+  const currentType = searchParams.get("type");
+
   // Whole-segment match, so /r/media does not also light up on /r/media-categories unless in `also`
-  const isActive = (href: string, also: string[] = []) =>
-    href === "/" ? pathname === "/" : [href, ...also].some((h) => pathname === h || pathname.startsWith(`${h}/`));
+  const isActive = (it: Item) => {
+    const baseHref = it.href.split("?")[0];
+    if (baseHref === "/") return pathname === "/";
+    const pathMatches = [baseHref, ...(it.also ?? [])].some((h) => pathname === h || pathname.startsWith(`${h}/`));
+    if (!pathMatches) return false;
+    if (it.matchBrandType === "COUNTER") {
+      return pathname === "/content/shopPage" || currentType === "COUNTER";
+    }
+    if (it.matchBrandType === "SALON") {
+      return pathname !== "/content/shopPage" && currentType !== "COUNTER";
+    }
+    return true;
+  };
 
   const nav = (
     <nav
@@ -118,22 +142,26 @@ export function Sidebar({ user, newInquiries }: { user: { name: string; email: s
           <ul className="space-y-1">
             {g.items
               .filter((it) => !it.adminOnly || user.role === "ADMIN")
-              .map(({ href, label, icon: Icon, badge, also }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={isActive(href, also) ? "page" : undefined}
-                    className={clsx(
-                      "flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
-                      isActive(href, also) ? "bg-brand-soft font-medium text-brand" : "text-ink/80 hover:bg-sand hover:text-ink",
-                    )}
-                  >
-                    <Icon className="size-4 shrink-0" />
-                    <span className="flex-1">{label}</span>
-                    {!!badge && <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-medium text-white">{badge}</span>}
-                  </Link>
-                </li>
-              ))}
+              .map((it) => {
+                const { href, label, icon: Icon, badge } = it;
+                const active = isActive(it);
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      aria-current={active ? "page" : undefined}
+                      className={clsx(
+                        "flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
+                        active ? "bg-brand-soft font-medium text-brand" : "text-ink/80 hover:bg-sand hover:text-ink",
+                      )}
+                    >
+                      <Icon className="size-4 shrink-0" />
+                      <span className="flex-1">{label}</span>
+                      {!!badge && <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-medium text-white">{badge}</span>}
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
         </div>
       ))}
@@ -186,5 +214,13 @@ export function Sidebar({ user, newInquiries }: { user: { name: string; email: s
         {footer}
       </aside>
     </>
+  );
+}
+
+export function Sidebar(props: { user: { name: string; email: string; role: string }; newInquiries: number }) {
+  return (
+    <Suspense fallback={null}>
+      <SidebarInner {...props} />
+    </Suspense>
   );
 }

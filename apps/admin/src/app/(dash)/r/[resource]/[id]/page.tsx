@@ -55,31 +55,59 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
     );
   }
 
+  const isBrandScoped = name === "brands" || name === "main-categories" || name === "categories" || name === "products";
+  const detectedBrandScope: "SALON" | "COUNTER" | undefined = isBrandScoped
+    ? name === "brands"
+      ? row.type === "COUNTER"
+        ? "COUNTER"
+        : "SALON"
+      : (row.brand as { type?: string } | undefined)?.type === "COUNTER" ||
+          relations.brands?.find((b) => b.value === String(row.brandId))?.brandType === "COUNTER"
+        ? "COUNTER"
+        : "SALON"
+    : undefined;
+  const scopedRelations =
+    detectedBrandScope && relations.brands
+      ? { ...relations, brands: relations.brands.filter((b) => (b.brandType || "SALON") === detectedBrandScope) }
+      : relations;
+
   const trail: BreadcrumbItem[] = [];
   if (row.brandId && relations.brands) {
     const b = relations.brands.find((o) => o.value === String(row.brandId));
-    if (b) trail.push({ label: `แบรนด์: ${b.label}`, href: `/r/${name}?filter=${b.value}` });
+    if (b) trail.push({ label: `แบรนด์: ${b.label}`, href: `/r/${name}?${detectedBrandScope ? `type=${detectedBrandScope}&` : ""}filter=${b.value}` });
   }
   if (row.mainCategoryId && relations["main-categories"]) {
     const mc = relations["main-categories"].find((o) => o.value === String(row.mainCategoryId));
-    if (mc) trail.push({ label: `หมวดหลัก: ${mc.label}`, href: `/r/${name}?sub=${mc.value}` });
+    if (mc) trail.push({ label: `หมวดหลัก: ${mc.label}`, href: `/r/${name}?${detectedBrandScope ? `type=${detectedBrandScope}&` : ""}sub=${mc.value}` });
   }
   if (row.categoryId) {
     const catList = relations.categories || relations["media-categories"] || relations["forum-categories"];
     const cat = catList?.find((o) => o.value === String(row.categoryId));
-    if (cat) trail.push({ label: `หมวด/คอลเลกชัน: ${cat.label}`, href: `/r/${name}?sub=${cat.value}` });
+    if (cat) trail.push({ label: `หมวด/คอลเลกชัน: ${cat.label}`, href: `/r/${name}?${detectedBrandScope ? `type=${detectedBrandScope}&` : ""}sub=${cat.value}` });
   }
   trail.push({ label: `แก้ไข: ${title}` });
 
   const postType = name === "posts" && (row.type === "ARTICLE" || row.type === "ACTIVITY") ? row.type : undefined;
-  const flowKey = postType ? `posts:${postType}` : name;
-  const backHref = postType ? `/r/posts?filter=${postType}` : `/r/${name}`;
+  const flowKey = postType
+    ? `posts:${postType}`
+    : detectedBrandScope === "COUNTER"
+      ? `${name}:COUNTER`
+      : name;
+  const backHref = postType
+    ? `/r/posts?filter=${postType}`
+    : detectedBrandScope
+      ? `/r/${name}?type=${detectedBrandScope}`
+      : `/r/${name}`;
   const backLabel =
     postType === "ARTICLE"
       ? "บทความ (Articles)"
       : postType === "ACTIVITY"
         ? "กิจกรรม (Activities)"
-        : ui.title;
+        : detectedBrandScope === "COUNTER" && name === "brands"
+          ? "เคาน์เตอร์แบรนด์"
+          : detectedBrandScope === "COUNTER" && name === "products"
+            ? "สินค้าเคาน์เตอร์แบรนด์"
+            : ui.title;
 
   return (
     <>
@@ -91,7 +119,7 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
       />
       {name === "media" && <MediaSharePanel slug={String(row.slug)} publishedAt={row.publishedAt as string | null} />}
       {name === "products" && <ProductSharePanel slug={String(row.slug)} isActive={Boolean(row.isActive)} />}
-      <ResourceForm key={id} resourceName={name} fields={ui.fields} initial={row} relations={relations} onSave={saveResource.bind(null, name, id)} />
+      <ResourceForm key={id} resourceName={name} fields={ui.fields} initial={row} relations={scopedRelations} onSave={saveResource.bind(null, name, id)} />
     </>
   );
 }

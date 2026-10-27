@@ -42,7 +42,29 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
             ...rawInitial,
             founderPhoto: (rawInitial.founderPhoto as string) || "/founder.png",
           }
-        : rawInitial;
+        : key === "shopPage"
+          ? {
+              eyebrow: { th: "Our Counter Brand", en: "Our Counter Brand" },
+              headline: { th: "เคาน์เตอร์แบรนด์ชั้นนำ ในราคาที่คุ้มค่า", en: "Leading Counter Brands at Exceptional Value" },
+              lead: {
+                th: "สกินแคร์ น้ำหอม และเครื่องสำอางจากแบรนด์ระดับโลก คัดสรรโดยบิวตี้อัพ",
+                en: "World-class skincare, fragrance, and cosmetics curated by BeautyUp.",
+              },
+              ceoEyebrow: { th: "From the CEO", en: "From the CEO" },
+              ceoQuote: { th: "“I'm Amy … CEO of Beauty Up Enterprise”", en: "“I'm Amy … CEO of Beauty Up Enterprise”" },
+              ceoText: {
+                th: "คัดสรรผลิตภัณฑ์ของแท้จากเคาน์เตอร์แบรนด์ชั้นนำ เพื่อให้ทุกคนเข้าถึงความงามระดับพรีเมียม",
+                en: "Authentic products curated from leading counter brands, bringing premium beauty within reach.",
+              },
+              productsEyebrow: { th: "Shop", en: "Shop" },
+              productsTitle: { th: "สินค้าเคาน์เตอร์แบรนด์", en: "Counter Brand Products" },
+              productsLead: {
+                th: "สนใจสินค้า กด “ติดต่อสั่งซื้อ” ทีมงานจะติดต่อกลับ",
+                en: "Interested in an item? Click “Contact to Order” and our team will get in touch.",
+              },
+              ...rawInitial,
+            }
+          : rawInitial;
 
   return (
     <>
@@ -73,7 +95,7 @@ export default async function PageContentPage({ params }: PageProps<"/content/[k
           ))}
         </nav>
       )}
-      <ResourceForm key={key} fields={ui.fields} initial={initial} onSave={saveSetting.bind(null, key)} />
+      <ResourceForm key={key} resourceName={key} fields={ui.fields} initial={initial} onSave={saveSetting.bind(null, key)} />
     </>
   );
 }

@@ -873,7 +873,120 @@ export function ResourcePreviewModal({
   };
 
   /* -------------------------------------------------------------------------
-   * 5. GENERIC PREVIEW (posts, media, courses, etc.)
+   * 5. SHOP PAGE PREVIEW (shopPage -> /shop)
+   * ----------------------------------------------------------------------- */
+  const renderShopPagePreview = () => {
+    const eyebrow = pick(values.eyebrow, locale) || "Our Counter Brand";
+    const headline = pick(values.headline, locale) || (th ? "เคาน์เตอร์แบรนด์ชั้นนำ ในราคาที่คุ้มค่า" : "Leading Counter Brands");
+    const lead =
+      pick(values.lead, locale) ||
+      (th ? "สกินแคร์ น้ำหอม และเครื่องสำอางจากแบรนด์ระดับโลก คัดสรรโดยบิวตี้อัพ" : "World-class skincare, fragrance, and cosmetics.");
+    const ceoImageUrl = resolveImg(values.ceoImageUrl);
+    const ceoEyebrow = pick(values.ceoEyebrow, locale) || "From the CEO";
+    const ceoQuote = pick(values.ceoQuote, locale) || "“I'm Amy … CEO of Beauty Up Enterprise”";
+    const ceoText =
+      pick(values.ceoText, locale) ||
+      (th ? "คัดสรรผลิตภัณฑ์ของแท้จากเคาน์เตอร์แบรนด์ชั้นนำ เพื่อให้ทุกคนเข้าถึงความงามระดับพรีเมียม" : "");
+    const productsEyebrow = pick(values.productsEyebrow, locale) || "Shop";
+    const productsTitle = pick(values.productsTitle, locale) || (th ? "สินค้าเคาน์เตอร์แบรนด์" : "Counter Brand Products");
+    const productsLead =
+      pick(values.productsLead, locale) || (th ? "สนใจสินค้า กด “ติดต่อสั่งซื้อ” ทีมงานจะติดต่อกลับ" : "");
+    const sampleBrands = [
+      "La Prairie",
+      "La Mer",
+      "Clarins",
+      "Jo Malone",
+      "Kiehl's",
+      "Givenchy",
+      "Guerlain",
+      "Jung Saem Mool",
+      "Laura Mercier",
+      "Dior",
+      "Sulwhasoo",
+      "Estée Lauder",
+      "Tom Ford",
+      "Sisley",
+    ];
+
+    return (
+      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm text-[#1c1917]">
+        <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
+          <span className="font-semibold text-[#1c1917]">ตัวอย่างหน้าเคาน์เตอร์แบรนด์ (/{locale}/shop)</span>
+          <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+            {isMobile ? "มุมมองมือถือ" : "มุมมองคอมพิวเตอร์"}
+          </span>
+        </div>
+
+        {/* 1. PageHero */}
+        <section
+          className={clsx(
+            "relative overflow-hidden border-b border-[#e8e6e1]/60 bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)]",
+            isMobile ? "px-5 py-10" : "px-6 py-12 sm:px-10 sm:py-16 lg:py-20",
+          )}
+        >
+          <div className="relative min-w-0">
+            <p className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">
+              <span aria-hidden className="h-px w-6 bg-[#d6297f]" />
+              {eyebrow}
+            </p>
+            <h1 className={clsx("mt-3 max-w-4xl font-serif leading-[1.15] text-[#1c1917] wrap-break-word", isMobile ? "text-4xl" : "text-4xl sm:text-5xl lg:text-6xl")}>
+              {headline}
+            </h1>
+            <p className={clsx("mt-5 max-w-2xl text-[#6b6762] whitespace-pre-line wrap-break-word", isMobile ? "text-base" : "text-base sm:text-lg")}>
+              {lead}
+            </p>
+          </div>
+        </section>
+
+        {/* 2. Counter Brand Grid */}
+        <section className={clsx("bg-white", isMobile ? "px-4 py-8" : "px-6 py-12 sm:px-10")}>
+          <ul className={clsx("grid gap-px overflow-hidden rounded-3xl border border-[#e8e6e1] bg-[#e8e6e1]", isMobile ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-7")}>
+            {sampleBrands.map((b) => (
+              <li key={b} className="grid min-h-20 place-items-center bg-white p-3 text-center font-serif text-sm text-[#1c1917]/80 sm:min-h-24 sm:text-base">
+                {b}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* 3. From the CEO */}
+        <section className={clsx("bg-white", isMobile ? "px-4 py-8" : "px-6 py-12 sm:px-10")}>
+          <div className={clsx("grid items-center gap-8", isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:gap-14")}>
+            <div className="aspect-[4/5] w-full overflow-hidden rounded-3xl bg-[#f7f7f5]">
+              {ceoImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={ceoImageUrl} alt="I'm Amy" className="size-full object-cover" />
+              ) : (
+                <div className="flex size-full flex-col items-center justify-center gap-2 border border-dashed border-[#e8e6e1] rounded-3xl text-[#6b6762]">
+                  <ImageOff className="size-8 opacity-40" />
+                  <span className="text-sm font-medium">I&apos;m Amy (ยังไม่ได้อัปโหลดรูป CEO)</span>
+                </div>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">{ceoEyebrow}</p>
+              <p className={clsx("mt-4 font-serif leading-snug text-[#1c1917] whitespace-pre-line wrap-break-word", isMobile ? "text-2xl" : "text-3xl sm:text-4xl")}>
+                {ceoQuote}
+              </p>
+              <p className="mt-5 text-[#6b6762] whitespace-pre-line wrap-break-word">{ceoText}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Products Heading */}
+        <section className={clsx("border-t border-[#e8e6e1] bg-white", isMobile ? "px-4 py-8" : "px-6 py-12 sm:px-10")}>
+          <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">{productsEyebrow}</p>
+          <h2 className={clsx("mt-3 font-serif leading-tight text-[#1c1917]", isMobile ? "text-3xl" : "text-3xl sm:text-4xl")}>
+            {productsTitle}
+          </h2>
+          <p className="mt-3 text-base text-[#6b6762]">{productsLead}</p>
+        </section>
+      </div>
+    );
+  };
+
+  /* -------------------------------------------------------------------------
+   * 6. GENERIC PREVIEW (posts, media, courses, etc.)
    * ----------------------------------------------------------------------- */
   const renderGenericPreview = () => {
     const title =
@@ -1006,7 +1119,9 @@ export function ResourcePreviewModal({
                 ? renderCollectionPreview()
                 : resourceName === "products"
                   ? renderProductPreview()
-                  : renderGenericPreview()}
+                  : resourceName === "shopPage"
+                    ? renderShopPagePreview()
+                    : renderGenericPreview()}
         </div>
       </div>
     </div>

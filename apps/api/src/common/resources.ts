@@ -48,7 +48,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     orderBy: byOrder,
     slugField: 'slug',
     hasActive: true,
-    include: { brand: { select: { id: true, slug: true, name: true } } },
+    include: { brand: { select: { id: true, slug: true, name: true, type: true } } },
     searchFields: ['slug'],
   },
   categories: {

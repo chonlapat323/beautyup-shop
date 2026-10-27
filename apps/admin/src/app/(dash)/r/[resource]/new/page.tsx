@@ -15,8 +15,18 @@ export default async function NewResourcePage({ params, searchParams }: PageProp
   const sp = await searchParams;
   const presetPostType =
     name === "posts" && (sp.type === "ARTICLE" || sp.type === "ACTIVITY") ? sp.type : undefined;
+  const isBrandScoped = name === "brands" || name === "main-categories" || name === "categories" || name === "products";
+  const brandScope: "SALON" | "COUNTER" | undefined = isBrandScoped
+    ? sp.type === "COUNTER"
+      ? "COUNTER"
+      : "SALON"
+    : undefined;
   const ui = resourceUi[name];
-  const relations = await loadRelations(ui.fields);
+  const rawRelations = await loadRelations(ui.fields);
+  const relations =
+    brandScope && rawRelations.brands
+      ? { ...rawRelations, brands: rawRelations.brands.filter((b) => (b.brandType || "SALON") === brandScope) }
+      : rawRelations;
 
   if (name === "menu-items") {
     return (
@@ -42,16 +52,46 @@ export default async function NewResourcePage({ params, searchParams }: PageProp
     );
   }
 
-  const flowKey = presetPostType ? `posts:${presetPostType}` : name;
+  const flowKey = presetPostType
+    ? `posts:${presetPostType}`
+    : brandScope === "COUNTER"
+      ? `${name}:COUNTER`
+      : name;
   const noun =
-    presetPostType === "ARTICLE" ? "บทความ" : presetPostType === "ACTIVITY" ? "กิจกรรม" : ui.noun;
-  const backHref = presetPostType ? `/r/posts?filter=${presetPostType}` : `/r/${name}`;
+    presetPostType === "ARTICLE"
+      ? "บทความ"
+      : presetPostType === "ACTIVITY"
+        ? "กิจกรรม"
+        : brandScope === "COUNTER" && name === "brands"
+          ? "เคาน์เตอร์แบรนด์"
+          : brandScope === "COUNTER" && name === "products"
+            ? "สินค้าเคาน์เตอร์แบรนด์"
+            : brandScope === "SALON" && name === "brands"
+              ? "แบรนด์ซาลอน"
+              : brandScope === "SALON" && name === "products"
+                ? "สินค้าซาลอน"
+                : ui.noun;
+  const backHref = presetPostType
+    ? `/r/posts?filter=${presetPostType}`
+    : brandScope
+      ? `/r/${name}?type=${brandScope}`
+      : `/r/${name}`;
   const backLabel =
     presetPostType === "ARTICLE"
       ? "บทความ (Articles)"
       : presetPostType === "ACTIVITY"
         ? "กิจกรรม (Activities)"
-        : ui.title;
+        : brandScope === "COUNTER" && name === "brands"
+          ? "เคาน์เตอร์แบรนด์"
+          : brandScope === "COUNTER" && name === "products"
+            ? "สินค้าเคาน์เตอร์แบรนด์"
+            : ui.title;
+
+  const initial = presetPostType
+    ? { type: presetPostType }
+    : name === "brands" && brandScope
+      ? { type: brandScope }
+      : undefined;
 
   return (
     <>
@@ -60,7 +100,7 @@ export default async function NewResourcePage({ params, searchParams }: PageProp
       <ResourceForm
         resourceName={name}
         fields={ui.fields}
-        initial={presetPostType ? { type: presetPostType } : undefined}
+        initial={initial}
         relations={relations}
         onSave={saveResource.bind(null, name, null)}
         redirectTo={backHref}

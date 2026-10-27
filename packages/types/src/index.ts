@@ -477,7 +477,30 @@ export const vipCustomerSetting = z.object({
 });
 export type VipCustomerSetting = z.infer<typeof vipCustomerSetting>;
 
-export const SETTING_KEYS = ["company", "about", "aboutSlides", "vipCustomer", "growVision", "timeline", "regionCounts"] as const;
+export const shopPageSetting = z.object({
+  eyebrow: localizedOptional,
+  headline: localizedOptional,
+  lead: localizedOptional,
+  ceoEyebrow: localizedOptional,
+  ceoQuote: localizedOptional,
+  ceoText: localizedOptional,
+  ceoImageUrl: z.string().default(""),
+  productsEyebrow: localizedOptional,
+  productsTitle: localizedOptional,
+  productsLead: localizedOptional,
+});
+export type ShopPageSetting = z.infer<typeof shopPageSetting>;
+
+export const SETTING_KEYS = [
+  "company",
+  "about",
+  "aboutSlides",
+  "vipCustomer",
+  "shopPage",
+  "growVision",
+  "timeline",
+  "regionCounts",
+] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 export const settingSchemas = {
@@ -485,6 +508,7 @@ export const settingSchemas = {
   about: aboutSetting,
   aboutSlides: aboutSlidesSetting,
   vipCustomer: vipCustomerSetting,
+  shopPage: shopPageSetting,
   growVision: growVisionSetting,
   timeline: z.array(z.object({ year: z.string(), text: localized })),
   /** Optional override for the salon directory counts until all salons are imported */

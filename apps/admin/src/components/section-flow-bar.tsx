@@ -58,14 +58,25 @@ const FLOWS: MenuFlow[] = [
     ],
   },
   {
-    menuLabel: "ผลิตภัณฑ์ผม / สินค้า (Products)",
+    menuLabel: "ผลิตภัณฑ์ซาลอน (Salon Products)",
     menuPath: "/products",
-    sidebarSection: { label: "สินค้าและแบรนด์", href: "/r/products" },
+    sidebarSection: { label: "ผลิตภัณฑ์ซาลอน (/products)", href: "/r/products?type=SALON" },
     steps: [
-      { key: "brands", label: "1. แบรนด์", href: "/r/brands" },
-      { key: "main-categories", label: "2. หมวดหมู่หลัก", href: "/r/main-categories" },
-      { key: "categories", label: "3. คอลเลกชัน (ไม่บังคับ)", href: "/r/categories" },
-      { key: "products", label: "4. สินค้า", href: "/r/products" },
+      { key: "brands", label: "1. แบรนด์ซาลอน", href: "/r/brands?type=SALON" },
+      { key: "main-categories", label: "2. หมวดหมู่หลัก", href: "/r/main-categories?type=SALON" },
+      { key: "categories", label: "3. คอลเลกชัน (ไม่บังคับ)", href: "/r/categories?type=SALON" },
+      { key: "products", label: "4. สินค้าซาลอน", href: "/r/products?type=SALON" },
+    ],
+  },
+  {
+    menuLabel: "เคาน์เตอร์แบรนด์ (Counter Brand)",
+    menuPath: "/shop",
+    sidebarSection: { label: "เคาน์เตอร์แบรนด์ (/shop)", href: "/r/products?type=COUNTER" },
+    steps: [
+      { key: "shopPage", label: "1. เนื้อหาหน้า & รูป CEO (/shop)", href: "/content/shopPage" },
+      { key: "brands:COUNTER", label: "2. แบรนด์เคาน์เตอร์", href: "/r/brands?type=COUNTER" },
+      { key: "main-categories:COUNTER", label: "3. หมวดหมู่หลัก", href: "/r/main-categories?type=COUNTER" },
+      { key: "products:COUNTER", label: "4. สินค้าเคาน์เตอร์แบรนด์", href: "/r/products?type=COUNTER" },
     ],
   },
   {
@@ -141,7 +152,7 @@ export function SectionFlowBar({
       ? FLOWS.find(
           (f) =>
             f.menuPath === cleanHref ||
-            (f.menuPath === "/products" && (cleanHref.startsWith("/products/") || cleanHref === "/shop")) ||
+            (f.menuPath === "/products" && cleanHref.startsWith("/products/")) ||
             (f.menuPath === "/contact" && cleanHref === "/policy"),
         )
       : undefined);

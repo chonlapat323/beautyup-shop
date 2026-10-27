@@ -110,11 +110,29 @@ const DEDICATED_ROUTES: Record<string, DedicatedRouteInfo> = {
     ],
   },
   "/shop": {
-    pageTitle: "หน้าช่องทางสั่งซื้อ (Shop Online)",
-    description: "หน้าช่องทางสั่งซื้อดึงลิงก์ Shopee, Lazada, TikTok Shop และ LINE จากข้อมูลบริษัทและแบรนด์",
+    pageTitle: "หน้าเคาน์เตอร์แบรนด์ (Counter Brand — /shop)",
+    description: "หน้าเคาน์เตอร์แบรนด์ (/shop) แยกการจัดการออกจากสินค้าซาลอน มี 4 ส่วนหลักตามลำดับด้านล่างนี้",
     links: [
-      { label: "ข้อมูลบริษัท / ลิงก์ร้านค้าออนไลน์", detail: "แก้ไขลิงก์ Shopee, Lazada, TikTok Shop, LINE Official", href: "/settings?tab=company" },
-      { label: "แบรนด์", detail: "จัดการข้อมูลและช่องทางของแต่ละแบรนด์", href: "/r/brands" },
+      {
+        label: "1. เนื้อหาหน้าเคาน์เตอร์แบรนด์ & รูป CEO (I'm Amy)",
+        detail: "แก้ไขหัวข้อ Our Counter Brand, อัปโหลดรูป I'm Amy และแก้ไขคำพูด From the CEO",
+        href: "/content/shopPage",
+      },
+      {
+        label: "2. รายชื่อเคาน์เตอร์แบรนด์ (La Prairie, La Mer, Dior ฯลฯ)",
+        detail: "เพิ่ม/ลบ/แก้ไข เฉพาะเคาน์เตอร์แบรนด์ทั้ง 14 แบรนด์ที่แสดงบนหน้า /shop",
+        href: "/r/brands?type=COUNTER",
+      },
+      {
+        label: "3. หมวดหมู่หลัก (เคาน์เตอร์แบรนด์)",
+        detail: "สร้างและจัดการหมวดหมู่หลักของเคาน์เตอร์แบรนด์",
+        href: "/r/main-categories?type=COUNTER",
+      },
+      {
+        label: "4. สินค้าเคาน์เตอร์แบรนด์",
+        detail: "เพิ่ม/แก้ไขรายการสินค้าเคาน์เตอร์แบรนด์ รูปภาพ ราคา และราคาลดในหน้า /shop",
+        href: "/r/products?type=COUNTER",
+      },
     ],
   },
   "/policy": {

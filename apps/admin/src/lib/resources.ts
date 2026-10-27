@@ -30,7 +30,9 @@ export async function loadRelations(fields: readonly Field[], excludeId?: string
           ? { parent: String(x.brandId) }
           : r === "categories"
             ? { parent: String(x.mainCategoryId || x.brandId) }
-            : {};
+            : r === "brands"
+              ? { brandType: String(x.type ?? "") }
+              : {};
       return [r, rows.map((x) => ({ value: x.id, label: rowTitle(r, x), ...parent(x) }))] as const;
     }),
   );

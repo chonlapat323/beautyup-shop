@@ -46,10 +46,6 @@ function extractFilters(name: ResourceName, rows: Row[], activeFilter: string) {
         const p = r.parent as { id?: string; label?: unknown } | undefined;
         bump(primaryMap, String(r.parentId), `ใต้เมนู: ${localizedLabel(p?.label) || r.parentId}`);
       }
-    } else if (name === "brands") {
-      primaryLabel = "ประเภทแบรนด์";
-      const t = String(r.type ?? "");
-      bump(primaryMap, t, brandTypeLabels[t] ?? t);
     } else if (name === "main-categories" || name === "categories" || name === "products") {
       primaryLabel = "แบรนด์";
       const b = r.brand as { slug?: string; name?: string } | undefined;
@@ -156,7 +152,18 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
   const name = resolveResource((await params).resource);
   const sp = await searchParams;
   const query = typeof sp.q === "string" ? sp.q : "";
-  const rawFilter = typeof sp.filter === "string" ? sp.filter : (typeof sp.brand === "string" ? sp.brand : "");
+  const isBrandScoped = name === "brands" || name === "main-categories" || name === "categories" || name === "products";
+  const brandScope: "SALON" | "COUNTER" | undefined = isBrandScoped
+    ? sp.type === "COUNTER" || sp.filter === "COUNTER"
+      ? "COUNTER"
+      : "SALON"
+    : undefined;
+  const rawFilter =
+    typeof sp.filter === "string" && !(name === "brands" && (sp.filter === "SALON" || sp.filter === "COUNTER"))
+      ? sp.filter
+      : typeof sp.brand === "string"
+        ? sp.brand
+        : "";
   const filter = name === "posts" && !rawFilter ? "ARTICLE" : rawFilter;
   const sub = typeof sp.sub === "string" ? sp.sub : "";
   const status = typeof sp.status === "string" ? sp.status : "";
@@ -164,7 +171,16 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
   const limit = Math.max(5, Math.min(100, Number(sp.limit) || 20));
 
   const ui = resourceUi[name];
-  const allRows = await listResource(name, query);
+  const rawRows = await listResource(name, query);
+  const allRows = brandScope
+    ? rawRows.filter((r) => {
+        const rowBrandType =
+          name === "brands"
+            ? String(r.type ?? "SALON")
+            : String((r.brand as { type?: string } | undefined)?.type ?? "SALON");
+        return rowBrandType === brandScope;
+      })
+    : rawRows;
   const { primaryLabel, primaryOptions, subLabel, subOptions } = extractFilters(name, allRows, filter);
   const filteredRows = allRows.filter((r) => rowMatchesFilters(name, r, filter, sub, status));
 
@@ -185,6 +201,7 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
     const nextPage = overrides.page !== undefined ? overrides.page : 1;
     const nextLimit = overrides.limit !== undefined ? overrides.limit : limit;
 
+    if (brandScope) pms.set("type", brandScope);
     if (nextQ) pms.set("q", nextQ);
     if (nextFilter) pms.set("filter", nextFilter);
     if (nextSub) pms.set("sub", nextSub);
@@ -197,20 +214,54 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
 
   // Breadcrumb trail for active filters
   const isPostTypeTab = name === "posts" && (filter === "ARTICLE" || filter === "ACTIVITY");
-  const flowCurrentKey = isPostTypeTab ? `posts:${filter}` : name;
+  const flowCurrentKey = isPostTypeTab
+    ? `posts:${filter}`
+    : brandScope === "COUNTER"
+      ? `${name}:COUNTER`
+      : name;
   const pageTitle =
     name === "posts" && filter === "ARTICLE"
       ? "บทความ (Articles)"
       : name === "posts" && filter === "ACTIVITY"
         ? "กิจกรรม (Activities)"
-        : ui.title;
+        : brandScope === "COUNTER"
+          ? name === "brands"
+            ? "เคาน์เตอร์แบรนด์ (Counter Brands)"
+            : name === "main-categories"
+              ? "หมวดหมู่หลัก (เคาน์เตอร์แบรนด์)"
+              : name === "products"
+                ? "สินค้าเคาน์เตอร์แบรนด์ (/shop)"
+                : ui.title
+          : brandScope === "SALON"
+            ? name === "brands"
+              ? "แบรนด์ซาลอน (Salon Brands)"
+              : name === "products"
+                ? "สินค้าซาลอน (/products)"
+                : ui.title
+            : ui.title;
   const pageNoun =
     name === "posts" && filter === "ARTICLE"
       ? "บทความ"
       : name === "posts" && filter === "ACTIVITY"
         ? "กิจกรรม"
-        : ui.noun;
-  const newHref = isPostTypeTab ? `/r/posts/new?type=${filter}` : `/r/${name}/new`;
+        : brandScope === "COUNTER"
+          ? name === "brands"
+            ? "เคาน์เตอร์แบรนด์"
+            : name === "products"
+              ? "สินค้าเคาน์เตอร์แบรนด์"
+              : ui.noun
+          : brandScope === "SALON"
+            ? name === "brands"
+              ? "แบรนด์ซาลอน"
+              : name === "products"
+                ? "สินค้าซาลอน"
+                : ui.noun
+            : ui.noun;
+  const newHref = isPostTypeTab
+    ? `/r/posts/new?type=${filter}`
+    : brandScope
+      ? `/r/${name}/new?type=${brandScope}`
+      : `/r/${name}/new`;
 
   const activePrimary = primaryOptions.find((o) => o.value === filter);
   const activeSub = subOptions.find((o) => o.value === sub);
@@ -262,7 +313,8 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
           {ui.searchable ? (
             <form className="relative max-w-sm flex-1 min-w-[220px]" role="search">
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" />
-              <input name="q" defaultValue={query} placeholder={`ค้นหาใน${ui.title}...`} aria-label={`ค้นหา${ui.title}`} className="input !pl-9 !min-h-9 text-sm" type="search" />
+              <input name="q" defaultValue={query} placeholder={`ค้นหาใน${pageTitle}...`} aria-label={`ค้นหา${pageTitle}`} className="input !pl-9 !min-h-9 text-sm" type="search" />
+              {brandScope && <input type="hidden" name="type" value={brandScope} />}
               {filter && <input type="hidden" name="filter" value={filter} />}
               {sub && <input type="hidden" name="sub" value={sub} />}
               {status && <input type="hidden" name="status" value={status} />}

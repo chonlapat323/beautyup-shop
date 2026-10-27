@@ -3,7 +3,7 @@ import { DEPARTMENTS, POST_TYPES, REGIONS, type ResourceName, type SettingKey } 
 /* Field definitions drive the generic admin form and list for every resource. */
 
 /** `parent` lets a dependent dropdown show only some options (e.g. collections of the chosen brand) */
-export type Option = { value: string; label: string; parent?: string };
+export type Option = { value: string; label: string; parent?: string; brandType?: string };
 
 /** Extras every field accepts */
 type FieldExtras = {
@@ -573,6 +573,22 @@ export const settingsUi = {
       { type: "image", name: "bgImageUrl", label: "รูปพื้นหลัง", help: "แสดงจางๆ ด้านหลังข้อความ เว้นว่างได้" },
     ] satisfies Field[],
   },
+  shopPage: {
+    title: "หน้าร้านบิวตี้อัพ / เคาน์เตอร์แบรนด์ (/shop)",
+    description: "แก้ไขข้อความส่วนหัวหน้า /shop, รูปและคำพูด From the CEO (I'm Amy), และหัวข้อส่วนสินค้าเคาน์เตอร์แบรนด์",
+    fields: [
+      { type: "localized", name: "eyebrow", label: "ข้อความเล็กเหนือหัวเรื่อง (Eyebrow)", help: "เช่น Our Counter Brand" },
+      { type: "localized", name: "headline", label: "หัวเรื่องหลักหน้า /shop", help: "เช่น เคาน์เตอร์แบรนด์ชั้นนำ ในราคาที่คุ้มค่า" },
+      { type: "localizedTextarea", name: "lead", label: "คำโปรยใต้หัวเรื่อง", help: "เช่น สกินแคร์ น้ำหอม และเครื่องสำอางจากแบรนด์ระดับโลก คัดสรรโดยบิวตี้อัพ" },
+      { type: "image", name: "ceoImageUrl", label: "รูปภาพส่วน From the CEO (I'm Amy)" },
+      { type: "localized", name: "ceoEyebrow", label: "ข้อความเล็กเหนือคำพูด CEO", help: "เช่น From the CEO" },
+      { type: "localized", name: "ceoQuote", label: "คำพูด CEO", help: "เช่น “I'm Amy … CEO of Beauty Up Enterprise”" },
+      { type: "localizedTextarea", name: "ceoText", label: "ข้อความบรรยายใต้คำพูด CEO", help: "เช่น คัดสรรผลิตภัณฑ์ของแท้จากเคาน์เตอร์แบรนด์ชั้นนำ เพื่อให้ทุกคนเข้าถึงความงามระดับพรีเมียม" },
+      { type: "localized", name: "productsEyebrow", label: "ข้อความเล็กเหนือหมวดสินค้า", help: "เช่น Shop" },
+      { type: "localized", name: "productsTitle", label: "หัวข้อส่วนสินค้าเคาน์เตอร์แบรนด์", help: "เช่น สินค้าเคาน์เตอร์แบรนด์" },
+      { type: "localizedTextarea", name: "productsLead", label: "คำอธิบายส่วนสินค้า", help: "เช่น สนใจสินค้า กด “ติดต่อสั่งซื้อ” ทีมงานจะติดต่อกลับ" },
+    ] satisfies Field[],
+  },
   growVision: {
     title: "แถบ Grow Your Vision",
     description: "กล่องรูปและลิงก์ที่แสดงก่อนท้ายเว็บของทุกหน้า",
@@ -622,5 +638,6 @@ export const PAGE_SETTINGS = {
   aboutSlides: { path: "/about", page: "หน้าเกี่ยวกับเรา", tab: "สไลด์" },
   timeline: { path: "/about", page: "หน้าเกี่ยวกับเรา", tab: "เส้นทางของบิวตี้อัพ" },
   vipCustomer: { path: "/customers", page: "แบนเนอร์ลูกค้า VIP", tab: "แบนเนอร์" },
+  shopPage: { path: "/shop", page: "หน้าร้านบิวตี้อัพ / เคาน์เตอร์แบรนด์ (/shop)", tab: "เนื้อหาหน้าร้าน & CEO" },
 } as const satisfies Partial<Record<SettingKey, { path: string; page: string; tab: string }>>;
 export type PageSettingKey = keyof typeof PAGE_SETTINGS;

@@ -193,13 +193,40 @@ interface VipCustomerRow {
   bgImageUrl?: string;
 }
 
+interface ShopPageRow {
+  eyebrow?: L;
+  headline?: L;
+  lead?: L;
+  ceoEyebrow?: L;
+  ceoQuote?: L;
+  ceoText?: L;
+  ceoImageUrl?: string;
+  productsEyebrow?: L;
+  productsTitle?: L;
+  productsLead?: L;
+}
+
 interface SettingsRow {
   company?: CompanyRow;
   about?: AboutRow;
   aboutSlides?: AboutSlideRow[];
   vipCustomer?: VipCustomerRow;
+  shopPage?: ShopPageRow;
   growVision?: GrowVisionRow;
   timeline?: { year: string; text: L }[];
+}
+
+export interface ShopPageData {
+  eyebrow: string;
+  headline: string;
+  lead: string;
+  ceoEyebrow: string;
+  ceoQuote: string;
+  ceoText: string;
+  ceoImageUrl: string;
+  productsEyebrow: string;
+  productsTitle: string;
+  productsLead: string;
 }
 
 export interface VipCustomerData {
@@ -325,6 +352,30 @@ export async function getGrowVision(lang: Locale): Promise<GrowVisionData> {
     : dict.items;
 
   return { imageUrl, badge, items };
+}
+
+export async function getShopPageData(lang: Locale): Promise<ShopPageData> {
+  const dict = getDictionary(lang).shop;
+  let settings: SettingsRow | undefined;
+  try {
+    settings = await get<SettingsRow>("/settings");
+  } catch {
+    // fallback
+  }
+  const sp = settings?.shopPage;
+
+  return {
+    eyebrow: (sp?.eyebrow && t(sp.eyebrow, lang)) || dict.eyebrow,
+    headline: (sp?.headline && t(sp.headline, lang)) || dict.headline,
+    lead: (sp?.lead && t(sp.lead, lang)) || dict.lead,
+    ceoEyebrow: (sp?.ceoEyebrow && t(sp.ceoEyebrow, lang)) || dict.ceoEyebrow,
+    ceoQuote: (sp?.ceoQuote && t(sp.ceoQuote, lang)) || dict.ceoQuote,
+    ceoText: (sp?.ceoText && t(sp.ceoText, lang)) || dict.ceoText,
+    ceoImageUrl: s(sp?.ceoImageUrl) || "",
+    productsEyebrow: (sp?.productsEyebrow && t(sp.productsEyebrow, lang)) || "Shop",
+    productsTitle: (sp?.productsTitle && t(sp.productsTitle, lang)) || dict.productsTitle,
+    productsLead: (sp?.productsLead && t(sp.productsLead, lang)) || dict.productsLead,
+  };
 }
 
 export async function getVipCustomerData(lang: Locale): Promise<VipCustomerData> {
