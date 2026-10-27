@@ -60,7 +60,7 @@ export type Socials = z.infer<typeof socials>;
  * Enums
  * ------------------------------------------------------------------------- */
 
-export const ROLES = ["ADMIN", "STAFF"] as const;
+export const ROLES = ["ADMIN", "MANAGER", "EDITOR", "STAFF"] as const;
 export const BRAND_TYPES = ["SALON", "COUNTER"] as const;
 export const REGIONS = ["BANGKOK_CENTRAL", "EAST", "WEST", "NORTH", "SOUTH", "NORTHEAST"] as const;
 export const POST_TYPES = ["ARTICLE", "ACTIVITY"] as const;
@@ -360,6 +360,19 @@ export const loginInput = z.object({
   email: z.email(),
   password: z.string().min(1),
 });
+
+export const changePasswordInput = z.object({
+  currentPassword: z.string().min(1, "กรุณากรอกรหัสผ่านปัจจุบัน"),
+  newPassword: z.string().min(8, "รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร"),
+});
+export type ChangePasswordInput = z.infer<typeof changePasswordInput>;
+
+export const roleLabels: Record<Role, string> = {
+  ADMIN: "ผู้ดูแลระบบสูงสุด (ADMIN)",
+  MANAGER: "ผู้จัดการระบบ (MANAGER)",
+  EDITOR: "ผู้ดูแลเนื้อหา (EDITOR)",
+  STAFF: "ทีมงานทั่วไป (STAFF)",
+};
 
 /* ----------------------------------------------------------------------------
  * Public input (website forms)

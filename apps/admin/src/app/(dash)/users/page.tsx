@@ -13,7 +13,10 @@ export default async function UsersPage() {
 
   return (
     <>
-      <PageHeader title="ผู้ใช้หลังบ้าน" description="ผู้ดูแลระบบ (ADMIN) จัดการผู้ใช้และการตั้งค่าได้ ทีมงาน (STAFF) แก้ไขเนื้อหาและตอบข้อความได้" />
+      <PageHeader
+        title="ผู้ใช้หลังบ้านและการกำหนดสิทธิ์"
+        description="ADMIN ดูแลระบบสูงสุดและจัดการผู้ใช้ · MANAGER จัดการสินค้าและเนื้อหา · EDITOR จัดการบทความและมีเดีย · STAFF ดูและตอบข้อความ"
+      />
       <UsersManager users={users} meId={me.id} />
     </>
   );

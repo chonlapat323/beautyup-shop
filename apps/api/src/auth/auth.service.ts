@@ -51,6 +51,19 @@ export class AuthService {
     if (!user || !user.isActive) throw new UnauthorizedException();
     return toAuthUser(user);
   }
+
+  async changePassword(userId: string, currentPass: string, newPass: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('ไม่พบบัญชีผู้ใช้');
+    const ok = await bcrypt.compare(currentPass, user.passwordHash);
+    if (!ok) throw new UnauthorizedException('รหัสผ่านปัจจุบันไม่ถูกต้อง');
+    const passwordHash = await hashPassword(newPass);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+    return { ok: true, message: 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว' };
+  }
 }
 
 export function hashPassword(password: string) {

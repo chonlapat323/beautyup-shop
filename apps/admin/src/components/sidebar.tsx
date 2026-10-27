@@ -7,6 +7,7 @@ import {
   Film,
   Gem,
   Inbox,
+  KeyRound,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -25,6 +26,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { logout } from "@/app/login/actions";
+import { roleLabels, type Role } from "@beautyup/types";
 
 /** `also`: other pages that belong to this top-level entry */
 type Item = {
@@ -32,7 +34,7 @@ type Item = {
   label: string;
   icon: LucideIcon;
   badge?: number;
-  adminOnly?: boolean;
+  allowedRoles?: Role[];
   also?: string[];
   matchBrandType?: "SALON" | "COUNTER";
 };
@@ -41,7 +43,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
     items: [
       { href: "/", label: "ภาพรวม", icon: LayoutDashboard },
-      { href: "/inquiries", label: "กล่องข้อความ", icon: Inbox, badge: newInquiries },
+      { href: "/inquiries", label: "กล่องข้อความ", icon: Inbox, badge: newInquiries, allowedRoles: ["ADMIN", "MANAGER", "STAFF"] },
     ],
   },
   {
@@ -51,6 +53,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/menu-items",
         label: "เมนูและหน้าเว็บ",
         icon: MenuSquare,
+        allowedRoles: ["ADMIN", "MANAGER", "EDITOR"],
         also: [
           "/r/hero-slides",
           "/r/videos",
@@ -69,6 +72,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/products?type=SALON",
         label: "ผลิตภัณฑ์ซาลอน (/products)",
         icon: Package,
+        allowedRoles: ["ADMIN", "MANAGER", "STAFF"],
         also: ["/r/brands", "/r/main-categories", "/r/categories", "/r/products"],
         matchBrandType: "SALON",
       },
@@ -76,6 +80,7 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/products?type=COUNTER",
         label: "เคาน์เตอร์แบรนด์ (/shop)",
         icon: Gem,
+        allowedRoles: ["ADMIN", "MANAGER", "STAFF"],
         also: ["/content/shopPage", "/r/brands", "/r/main-categories", "/r/products"],
         matchBrandType: "COUNTER",
       },
@@ -83,17 +88,20 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
         href: "/r/media",
         label: "มีเดีย",
         icon: Film,
+        allowedRoles: ["ADMIN", "MANAGER", "EDITOR"],
         also: ["/r/media-categories"],
       },
       {
         href: "/r/posts",
         label: "บทความและกิจกรรม",
         icon: Newspaper,
+        allowedRoles: ["ADMIN", "MANAGER", "EDITOR"],
       },
       {
         href: "/r/forum-topics",
         label: "ฟอรั่ม",
         icon: MessagesSquare,
+        allowedRoles: ["ADMIN", "MANAGER", "EDITOR", "STAFF"],
         also: ["/r/forum-replies", "/r/forum-categories"],
       },
     ],
@@ -101,9 +109,10 @@ const groups = (newInquiries: number): { title?: string; items: Item[] }[] => [
   {
     title: "ระบบและสมาชิก",
     items: [
-      { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound },
-      { href: "/settings", label: "ตั้งค่าเว็บไซต์", icon: Settings },
-      { href: "/users", label: "ผู้ใช้หลังบ้าน", icon: UserCog, adminOnly: true },
+      { href: "/members", label: "สมาชิกเว็บไซต์", icon: UserRound, allowedRoles: ["ADMIN", "MANAGER"] },
+      { href: "/settings", label: "ตั้งค่าเว็บไซต์", icon: Settings, allowedRoles: ["ADMIN", "MANAGER"] },
+      { href: "/users", label: "ผู้ใช้หลังบ้าน", icon: UserCog, allowedRoles: ["ADMIN"] },
+      { href: "/profile", label: "เปลี่ยนรหัสผ่าน / บัญชี", icon: KeyRound },
     ],
   },
 ];
@@ -141,7 +150,7 @@ function SidebarInner({ user, newInquiries }: { user: { name: string; email: str
           {g.title && <p className="mb-1.5 px-3 text-xs font-medium tracking-wide text-muted">{g.title}</p>}
           <ul className="space-y-1">
             {g.items
-              .filter((it) => !it.adminOnly || user.role === "ADMIN")
+              .filter((it) => !it.allowedRoles || it.allowedRoles.includes(user.role as Role))
               .map((it) => {
                 const { href, label, icon: Icon, badge } = it;
                 const active = isActive(it);
@@ -170,14 +179,41 @@ function SidebarInner({ user, newInquiries }: { user: { name: string; email: str
 
   const footer = (
     <div className="border-t border-line p-3">
-      <div className="flex items-center gap-3 px-2 py-2">
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand">{user.name.slice(0, 1)}</span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium">{user.name}</span>
-          <span className="block truncate text-xs text-muted">{user.role === "ADMIN" ? "ผู้ดูแลระบบ" : "ทีมงาน"}</span>
-        </span>
+      <div className="flex items-center gap-2 px-1 py-1">
+        <Link
+          href="/profile"
+          title="ดูบัญชีผู้ใช้และเปลี่ยนรหัสผ่าน"
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand hover:opacity-80 transition-opacity"
+        >
+          {user.name.slice(0, 1)}
+        </Link>
+        <div className="min-w-0 flex-1">
+          <Link
+            href="/profile"
+            title="ดูบัญชีผู้ใช้และเปลี่ยนรหัสผ่าน"
+            className="block truncate text-sm font-medium hover:text-brand transition-colors"
+          >
+            {user.name}
+          </Link>
+          <span className="block truncate text-xs text-muted">
+            {roleLabels[user.role as Role] ? roleLabels[user.role as Role].split(" ")[0] : user.role}
+          </span>
+        </div>
+        <Link
+          href="/profile"
+          aria-label="เปลี่ยนรหัสผ่าน"
+          title="เปลี่ยนรหัสผ่าน"
+          className="grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-sand hover:text-ink"
+        >
+          <KeyRound className="size-4" />
+        </Link>
         <form action={logout}>
-          <button type="submit" aria-label="ออกจากระบบ" title="ออกจากระบบ" className="grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600">
+          <button
+            type="submit"
+            aria-label="ออกจากระบบ"
+            title="ออกจากระบบ"
+            className="grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
+          >
             <LogOut className="size-4" />
           </button>
         </form>

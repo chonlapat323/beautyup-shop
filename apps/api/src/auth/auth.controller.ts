@@ -1,5 +1,5 @@
-import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { loginInput } from '@beautyup/types';
+import { Body, Controller, Get, HttpCode, Post, Put, UseGuards } from '@nestjs/common';
+import { changePasswordInput, loginInput } from '@beautyup/types';
 import type { z } from 'zod';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { AdminGuard, CurrentUser } from './auth.guard.js';
@@ -19,5 +19,14 @@ export class AuthController {
   @UseGuards(AdminGuard)
   me(@CurrentUser() user: AuthUser) {
     return user;
+  }
+
+  @Put('password')
+  @UseGuards(AdminGuard)
+  changePassword(
+    @CurrentUser() me: AuthUser,
+    @Body(new ZodValidationPipe(changePasswordInput)) body: z.output<typeof changePasswordInput>,
+  ) {
+    return this.auth.changePassword(me.id, body.currentPassword, body.newPassword);
   }
 }
