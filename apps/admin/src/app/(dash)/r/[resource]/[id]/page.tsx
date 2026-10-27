@@ -24,6 +24,12 @@ export default async function EditResourcePage({ params }: PageProps<"/r/[resour
       row.images = [row.imageUrl.trim()];
     }
   }
+  if (name === "posts") {
+    const imgs = (row.images as string[] | undefined) ?? [];
+    if (imgs.length === 0 && typeof row.coverUrl === "string" && row.coverUrl.trim()) {
+      row.images = [row.coverUrl.trim()];
+    }
+  }
   const title = rowTitle(name, row);
 
   if (name === "menu-items") {

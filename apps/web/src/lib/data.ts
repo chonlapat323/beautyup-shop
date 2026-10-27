@@ -664,18 +664,24 @@ export async function getCourse(lang: Locale, slug: string) {
 
 /* ---------------------------------------------------------------- posts */
 
-interface PostRow { slug: string; type: PostType; title: L; excerpt: L; body: L; coverUrl: string; videoUrl: string; publishedAt: string | null }
+interface PostRow { slug: string; type: PostType; title: L; excerpt: L; body: L; coverUrl: string; images?: string[] | null; videoUrl: string; publishedAt: string | null }
 
-const toPost = (p: PostRow, lang: Locale): Post => ({
-  slug: p.slug,
-  type: p.type,
-  title: t(p.title, lang),
-  excerpt: t(p.excerpt, lang),
-  body: lines(p.body, lang),
-  coverUrl: s(p.coverUrl),
-  videoUrl: s(p.videoUrl),
-  publishedAt: p.publishedAt ?? "",
-});
+const toPost = (p: PostRow, lang: Locale): Post => {
+  const rawImages = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  const cover = rawImages[0] || s(p.coverUrl);
+  const images = rawImages.length > 0 ? rawImages : cover ? [cover] : [];
+  return {
+    slug: p.slug,
+    type: p.type,
+    title: t(p.title, lang),
+    excerpt: t(p.excerpt, lang),
+    body: lines(p.body, lang),
+    coverUrl: cover,
+    images,
+    videoUrl: s(p.videoUrl),
+    publishedAt: p.publishedAt ?? "",
+  };
+};
 
 /** Articles and activities, plus media (as post-shaped cards) so lists and search cover everything. */
 export async function getPosts(lang: Locale, type?: PostType): Promise<Post[]> {
@@ -721,6 +727,7 @@ const mediaAsPost = (m: MediaItem): Post => ({
   excerpt: m.excerpt,
   body: m.body,
   coverUrl: m.images[0],
+  images: m.images,
   videoUrl: m.videoUrl,
   publishedAt: m.publishedAt,
 });

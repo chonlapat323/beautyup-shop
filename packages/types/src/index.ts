@@ -252,6 +252,7 @@ export const postInput = z.object({
   /** One paragraph per line */
   body: localizedOptional,
   coverUrl: url,
+  images: z.array(z.string().trim()).max(20).default([]),
   videoUrl: url,
   publishedAt: z.coerce.date().nullable().optional().default(null),
 });

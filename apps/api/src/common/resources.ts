@@ -107,7 +107,34 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
   ambassadors: { model: 'ambassador', orderBy: byOrder, hasActive: true, searchFields: ['name'] },
   salons: { model: 'salon', orderBy: [{ region: 'asc' }, { province: 'asc' }, { name: 'asc' }], hasActive: true, searchFields: ['name', 'province'] },
   courses: { model: 'course', orderBy: byOrder, slugField: 'slug', hasActive: true, searchFields: ['slug'] },
-  posts: { model: 'post', orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }], slugField: 'slug', hasActive: false, publishedOnly: true, searchFields: ['slug'] },
+  posts: {
+    model: 'post',
+    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+    slugField: 'slug',
+    hasActive: false,
+    publishedOnly: true,
+    searchFields: ['slug'],
+    afterSave: async (row) => {
+      const rawImages = ((row.images as string[] | null) ?? []).filter(Boolean);
+      const fallbackSingle = (row.coverUrl as string | null) ?? '';
+      const images = rawImages.length > 0 ? rawImages : fallbackSingle ? [fallbackSingle] : [];
+      if (images.length === 0) {
+        return fallbackSingle !== '' ? { coverUrl: '' } : undefined;
+      }
+      const postTypeTag = String(row.type ?? '').toLowerCase();
+      const base = mediaFileBase(
+        [],
+        String(row.slug),
+        postTypeTag ? [postTypeTag] : [],
+        (row.publishedAt as Date | null) ?? (row.updatedAt as Date | null) ?? new Date(),
+      );
+      const renamed = await renameUploads(images, base);
+      const cover = renamed[0] ?? '';
+      const imagesChanged = renamed.length !== rawImages.length || renamed.some((u, i) => u !== rawImages[i]);
+      const coverChanged = cover !== fallbackSingle;
+      return imagesChanged || coverChanged ? { images: renamed, coverUrl: cover } : undefined;
+    },
+  },
   media: {
     model: 'media',
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],

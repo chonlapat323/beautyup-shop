@@ -162,6 +162,7 @@ export interface Post {
   excerpt: string;
   body: string[];
   coverUrl?: string;
+  images?: string[];
   videoUrl?: string;
   publishedAt: string;
 }

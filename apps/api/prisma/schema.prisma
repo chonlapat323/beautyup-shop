@@ -253,6 +253,7 @@ model Post {
   excerpt     Json
   body        Json
   coverUrl    String    @default("")
+  images      String[]  @default([])
   videoUrl    String    @default("")
   publishedAt DateTime?
   createdAt   DateTime  @default(now())

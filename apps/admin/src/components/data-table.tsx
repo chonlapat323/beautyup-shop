@@ -10,7 +10,7 @@ function Cell({ col, row }: { col: Column; row: Row }) {
   const v = row[col.name];
   switch (col.kind) {
     case "image": {
-      const src = (Array.isArray(v) ? v[0] : v) || row.imageUrl;
+      const src = (Array.isArray(v) ? v[0] : v) || row.imageUrl || row.coverUrl;
       return <TableImage src={src ? String(src) : undefined} />;
     }
     case "localized": {
