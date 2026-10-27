@@ -145,6 +145,7 @@ export function ResourcePreviewModal({
   if (!open) return null;
 
   const th = locale === "th";
+  const isMobile = device === "mobile";
 
   const renderBrandPreview = () => {
     const name = String(values.name ?? "").trim() || "Brand Name";
@@ -166,17 +167,22 @@ export function ResourcePreviewModal({
         {/* Section 1: หน้ารวมแบรนด์ (/products) — ตรงตาม new.beautyup-enterprise.com/th/products ทุกประการ */}
         {brandType === "SALON" && (
           <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
-            <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-5 py-2.5 flex items-center justify-between text-xs text-[#6b6762]">
+            <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
               <span className="font-semibold text-[#1c1917]">1. การแสดงผลในหน้ารวมแบรนด์ (/{locale}/products)</span>
-              <span className="rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
-                ตรงกับหน้าเว็บจริง 100%
+              <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+                {isMobile ? "มุมมองมือถือ" : "มุมมองคอมพิวเตอร์"}
               </span>
             </div>
 
-            <div className="bg-white px-6 sm:px-10">
-              <section className="grid grid-cols-1 items-center gap-8 py-14 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20">
+            <div className={clsx("bg-white", isMobile ? "px-4" : "px-6 sm:px-10")}>
+              <section
+                className={clsx(
+                  "grid items-center gap-8",
+                  isMobile ? "grid-cols-1 py-10" : "grid-cols-1 py-14 md:grid-cols-2 md:gap-12 md:py-20 lg:gap-20",
+                )}
+              >
                 {/* โลโก้พื้นหลังสีขาวล้วน ไม่มีกรอบสีเทา/ครีม ตาม apps/web/src/app/[lang]/products/page.tsx */}
-                <div className="flex items-center justify-center overflow-hidden rounded-3xl bg-white p-8 sm:p-12">
+                <div className={clsx("flex items-center justify-center overflow-hidden rounded-3xl bg-white", isMobile ? "p-6" : "p-8 sm:p-12")}>
                   {logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={logoUrl} alt={name} className="aspect-[4/3] w-full object-contain" />
@@ -188,13 +194,13 @@ export function ResourcePreviewModal({
                   )}
                 </div>
 
-                <div>
-                  <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">{importedLabel}</p>
-                  <h2 className="mt-3 font-serif text-4xl leading-tight text-[#1c1917] sm:text-5xl">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase wrap-break-word">{importedLabel}</p>
+                  <h2 className={clsx("mt-3 font-serif leading-tight text-[#1c1917] wrap-break-word", isMobile ? "text-4xl" : "text-4xl sm:text-5xl")}>
                     {localName}
-                    <span className="mt-1 block text-2xl text-[#6b6762] sm:text-3xl">{name}</span>
+                    <span className={clsx("mt-1 block text-[#6b6762] wrap-break-word", isMobile ? "text-2xl" : "text-2xl sm:text-3xl")}>{name}</span>
                   </h2>
-                  {description && <p className="mt-5 text-lg text-[#6b6762] whitespace-pre-line">{description}</p>}
+                  {description && <p className="mt-5 text-lg text-[#6b6762] whitespace-pre-line wrap-break-word">{description}</p>}
                   {highlights.length > 0 && (
                     <ul className="mt-6 flex flex-wrap gap-2">
                       {highlights.map((h, i) => (
@@ -204,13 +210,13 @@ export function ResourcePreviewModal({
                       ))}
                     </ul>
                   )}
-                  {tagline && <p className="mt-6 font-serif text-xl italic text-[#1c1917]">“{tagline}”</p>}
-                  <div className="mt-8 flex flex-col gap-2 sm:flex-row">
-                    <span className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#1c1917] px-6 text-[15px] font-medium text-white">
+                  {tagline && <p className="mt-6 font-serif text-xl italic text-[#1c1917] wrap-break-word">“{tagline}”</p>}
+                  <div className={clsx("mt-8 flex gap-2", isMobile ? "flex-col" : "flex-col sm:flex-row")}>
+                    <span className={clsx("inline-flex min-h-11 items-center justify-center rounded-full bg-[#1c1917] px-6 text-[15px] font-medium text-white", isMobile && "w-full")}>
                       {th ? "ชมสินค้า" : "View Products"}
                     </span>
                     {catalogUrl && (
-                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                      <span className={clsx("inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]", isMobile && "w-full")}>
                         {th ? "แคตตาล็อก" : "Catalog"}
                       </span>
                     )}
@@ -225,42 +231,54 @@ export function ResourcePreviewModal({
         {/* Section 2: ส่วนหัวหน้าแบรนด์เดี่ยว (/products/[brand]) — PageHero */}
         {brandType === "SALON" && (
           <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
-            <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-5 py-2.5 flex items-center justify-between text-xs text-[#6b6762]">
+            <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
               <span className="font-semibold text-[#1c1917]">
                 2. ส่วนหัวเมื่อคลิกเข้าหน้าแบรนด์ (/{locale}/products/{String(values.slug || "brand")})
               </span>
-              <span className="rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
                 PageHero
               </span>
             </div>
 
-            <section className="relative overflow-hidden bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)] px-6 py-12 sm:px-10 sm:py-16 lg:py-20">
+            <section
+              className={clsx(
+                "relative overflow-hidden bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)]",
+                isMobile ? "px-5 py-10" : "px-6 py-12 sm:px-10 sm:py-16 lg:py-20",
+              )}
+            >
               <div
                 aria-hidden
                 className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-[radial-gradient(circle,rgb(214_41_127/0.15),transparent_70%)] blur-3xl"
               />
-              <div className="relative">
+              <div className="relative min-w-0">
                 {importedLabel && (
-                  <p className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">
-                    <span aria-hidden className="h-px w-6 bg-[#d6297f]" />
+                  <p className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase wrap-break-word">
+                    <span aria-hidden className="h-px w-6 shrink-0 bg-[#d6297f]" />
                     {importedLabel}
                   </p>
                 )}
-                <h1 className="mt-3 max-w-4xl font-serif text-4xl leading-[1.15] text-[#1c1917] sm:text-5xl lg:text-6xl">
+                <h1
+                  className={clsx(
+                    "mt-3 max-w-4xl font-serif leading-[1.15] text-[#1c1917] wrap-break-word",
+                    isMobile ? "text-4xl" : "text-4xl sm:text-5xl lg:text-6xl",
+                  )}
+                >
                   {localName} <span className="text-[#6b6762]">{name}</span>
                 </h1>
                 {description && (
-                  <p className="mt-5 max-w-2xl text-base text-[#6b6762] sm:text-lg whitespace-pre-line">{description}</p>
+                  <p className={clsx("mt-5 max-w-2xl text-[#6b6762] whitespace-pre-line wrap-break-word", isMobile ? "text-base" : "text-base sm:text-lg")}>
+                    {description}
+                  </p>
                 )}
                 {(website || catalogUrl || Object.values(socials).some(Boolean)) && (
-                  <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className={clsx("mt-8 flex gap-4", isMobile ? "flex-col" : "flex-col sm:flex-row sm:items-center")}>
                     {website && (
-                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                      <span className={clsx("inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]", isMobile && "w-full")}>
                         {th ? "เว็บไซต์แบรนด์" : "Brand Website"}
                       </span>
                     )}
                     {catalogUrl && (
-                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]">
+                      <span className={clsx("inline-flex min-h-11 items-center justify-center rounded-full border border-[#e8e6e1] bg-white px-6 text-[15px] font-medium text-[#1c1917]", isMobile && "w-full")}>
                         {th ? "แคตตาล็อก" : "Catalog"}
                       </span>
                     )}
@@ -274,16 +292,16 @@ export function ResourcePreviewModal({
 
         {/* Section 3: การ์ดแบรนด์บนหน้าแรก (/) */}
         <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
-          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-5 py-2.5 flex items-center justify-between text-xs text-[#6b6762]">
+          <div className="border-b border-[#e8e6e1] bg-[#f7f7f5] px-4 py-2.5 flex items-center justify-between gap-2 text-xs text-[#6b6762]">
             <span className="font-semibold text-[#1c1917]">
               {brandType === "SALON" ? "3" : "1"}. การ์ดแบรนด์บนหน้าแรก (/{locale}) —{" "}
               {brandType === "SALON" ? "ผลิตภัณฑ์ซาลอน" : "เคาน์เตอร์แบรนด์"}
             </span>
-            <span className="rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
-              การ์ดหน้าแรก (1 ใน 3 คอลัมน์)
+            <span className="shrink-0 rounded-full bg-white border border-[#e8e6e1] px-2.5 py-0.5 text-[11px] font-medium text-[#1c1917]">
+              การ์ดหน้าแรก
             </span>
           </div>
-          <div className="bg-white p-6 md:p-10">
+          <div className={clsx("bg-white", isMobile ? "p-4" : "p-6 md:p-10")}>
             <div className="mx-auto max-w-sm flex flex-col overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white">
               <div className="flex items-center justify-center overflow-hidden bg-white p-6 sm:p-8">
                 {logoUrl ? (
@@ -295,12 +313,12 @@ export function ResourcePreviewModal({
                   </div>
                 )}
               </div>
-              <div className="flex flex-1 flex-col p-6">
-                <p className="text-xs tracking-wide text-[#6b6762] uppercase">{importedLabel}</p>
-                <p className="mt-2 font-serif text-2xl text-[#1c1917]">
+              <div className="flex flex-1 flex-col p-6 min-w-0">
+                <p className="text-xs tracking-wide text-[#6b6762] uppercase wrap-break-word">{importedLabel}</p>
+                <p className="mt-2 font-serif text-2xl text-[#1c1917] wrap-break-word">
                   {localName} <span className="text-[#6b6762]">({name})</span>
                 </p>
-                {description && <p className="mt-3 flex-1 text-[#6b6762]">{description}</p>}
+                {description && <p className="mt-3 flex-1 text-[#6b6762] wrap-break-word">{description}</p>}
                 <span className="mt-6 inline-flex items-center gap-2 font-medium text-[#1c1917]">
                   {brandType === "COUNTER" && website
                     ? th
@@ -332,8 +350,8 @@ export function ResourcePreviewModal({
     const tags = Array.isArray(values.tags) ? values.tags.map(String).filter(Boolean) : [];
 
     return (
-      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white p-6 md:p-12 shadow-sm text-[#1c1917]">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
+      <div className={clsx("overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm text-[#1c1917]", isMobile ? "p-4" : "p-6 md:p-12")}>
+        <div className={clsx("grid gap-8", isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 md:gap-12")}>
           <div>
             <div className="aspect-square overflow-hidden rounded-3xl bg-white flex items-center justify-center">
               {currentImg ? (
