@@ -1019,7 +1019,7 @@ export function ResourcePreviewModal({
         : "Draft (Unpublished)";
 
     return (
-      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white p-6 md:p-12 shadow-sm text-[#1c1917] space-y-6">
+      <div className={clsx("overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm text-[#1c1917] space-y-6", isMobile ? "p-4 sm:p-6" : "p-6 md:p-12")}>
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-[#8a8580]">
           <span>{th ? "มุมสมาชิก" : "Members"}</span>
@@ -1028,7 +1028,7 @@ export function ResourcePreviewModal({
         </div>
 
         {/* Title */}
-        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#1c1917] wrap-break-word">
+        <h1 className={clsx("font-serif leading-tight text-[#1c1917] wrap-break-word", isMobile ? "text-2xl sm:text-3xl" : "text-3xl sm:text-4xl lg:text-5xl")}>
           {title}
         </h1>
 
@@ -1160,23 +1160,23 @@ export function ResourcePreviewModal({
         </div>
 
         {/* Sample Media Cards Grid */}
-        <div className="p-6 sm:p-10">
-          <p className="text-xs text-[#8a8580] mb-4">
+        <div className={clsx("bg-white", isMobile ? "p-4" : "p-6 sm:p-10")}>
+          <p className="text-xs text-[#8a8580] mb-3">
             {th
               ? `ตัวอย่างการ์ดมีเดียที่จะแสดงเมื่อเลือกหมวดหมู่ "${name}"`
               : `Sample media cards displayed under "${name}"`}
           </p>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2].map((i) => (
-              <div key={i} className="overflow-hidden rounded-2xl border border-[#e8e6e1] bg-white p-3 space-y-3">
-                <div className="aspect-[4/3] rounded-xl bg-[#f5f3ef] flex items-center justify-center text-xs text-[#8a8580]">
+          <div className={clsx("grid gap-4", isMobile ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3")}>
+            {(isMobile ? [1] : [1, 2]).map((i) => (
+              <div key={i} className="overflow-hidden rounded-2xl border border-[#e8e6e1] bg-white p-3 space-y-2.5">
+                <div className="aspect-[16/9] sm:aspect-[4/3] rounded-xl bg-[#f5f3ef] flex items-center justify-center text-xs text-[#8a8580]">
                   รูปภาพตัวอย่าง #{i}
                 </div>
                 <p className="text-xs text-[#d6297f] font-medium">
                   {name} · 15 มกราคม 2569
                 </p>
                 <h4 className="font-serif text-base text-[#1c1917] line-clamp-1">
-                  {i === 1 ? "Official Campaign Showcase" : "Hair Salon Showcase"}
+                  {i === 1 ? "20 Years of Fanola - Official Campaign" : "Hair Salon Showcase"}
                 </h4>
               </div>
             ))}
