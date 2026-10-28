@@ -986,7 +986,208 @@ export function ResourcePreviewModal({
   };
 
   /* -------------------------------------------------------------------------
-   * 6. GENERIC PREVIEW (posts, media, courses, etc.)
+   * 6. MEDIA PREVIEW (/members/media/[slug])
+   * ----------------------------------------------------------------------- */
+  const renderMediaPreview = () => {
+    const title = pick(values.title, locale) || (th ? "หัวข้อมีเดีย" : "Media Title");
+    const excerpt = pick(values.excerpt, locale);
+    const body = pick(values.body, locale);
+    const images = resolveImgs(values.images, values.imageUrl ?? values.coverUrl);
+    const videoUrl = String(values.videoUrl ?? "");
+    const tags = Array.isArray(values.tags) ? (values.tags as string[]) : [];
+
+    const catId = values.categoryId as string;
+    const catLabel = relations["media-categories"]?.find((c) => c.value === catId)?.label;
+
+    const brandIds = Array.isArray(values.brandIds) ? (values.brandIds as string[]) : [];
+    const brandLabels = brandIds
+      .map((id) => relations["brands"]?.find((b) => b.value === id)?.label)
+      .filter(Boolean);
+
+    const youtubeId = videoUrl.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/,
+    )?.[1];
+
+    const pubDate = values.publishedAt
+      ? new Date(String(values.publishedAt)).toLocaleDateString(th ? "th-TH" : "en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : th
+        ? "ฉบับร่าง (ยังไม่เผยแพร่)"
+        : "Draft (Unpublished)";
+
+    return (
+      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white p-6 md:p-12 shadow-sm text-[#1c1917] space-y-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs text-[#8a8580]">
+          <span>{th ? "มุมสมาชิก" : "Members"}</span>
+          <span>/</span>
+          <span className="text-[#1c1917] font-medium">{th ? "มีเดีย" : "Media"}</span>
+        </div>
+
+        {/* Title */}
+        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#1c1917] wrap-break-word">
+          {title}
+        </h1>
+
+        {/* Category & Date */}
+        <p className="text-sm text-[#8a8580] flex flex-wrap items-center gap-2">
+          {catLabel && <span className="font-semibold text-[#d6297f]">{catLabel} ·</span>}
+          <span>{pubDate}</span>
+        </p>
+
+        {/* YouTube Video Player if provided */}
+        {youtubeId && (
+          <div className="overflow-hidden rounded-2xl aspect-video w-full bg-black shadow-xs">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+              title={title}
+              className="size-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
+
+        {/* Gallery / Images */}
+        {images.length > 0 && (
+          <div className="space-y-3">
+            <div className="overflow-hidden rounded-2xl border border-[#e8e6e1] bg-[#fbfaf8]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={images[0]}
+                alt={title}
+                className="max-h-[500px] w-full object-contain mx-auto"
+              />
+            </div>
+            {images.length > 1 && (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {images.slice(1).map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="aspect-[4/3] overflow-hidden rounded-xl border border-[#e8e6e1] bg-white"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img} alt="" className="size-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Excerpt */}
+        {excerpt && (
+          <p className="text-lg font-serif italic text-[#6b6762] border-l-2 border-[#d6297f] pl-4 py-1">
+            {excerpt}
+          </p>
+        )}
+
+        {/* Body */}
+        {body && (
+          <div className="text-base leading-relaxed text-[#1c1917] whitespace-pre-line wrap-break-word">
+            {body}
+          </div>
+        )}
+
+        {/* Tags & Brands */}
+        {(tags.length > 0 || brandLabels.length > 0) && (
+          <div className="border-t border-[#e8e6e1] pt-6 flex flex-wrap gap-2 items-center">
+            {brandLabels.map((b, i) => (
+              <span
+                key={`b-${i}`}
+                className="rounded-full bg-[#fce7f3] text-[#be185d] px-3 py-1 text-xs font-medium"
+              >
+                {b}
+              </span>
+            ))}
+            {tags.map((t, i) => (
+              <span key={`t-${i}`} className="rounded-full bg-[#f4f2ee] text-[#6b6762] px-3 py-1 text-xs">
+                #{t}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  /* -------------------------------------------------------------------------
+   * 7. MEDIA CATEGORY PREVIEW (แสดงเป็นปุ่มแท็บในหน้า /members/media)
+   * ----------------------------------------------------------------------- */
+  const renderMediaCategoryPreview = () => {
+    const name = pick(values.name, locale) || (th ? "ชื่อหมวดหมู่มีเดีย" : "Media Category Name");
+    const otherCats = relations["media-categories"]?.filter((c) => c.label !== name).slice(0, 3) ?? [];
+
+    return (
+      <div className="overflow-hidden rounded-3xl border border-[#e8e6e1] bg-white shadow-sm">
+        {/* PageHero Simulation */}
+        <div className="border-b border-[#e8e6e1] bg-[linear-gradient(160deg,#fdf2f8_0%,#fdfcfb_60%,#fdfcfb_100%)] p-6 sm:p-10">
+          <p className="text-xs font-medium tracking-[0.18em] text-[#9a5b3f] uppercase">Members</p>
+          <h1 className="mt-2 font-serif text-3xl sm:text-4xl text-[#1c1917]">{th ? "มีเดีย" : "Media"}</h1>
+
+          {/* Type Tabs */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="rounded-full border border-[#e8e6e1] bg-white px-4 py-1.5 text-xs font-medium text-[#6b6762]">
+              {th ? "บทความ" : "Articles"}
+            </span>
+            <span className="rounded-full border border-[#e8e6e1] bg-white px-4 py-1.5 text-xs font-medium text-[#6b6762]">
+              {th ? "กิจกรรม" : "Events"}
+            </span>
+            <span className="rounded-full bg-[#1c1917] px-4 py-1.5 text-xs font-medium text-white shadow-xs">
+              {th ? "มีเดีย" : "Media"}
+            </span>
+          </div>
+
+          {/* Sub-Category Filter Pills with THIS category active */}
+          <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-[#e8e6e1] pt-4">
+            <span className="mr-1 text-xs font-medium text-[#8a8580]">{th ? "หมวดหมู่:" : "Category:"}</span>
+            <span className="rounded-full border border-[#e8e6e1] bg-white px-4 py-1.5 text-xs font-medium text-[#6b6762]">
+              {th ? "ทั้งหมด" : "All"}
+            </span>
+            {/* The Active Category Being Edited */}
+            <span className="rounded-full bg-[#d6297f] px-4 py-1.5 text-xs font-medium text-white shadow-xs">
+              ✓ {name}
+            </span>
+            {otherCats.map((c) => (
+              <span key={c.value} className="rounded-full border border-[#e8e6e1] bg-white px-4 py-1.5 text-xs font-medium text-[#6b6762]">
+                {c.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Sample Media Cards Grid */}
+        <div className="p-6 sm:p-10">
+          <p className="text-xs text-[#8a8580] mb-4">
+            {th
+              ? `ตัวอย่างการ์ดมีเดียที่จะแสดงเมื่อเลือกหมวดหมู่ "${name}"`
+              : `Sample media cards displayed under "${name}"`}
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="overflow-hidden rounded-2xl border border-[#e8e6e1] bg-white p-3 space-y-3">
+                <div className="aspect-[4/3] rounded-xl bg-[#f5f3ef] flex items-center justify-center text-xs text-[#8a8580]">
+                  รูปภาพตัวอย่าง #{i}
+                </div>
+                <p className="text-xs text-[#d6297f] font-medium">
+                  {name} · 15 มกราคม 2569
+                </p>
+                <h4 className="font-serif text-base text-[#1c1917] line-clamp-1">
+                  {i === 1 ? "Official Campaign Showcase" : "Hair Salon Showcase"}
+                </h4>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  /* -------------------------------------------------------------------------
+   * 8. GENERIC PREVIEW (posts, courses, etc.)
    * ----------------------------------------------------------------------- */
   const renderGenericPreview = () => {
     const title =
@@ -1119,9 +1320,13 @@ export function ResourcePreviewModal({
                 ? renderCollectionPreview()
                 : resourceName === "products"
                   ? renderProductPreview()
-                  : resourceName === "shopPage"
-                    ? renderShopPagePreview()
-                    : renderGenericPreview()}
+                  : resourceName === "media"
+                    ? renderMediaPreview()
+                    : resourceName === "media-categories"
+                      ? renderMediaCategoryPreview()
+                      : resourceName === "shopPage"
+                        ? renderShopPagePreview()
+                        : renderGenericPreview()}
         </div>
       </div>
     </div>

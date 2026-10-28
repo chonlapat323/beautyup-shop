@@ -155,6 +155,12 @@ export interface MediaItem {
   publishedAt: string;
 }
 
+export interface MediaCategoryItem {
+  slug: string;
+  name: string;
+  sortOrder: number;
+}
+
 export interface Post {
   slug: string;
   type: PostType;
@@ -164,6 +170,7 @@ export interface Post {
   coverUrl?: string;
   images?: string[];
   videoUrl?: string;
+  category?: { slug: string; name: string };
   publishedAt: string;
 }
 

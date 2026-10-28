@@ -24,6 +24,7 @@ import type {
   ForumTopic,
   ForumTopicSummary,
   HeroSlide,
+  MediaCategoryItem,
   MediaItem,
   MenuItem,
   PageContent,
@@ -735,8 +736,8 @@ const toPost = (p: PostRow, lang: Locale): Post => {
 };
 
 /** Articles and activities, plus media (as post-shaped cards) so lists and search cover everything. */
-export async function getPosts(lang: Locale, type?: PostType): Promise<Post[]> {
-  const mediaPosts = async () => (await getMediaList(lang)).map(mediaAsPost);
+export async function getPosts(lang: Locale, type?: PostType, category?: string): Promise<Post[]> {
+  const mediaPosts = async () => (await getMediaList(lang, category ? { category } : {})).map(mediaAsPost);
   if (type === "MEDIA") return mediaPosts();
   const posts = (await get<PostRow[]>(`/resources/posts${type ? `?type=${type}` : ""}`)).map((p) => toPost(p, lang));
   if (type) return posts;
@@ -780,8 +781,27 @@ const mediaAsPost = (m: MediaItem): Post => ({
   coverUrl: m.images[0],
   images: m.images,
   videoUrl: m.videoUrl,
+  category: m.category,
   publishedAt: m.publishedAt,
 });
+
+export async function getMediaCategories(lang: Locale): Promise<MediaCategoryItem[]> {
+  interface MediaCategoryRow {
+    slug: string;
+    name: L;
+    sortOrder?: number;
+    isActive?: boolean;
+  }
+  const rows = await get<MediaCategoryRow[]>("/resources/media-categories");
+  return rows
+    .filter((r) => r.isActive !== false)
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+    .map((r) => ({
+      slug: r.slug,
+      name: t(r.name, lang),
+      sortOrder: r.sortOrder ?? 0,
+    }));
+}
 
 export async function getMediaList(lang: Locale, filter: { category?: string; brand?: string } = {}) {
   const q = new URLSearchParams(Object.entries(filter).filter((e): e is [string, string] => !!e[1])).toString();
