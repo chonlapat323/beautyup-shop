@@ -66,28 +66,31 @@ export default async function PostListPage({
             <Link
               href="/members/media"
               className={clsx(
-                "rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+                "rounded-full px-4 py-1.5 text-xs transition-colors",
                 !selectedCat
-                  ? "bg-ink text-white shadow-2xs"
-                  : "border border-line bg-white/80 text-muted hover:bg-white hover:text-ink",
+                  ? "bg-ink font-semibold text-white shadow-xs"
+                  : "border border-line bg-white/90 text-muted hover:border-line hover:bg-white hover:text-ink",
               )}
             >
               {lang === "th" ? "ทั้งหมด" : "All"}
             </Link>
-            {mediaCategories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/members/media?cat=${encodeURIComponent(c.slug)}`}
-                className={clsx(
-                  "rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
-                  selectedCat === c.slug
-                    ? "bg-brand text-white shadow-2xs"
-                    : "border border-line bg-white/80 text-muted hover:border-brand/40 hover:bg-white hover:text-ink",
-                )}
-              >
-                {c.name}
-              </Link>
-            ))}
+            {mediaCategories.map((c) => {
+              const active = selectedCat === c.slug;
+              return (
+                <Link
+                  key={c.slug}
+                  href={`/members/media?cat=${encodeURIComponent(c.slug)}`}
+                  className={clsx(
+                    "rounded-full px-4 py-1.5 text-xs transition-colors",
+                    active
+                      ? "bg-[#d6297f] font-semibold text-white shadow-xs"
+                      : "border border-line bg-white/90 text-muted hover:border-[#d6297f]/50 hover:bg-white hover:text-ink",
+                  )}
+                >
+                  {c.name}
+                </Link>
+              );
+            })}
           </div>
         )}
       </PageHero>
