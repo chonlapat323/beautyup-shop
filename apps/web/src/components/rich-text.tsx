@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import clsx from "clsx";
 import Link from "@/components/link";
 
 /** Renders inline formatting (**bold**, __underline__, *italic*, [label](url)) safely as React nodes. */
@@ -62,7 +63,7 @@ export function renderInlineRichText(text: string): ReactNode[] {
   return nodes.length ? nodes : [text];
 }
 
-/** Multi-line rich text renderer supporting headings (## ), bullet lists (- ), numbered lists (1. ), and inline formatting. */
+/** Multi-line rich text renderer supporting HTML, headings (## ), bullet lists (- ), numbered lists (1. ), and inline formatting. */
 export function RichText({
   text,
   className = "space-y-3",
@@ -73,6 +74,26 @@ export function RichText({
   paragraphClassName?: string;
 }) {
   if (!text) return null;
+
+  // If text contains HTML tags (from rich text editor), render HTML safely with typography styling
+  if (typeof text === "string" && /<\/(p|h2|h3|h4|ul|ol|li|blockquote|strong|em|u|a)>/i.test(text)) {
+    return (
+      <div
+        className={clsx(
+          "max-w-none text-ink space-y-3 leading-relaxed",
+          "[&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-ink [&_h2]:mt-6 [&_h2]:mb-2",
+          "[&_h3]:font-display [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-ink [&_h3]:mt-4 [&_h3]:mb-2",
+          "[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5",
+          "[&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1.5",
+          "[&_blockquote]:border-l-3 [&_blockquote]:border-brand-pink [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted",
+          "[&_a]:text-brand-pink [&_a]:underline [&_a]:underline-offset-2",
+          className,
+        )}
+        dangerouslySetInnerHTML={{ __html: text }}
+      />
+    );
+  }
+
   const lines = Array.isArray(text) ? text.flatMap((t) => t.split("\n")) : text.split("\n");
   const blocks: ReactNode[] = [];
   let i = 0;
