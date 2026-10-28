@@ -41,11 +41,13 @@ export default async function PostPage({ params }: PageProps<"/[lang]/members/[t
 
       {post.videoUrl && (
         <div className="mt-8 overflow-hidden rounded-3xl">
-          <VideoPlayer src={post.videoUrl} poster={cover} title={post.title} rounded="rounded-none" />
+          <VideoPlayer src={post.videoUrl} title={post.title} rounded="rounded-none" />
         </div>
       )}
       {images.length > 0 ? (
-        <MediaGallery images={images} title={post.title} slug={post.slug} cover={!post.videoUrl} />
+        <div className={post.videoUrl ? "mt-8" : undefined}>
+          <MediaGallery images={images} title={post.title} slug={post.slug} cover={true} />
+        </div>
       ) : (
         !post.videoUrl && <Media src={post.coverUrl} tone={2} className="mt-8 aspect-[16/9] w-full rounded-3xl" />
       )}

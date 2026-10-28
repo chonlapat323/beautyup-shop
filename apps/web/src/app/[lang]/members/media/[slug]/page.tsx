@@ -88,12 +88,13 @@ export default async function MediaPage({ params }: PageProps<"/[lang]/members/m
 
         {media.videoUrl && (
           <div className="mt-8 overflow-hidden rounded-3xl">
-            <VideoPlayer src={media.videoUrl} poster={cover} title={media.title} rounded="rounded-none" />
+            <VideoPlayer src={media.videoUrl} title={media.title} rounded="rounded-none" />
           </div>
         )}
         {media.images.length > 0 ? (
-          // With a video, the photos are all thumbnails; without one, the first is the large cover
-          <MediaGallery images={media.images} title={media.title} slug={media.slug} cover={!media.videoUrl} />
+          <div className={media.videoUrl ? "mt-8" : undefined}>
+            <MediaGallery images={media.images} title={media.title} slug={media.slug} cover={true} />
+          </div>
         ) : (
           !media.videoUrl && <Media alt={media.title} tone={2} className="mt-8 aspect-[16/9] w-full rounded-3xl" />
         )}
