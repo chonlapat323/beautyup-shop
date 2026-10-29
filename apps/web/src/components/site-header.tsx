@@ -204,7 +204,7 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
             href={alt.href}
             hrefLang={alt.other}
             aria-label={dict.common.switchLanguageLabel}
-            className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 text-sm transition-colors hover:bg-sand hover:text-accent"
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors hover:bg-sand hover:text-accent"
           >
             <Globe className="size-4" />
             <span className="hidden xl:inline">{dict.common.switchLanguage}</span>
@@ -278,10 +278,10 @@ export function SiteHeader({ menu }: { menu: MenuItem[] }) {
           ) : (
             <Link
               href="/login"
-              className="btn-pill hidden sm:inline-flex"
+              className="btn-pill hidden sm:inline-flex shrink-0 items-center whitespace-nowrap"
             >
-              <User className="size-4" />
-              {dict.common.login}
+              <User className="size-4 shrink-0" />
+              <span>{dict.common.login}</span>
             </Link>
           )}
           <button
