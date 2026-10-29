@@ -15,7 +15,7 @@ export type Field = FieldExtras &
   (
   | { type: "text" | "textarea" | "url" | "color" | "date"; name: string; label: string; help?: string; required?: boolean; /** Fill this field from another one (slug from name) until edited by hand */ slugFrom?: string }
   | { type: "number"; name: string; label: string; help?: string; required?: boolean; step?: string }
-  | { type: "localized" | "localizedTextarea"; name: string; label: string; help?: string; required?: boolean }
+  | { type: "localized" | "localizedTextarea"; name: string; label: string; help?: string; required?: boolean; suggestions?: (string | { th: string; en?: string })[] }
   | { type: "boolean"; name: string; label: string; help?: string }
   | { type: "select"; name: string; label: string; options: Option[]; help?: string; required?: boolean }
   | { type: "relation"; name: string; label: string; resource: ResourceName; nullable?: boolean; help?: string; required?: boolean; /** Only options whose parent equals this field's value */ filterBy?: string }
@@ -112,7 +112,26 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "relation", name: "mainCategoryId", label: "หมวดหมู่หลัก", resource: "main-categories", required: true, filterBy: "brandId", help: "บังคับเลือกหมวดหมู่หลักที่คอลเลกชันนี้สังกัดอยู่ (แสดงเฉพาะหมวดของแบรนด์ที่เลือก)" },
       { type: "localized", name: "name", label: "ชื่อคอลเลกชัน", required: true },
       slugField("name"),
-      { type: "localized", name: "subtitle", label: "คำโปรยสั้น" },
+      {
+        type: "localized",
+        name: "subtitle",
+        label: "คำโปรยสั้น",
+        help: "เลือกจากตัวเลือกคำโปรยสำเร็จรูป หรือพิมพ์เองได้ตามต้องการ",
+        suggestions: [
+          { th: "ลดประกายเหลือง ล็อกสีผมโทนหม่นให้ยาวนาน", en: "Anti-yellow care for blonde, bleached, and cool-toned hair" },
+          { th: "ดูแลและฟื้นฟูเส้นผมอย่างล้ำลึก", en: "Deep care and intensive restoration for damaged hair" },
+          { th: "เติมความชุ่มชื้น คืนความนุ่มสลวยเงางาม", en: "Hydrating care for smooth, silky, and radiant hair" },
+          { th: "บำรุงผมแห้งเสียจากการทำสีและความร้อน", en: "Nourishing therapy for color-treated and heat-damaged hair" },
+          { th: "ปรับโครงสร้างเส้นผมให้แข็งแรงตั้งแต่โคนจรดปลาย", en: "Strengthening hair fiber structure from root to tip" },
+          { th: "ล็อกประกายสีผมสดชัด ไม่ซีดจางเร็ว", en: "Color lock protection for vibrant, long-lasting color" },
+          { th: "ปกป้องเส้นผมจากมลภาวะและรังสี UV", en: "Anti-pollution and UV shield for hair protection" },
+          { th: "คืนความยืดหยุ่น ลดผมชี้ฟูและแตกปลาย", en: "Frizz control and elasticity restore for split ends" },
+          { th: "ดีท็อกซ์หนังศีรษะ ปรับสมดุลและลดความมัน", en: "Scalp detox, purifying and sebum balancing care" },
+          { th: "เสริมสร้างวอลลุ่ม ผมหนานุ่มมีน้ำหนักเป็นธรรมชาติ", en: "Volumizing formula for bouncy, fuller-looking hair" },
+          { th: "สูตรพรีเมียมจากอิตาลี เพื่อผลลัพธ์ระดับมืออาชีพ", en: "Professional Italian formulation for salon-grade results" },
+          { th: "ดูแลเส้นผมและหนังศีรษะสูตรอ่อนโยนเป็นพิเศษ", en: "Extra gentle daily care for sensitive scalp and hair" },
+        ],
+      },
       { type: "localizedTextarea", name: "description", label: "คำอธิบาย (แสดงด้านบนหน้าคอลเลกชัน)" },
       { type: "localizedTextarea", name: "highlights", label: "จุดเด่น (เช่น 360° Blonde Protection)" },
       { type: "image", name: "imageUrl", label: "รูปการ์ดคอลเลกชัน" },

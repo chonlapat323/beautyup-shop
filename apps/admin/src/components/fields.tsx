@@ -250,8 +250,62 @@ export function FieldInput({
       const v = (value as { th?: string; en?: string }) ?? {};
       const err = errors[`${path}.${locale}`] ?? own;
       const other = locale === "th" ? "en" : "th";
+      const suggestions = (field as { suggestions?: (string | { th: string; en?: string })[] }).suggestions;
+      const suggestionItems = (suggestions ?? []).map((s) => {
+        if (typeof s === "string") return { value: s, label: s, th: s, en: s };
+        return { value: s[locale] || s.th, label: s[locale] || s.th, th: s.th, en: s.en || "" };
+      });
+
+      const onPickSuggestion = (selectedValue: string) => {
+        if (!selectedValue) return;
+        const found = suggestionItems.find((s) => s.value === selectedValue);
+        if (found) {
+          onChange({
+            ...v,
+            th: found.th || v.th || "",
+            en: found.en || v.en || "",
+            [locale]: found.value,
+          });
+        } else {
+          onChange({ ...v, [locale]: selectedValue });
+        }
+      };
+
       return (
         <FieldShell id={id} label={field.label} help={field.help} required={locale === "th" && field.required} errors={err}>
+          {suggestionItems.length > 0 && (
+            <div className="mb-2 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <select
+                  aria-label={`เลือก${field.label}สำเร็จรูป`}
+                  className="input !h-9 !py-1 text-xs text-ink/80 bg-mist/60 border-line hover:border-brand/60 focus:border-brand"
+                  value={suggestionItems.some((s) => s.value === (v[locale] ?? "")) ? (v[locale] as string) : ""}
+                  onChange={(e) => onPickSuggestion(e.target.value)}
+                >
+                  <option value="">— เลือก{field.label}สำเร็จรูป (หรือพิมพ์เองในช่องด้านล่าง) —</option>
+                  {suggestionItems.map((s, idx) => (
+                    <option key={`${s.value}-${idx}`} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {suggestionItems.slice(0, 6).map((s, idx) => (
+                  <button
+                    key={`${s.value}-btn-${idx}`}
+                    type="button"
+                    onClick={() => onPickSuggestion(s.value)}
+                    className="inline-flex items-center gap-1 rounded-md border border-line bg-white px-2 py-0.5 text-[11px] text-muted transition-colors hover:border-brand hover:text-brand"
+                  >
+                    <span>+</span>
+                    <span className="truncate max-w-[220px]">{s.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {field.type === "localizedTextarea" ? (
             <RichTextarea
               id={id}
@@ -266,6 +320,7 @@ export function FieldInput({
             <div className="relative">
               <input
                 id={id}
+                list={suggestionItems.length > 0 ? `${id}-datalist` : undefined}
                 className="input"
                 lang={locale}
                 placeholder={locale === "en" && v.th ? v.th : undefined}
@@ -273,6 +328,13 @@ export function FieldInput({
                 aria-invalid={err?.length ? true : undefined}
                 onChange={(e) => onChange({ ...v, [locale]: e.target.value })}
               />
+              {suggestionItems.length > 0 && (
+                <datalist id={`${id}-datalist`}>
+                  {suggestionItems.map((s, idx) => (
+                    <option key={`${s.value}-opt-${idx}`} value={s.value} />
+                  ))}
+                </datalist>
+              )}
               <span className="pointer-events-none absolute top-2 right-2 rounded bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-muted uppercase">{locale}</span>
             </div>
           )}
