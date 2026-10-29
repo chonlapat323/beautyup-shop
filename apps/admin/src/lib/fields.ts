@@ -3,7 +3,7 @@ import { DEPARTMENTS, POST_TYPES, REGIONS, type ResourceName, type SettingKey } 
 /* Field definitions drive the generic admin form and list for every resource. */
 
 /** `parent` lets a dependent dropdown show only some options (e.g. collections of the chosen brand) */
-export type Option = { value: string; label: string; parent?: string; brandType?: string };
+export type Option = { value: string; label: string; parent?: string; brandType?: string; slug?: string };
 
 /** Extras every field accepts */
 type FieldExtras = {

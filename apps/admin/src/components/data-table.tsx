@@ -73,7 +73,17 @@ function Cell({ col, row }: { col: Column; row: Row }) {
   }
 }
 
-export function DataTable({ columns, rows, hrefFor }: { columns: Column[]; rows: Row[]; hrefFor: (row: Row) => string }) {
+export function DataTable({
+  columns,
+  rows,
+  hrefFor,
+  renderRowActions,
+}: {
+  columns: Column[];
+  rows: Row[];
+  hrefFor: (row: Row) => string;
+  renderRowActions?: (row: Row) => React.ReactNode;
+}) {
   if (!rows.length) {
     return <p className="card p-10 text-center text-sm text-muted">ยังไม่มีข้อมูล</p>;
   }
@@ -90,6 +100,11 @@ export function DataTable({ columns, rows, hrefFor }: { columns: Column[]; rows:
                   {c.label}
                 </th>
               ))}
+              {renderRowActions && (
+                <th scope="col" className="px-4 py-3 font-medium text-right w-64">
+                  สินค้าในหมวดนี้
+                </th>
+              )}
               <th className="w-10" aria-label="เปิด" />
             </tr>
           </thead>
@@ -107,6 +122,11 @@ export function DataTable({ columns, rows, hrefFor }: { columns: Column[]; rows:
                     )}
                   </td>
                 ))}
+                {renderRowActions && (
+                  <td className="px-4 py-3 text-right align-middle relative z-10 whitespace-nowrap">
+                    {renderRowActions(row)}
+                  </td>
+                )}
                 <td className="pr-4 text-muted transition-transform group-hover:translate-x-0.5">
                   <ChevronRight className="size-4" />
                 </td>
@@ -119,8 +139,8 @@ export function DataTable({ columns, rows, hrefFor }: { columns: Column[]; rows:
       {/* Mobile cards */}
       <ul className="space-y-2 md:hidden">
         {rows.map((row) => (
-          <li key={row.id}>
-            <Link href={hrefFor(row)} className="card flex items-center gap-3 p-3 transition-colors hover:border-muted">
+          <li key={row.id} className="card p-3 transition-colors hover:border-muted">
+            <Link href={hrefFor(row)} className="flex items-center gap-3">
               {lead.kind === "image" && <Cell col={lead} row={row} />}
               <span className="min-w-0 flex-1 space-y-1 text-sm">
                 {(lead.kind === "image" ? rest : columns).map((c) => (
@@ -131,6 +151,11 @@ export function DataTable({ columns, rows, hrefFor }: { columns: Column[]; rows:
               </span>
               <ChevronRight className="size-4 shrink-0 text-muted" />
             </Link>
+            {renderRowActions && (
+              <div className="mt-3 pt-2.5 border-t border-line/60 flex items-center justify-end gap-2 relative z-10">
+                {renderRowActions(row)}
+              </div>
+            )}
           </li>
         ))}
       </ul>

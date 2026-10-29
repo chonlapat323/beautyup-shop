@@ -27,12 +27,12 @@ export async function loadRelations(fields: readonly Field[], excludeId?: string
       // Main categories belong to a brand; collections belong to a mainCategory (falling back to brandId)
       const parent = (x: Row) =>
         r === "main-categories"
-          ? { parent: String(x.brandId) }
+          ? { parent: String(x.brandId), slug: String(x.slug ?? "") }
           : r === "categories"
-            ? { parent: String(x.mainCategoryId || x.brandId) }
+            ? { parent: String(x.mainCategoryId || x.brandId), slug: String(x.slug ?? "") }
             : r === "brands"
-              ? { brandType: String(x.type ?? "") }
-              : {};
+              ? { brandType: String(x.type ?? ""), slug: String(x.slug ?? "") }
+              : { slug: String(x.slug ?? "") };
       return [r, rows.map((x) => ({ value: x.id, label: rowTitle(r, x), ...parent(x) }))] as const;
     }),
   );

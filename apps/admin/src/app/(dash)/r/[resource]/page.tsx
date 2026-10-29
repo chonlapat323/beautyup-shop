@@ -1,6 +1,6 @@
 import type { ResourceName } from "@beautyup/types";
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight, Filter, Plus, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, Package, Plus, Search, X } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
@@ -264,9 +264,91 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
 
   const newHref = isPostTypeTab
     ? `/r/posts/new?type=${filter}`
-    : brandScope
-      ? `/r/${name}/new?type=${brandScope}`
-      : `/r/${name}/new`;
+    : (() => {
+        const pms = new URLSearchParams();
+        if (brandScope) pms.set("type", brandScope);
+        if (filter && (name === "products" || name === "categories" || name === "main-categories")) pms.set("brand", filter);
+        if (sub && (name === "products" || name === "categories")) pms.set("sub", sub);
+        const qs = pms.toString();
+        return qs ? `/r/${name}/new?${qs}` : `/r/${name}/new`;
+      })();
+
+  let renderRowActions: ((row: Row) => React.ReactNode) | undefined = undefined;
+
+  if (name === "main-categories") {
+    renderRowActions = (row: Row) => {
+      const brand = row.brand as { id?: string; slug?: string; name?: string; type?: string } | undefined;
+      const brandType = brand?.type ?? brandScope ?? "SALON";
+      const brandSlug = brand?.slug ?? "";
+      const brandId = String(row.brandId ?? brand?.id ?? "");
+      const slug = String(row.slug ?? "");
+      const productCount = (row._count as { products?: number })?.products ?? 0;
+
+      const viewHref = `/r/products?type=${brandType}${brandSlug ? `&filter=${brandSlug}` : ""}&sub=${slug}`;
+      const addHref = `/r/products/new?type=${brandType}&brandId=${brandId}&mainCategoryId=${row.id}`;
+
+      return (
+        <div className="inline-flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+          <Link
+            href={viewHref}
+            title={`ดูสินค้าในหมวดหมู่นี้ (${productCount} รายการ)`}
+            className="inline-flex items-center gap-1 rounded-lg border border-line bg-white px-2.5 py-1 text-xs font-medium text-ink transition-colors hover:border-brand hover:text-brand shadow-2xs"
+          >
+            <Package className="size-3.5 text-brand" />
+            <span>ดูสินค้า</span>
+            <span className="rounded-full bg-sand px-1.5 py-0.2 text-[10px] font-semibold text-muted">
+              {productCount}
+            </span>
+          </Link>
+          <Link
+            href={addHref}
+            title="เพิ่มสินค้าในหมวดหมู่นี้ทันที (เลือกแบรนด์และหมวดหมู่อัตโนมัติ)"
+            className="inline-flex items-center gap-1 rounded-lg bg-brand px-2.5 py-1 text-xs font-medium text-white transition-opacity hover:opacity-90 shadow-2xs"
+          >
+            <Plus className="size-3.5" />
+            <span>+ เพิ่มสินค้า</span>
+          </Link>
+        </div>
+      );
+    };
+  } else if (name === "categories") {
+    renderRowActions = (row: Row) => {
+      const brand = row.brand as { id?: string; slug?: string; name?: string; type?: string } | undefined;
+      const brandType = brand?.type ?? brandScope ?? "SALON";
+      const brandSlug = brand?.slug ?? "";
+      const brandId = String(row.brandId ?? brand?.id ?? "");
+      const mainCategoryId = String(row.mainCategoryId ?? "");
+      const slug = String(row.slug ?? "");
+      const productCount = (row._count as { products?: number })?.products ?? 0;
+
+      const viewHref = `/r/products?type=${brandType}${brandSlug ? `&filter=${brandSlug}` : ""}&sub=${slug}`;
+      const addHref = `/r/products/new?type=${brandType}&brandId=${brandId}${mainCategoryId ? `&mainCategoryId=${mainCategoryId}` : ""}&categoryId=${row.id}`;
+
+      return (
+        <div className="inline-flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+          <Link
+            href={viewHref}
+            title={`ดูสินค้าในคอลเลกชันนี้ (${productCount} รายการ)`}
+            className="inline-flex items-center gap-1 rounded-lg border border-line bg-white px-2.5 py-1 text-xs font-medium text-ink transition-colors hover:border-brand hover:text-brand shadow-2xs"
+          >
+            <Package className="size-3.5 text-brand" />
+            <span>ดูสินค้า</span>
+            <span className="rounded-full bg-sand px-1.5 py-0.2 text-[10px] font-semibold text-muted">
+              {productCount}
+            </span>
+          </Link>
+          <Link
+            href={addHref}
+            title="เพิ่มสินค้าในคอลเลกชันนี้ทันที (เลือกแบรนด์และคอลเลกชันอัตโนมัติ)"
+            className="inline-flex items-center gap-1 rounded-lg bg-brand px-2.5 py-1 text-xs font-medium text-white transition-opacity hover:opacity-90 shadow-2xs"
+          >
+            <Plus className="size-3.5" />
+            <span>+ เพิ่มสินค้า</span>
+          </Link>
+        </div>
+      );
+    };
+  }
 
   const activePrimary = primaryOptions.find((o) => o.value === filter);
   const activeSub = subOptions.find((o) => o.value === sub);
@@ -462,7 +544,12 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
         )}
       </div>
 
-      <DataTable columns={ui.columns} rows={paginatedRows} hrefFor={(r) => `/r/${name}/${r.id}`} />
+      <DataTable
+        columns={ui.columns}
+        rows={paginatedRows}
+        hrefFor={(r) => `/r/${name}/${r.id}`}
+        renderRowActions={renderRowActions}
+      />
 
       {/* Pagination Footer */}
       {totalPages > 1 && (

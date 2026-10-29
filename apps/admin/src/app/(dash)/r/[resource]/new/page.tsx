@@ -71,11 +71,81 @@ export default async function NewResourcePage({ params, searchParams }: PageProp
               : brandScope === "SALON" && name === "products"
                 ? "สินค้าซาลอน"
                 : ui.noun;
+
+  // Resolve pre-filled relations from query params (e.g. from row quick actions or filtered list)
+  const rawBrand = typeof sp.brandId === "string" ? sp.brandId : typeof sp.brand === "string" ? sp.brand : typeof sp.filter === "string" ? sp.filter : "";
+  const rawMainCategory = typeof sp.mainCategoryId === "string" ? sp.mainCategoryId : typeof sp.mainCategory === "string" ? sp.mainCategory : "";
+  const rawCategory = typeof sp.categoryId === "string" ? sp.categoryId : typeof sp.category === "string" ? sp.category : "";
+  const rawSub = typeof sp.sub === "string" ? sp.sub : "";
+
+  let resolvedBrandId = "";
+  let resolvedMainCategoryId = "";
+  let resolvedCategoryId = "";
+
+  const brandOptions = relations.brands ?? [];
+  const mainCatOptions = relations["main-categories"] ?? [];
+  const catOptions = relations.categories ?? [];
+
+  // 1. Resolve category / collection
+  if (rawCategory) {
+    const c = catOptions.find((x) => x.value === rawCategory || x.slug === rawCategory);
+    if (c) resolvedCategoryId = c.value;
+  } else if (rawSub) {
+    const c = catOptions.find((x) => x.value === rawSub || x.slug === rawSub);
+    if (c) resolvedCategoryId = c.value;
+  }
+
+  // If collection resolved, infer its mainCategory or brand
+  if (resolvedCategoryId) {
+    const c = catOptions.find((x) => x.value === resolvedCategoryId);
+    if (c?.parent) {
+      const parentIsMainCat = mainCatOptions.find((m) => m.value === c.parent);
+      if (parentIsMainCat) {
+        resolvedMainCategoryId = parentIsMainCat.value;
+        if (parentIsMainCat.parent) resolvedBrandId = parentIsMainCat.parent;
+      } else {
+        const parentIsBrand = brandOptions.find((b) => b.value === c.parent);
+        if (parentIsBrand) resolvedBrandId = parentIsBrand.value;
+      }
+    }
+  }
+
+  // 2. Resolve main-category
+  if (!resolvedMainCategoryId) {
+    if (rawMainCategory) {
+      const m = mainCatOptions.find((x) => x.value === rawMainCategory || x.slug === rawMainCategory);
+      if (m) resolvedMainCategoryId = m.value;
+    } else if (rawSub && !resolvedCategoryId) {
+      const m = mainCatOptions.find((x) => x.value === rawSub || x.slug === rawSub);
+      if (m) resolvedMainCategoryId = m.value;
+    }
+    if (resolvedMainCategoryId) {
+      const m = mainCatOptions.find((x) => x.value === resolvedMainCategoryId);
+      if (m?.parent && !resolvedBrandId) resolvedBrandId = m.parent;
+    }
+  }
+
+  // 3. Resolve brand
+  if (!resolvedBrandId) {
+    if (rawBrand) {
+      const b = brandOptions.find((x) => x.value === rawBrand || x.slug === rawBrand);
+      if (b) resolvedBrandId = b.value;
+    }
+  }
+
+  const bLabel = brandOptions.find((x) => x.value === resolvedBrandId)?.label;
+  const mLabel = mainCatOptions.find((x) => x.value === resolvedMainCategoryId)?.label;
+  const cLabel = catOptions.find((x) => x.value === resolvedCategoryId)?.label;
+  const prefillHierarchy = [bLabel, mLabel, cLabel].filter(Boolean);
+  const prefillSummary = prefillHierarchy.length > 0 ? prefillHierarchy.join(" › ") : "";
+
   const backHref = presetPostType
     ? `/r/posts?filter=${presetPostType}`
-    : brandScope
-      ? `/r/${name}?type=${brandScope}`
-      : `/r/${name}`;
+    : name === "products" && (rawBrand || rawSub)
+      ? `/r/products?type=${brandScope || "SALON"}${rawBrand ? `&filter=${rawBrand}` : ""}${rawSub ? `&sub=${rawSub}` : ""}`
+      : brandScope
+        ? `/r/${name}?type=${brandScope}`
+        : `/r/${name}`;
   const backLabel =
     presetPostType === "ARTICLE"
       ? "บทความ (Articles)"
@@ -91,12 +161,40 @@ export default async function NewResourcePage({ params, searchParams }: PageProp
     ? { type: presetPostType }
     : name === "brands" && brandScope
       ? { type: brandScope }
-      : undefined;
+      : name === "products"
+        ? {
+            ...(resolvedBrandId ? { brandId: resolvedBrandId } : {}),
+            ...(resolvedMainCategoryId ? { mainCategoryId: resolvedMainCategoryId } : {}),
+            ...(resolvedCategoryId ? { categoryId: resolvedCategoryId } : {}),
+          }
+        : name === "categories"
+          ? {
+              ...(resolvedBrandId ? { brandId: resolvedBrandId } : {}),
+              ...(resolvedMainCategoryId ? { mainCategoryId: resolvedMainCategoryId } : {}),
+            }
+          : name === "main-categories"
+            ? {
+                ...(resolvedBrandId ? { brandId: resolvedBrandId } : {}),
+              }
+            : undefined;
+
+  const trail = [
+    ...(prefillSummary ? [{ label: prefillSummary }] : []),
+    { label: `เพิ่ม${noun}` },
+  ];
 
   return (
     <>
-      <SectionFlowBar currentKey={flowKey} trail={[{ label: `เพิ่ม${noun}` }]} />
-      <PageHeader title={`เพิ่ม${noun}`} back={{ href: backHref, label: backLabel }} />
+      <SectionFlowBar currentKey={flowKey} trail={trail} />
+      <PageHeader
+        title={`เพิ่ม${noun}`}
+        description={
+          prefillSummary
+            ? `กำหนดหมวดหมู่ให้อัตโนมัติ: ${prefillSummary} (ไม่ต้องเลือกเอง)`
+            : undefined
+        }
+        back={{ href: backHref, label: backLabel }}
+      />
       <ResourceForm
         resourceName={name}
         fields={ui.fields}

@@ -48,7 +48,10 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     orderBy: byOrder,
     slugField: 'slug',
     hasActive: true,
-    include: { brand: { select: { id: true, slug: true, name: true, type: true } } },
+    include: {
+      brand: { select: { id: true, slug: true, name: true, type: true } },
+      _count: { select: { products: true, categories: true } },
+    },
     searchFields: ['slug'],
   },
   categories: {
@@ -59,6 +62,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     include: {
       brand: { select: { id: true, slug: true, name: true, type: true } },
       mainCategory: { select: { id: true, slug: true, name: true } },
+      _count: { select: { products: true } },
     },
     searchFields: ['slug'],
   },
