@@ -50,7 +50,7 @@ export const resourceConfig: Record<ResourceName, ResourceConfig> = {
     hasActive: true,
     include: {
       brand: { select: { id: true, slug: true, name: true, type: true } },
-      _count: { select: { products: true, categories: true } },
+      _count: { select: { products: true, collections: true } },
     },
     searchFields: ['slug'],
   },
