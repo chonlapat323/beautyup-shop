@@ -52,13 +52,22 @@ export function toPayload(fields: readonly Field[], values: Obj): Obj {
     if (f.type === "relation" && f.nullable && !v) out[f.name] = null;
     if (f.type === "productSizes") {
       const arr = Array.isArray(v) ? v : [];
-      out[f.name] = arr
+      const validSizes = arr
         .filter((item: any) => item && item.size !== "" && item.size != null)
         .map((item: any) => ({
           size: Number(item.size) || item.size,
           unit: "ML",
           price: Number(item.price) || 0,
         }));
+      out[f.name] = validSizes;
+      if (validSizes.length > 0) {
+        out.price = validSizes[0].price;
+      } else if (values.price != null && values.price !== "") {
+        out.price = Number(values.price);
+      } else {
+        out.price = 0;
+      }
+      out.salePrice = null;
     }
   }
   return out;

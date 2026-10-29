@@ -30,17 +30,24 @@ function Cell({ col, row }: { col: Column; row: Row }) {
         </span>
       );
     case "price": {
-      const sale = row.salePrice as number | null;
+      const sizes = Array.isArray(row.sizes)
+        ? (row.sizes as any[]).filter((s) => s && s.size !== "" && s.size != null)
+        : [];
+      if (sizes.length > 0) {
+        return (
+          <div className="flex flex-col gap-0.5 text-xs tabular-nums">
+            {sizes.map((s, idx) => (
+              <span key={idx} className="whitespace-nowrap">
+                <span className="font-semibold text-muted">{s.size} {s.unit || "ML"}:</span>{" "}
+                <span className="font-medium text-ink">฿{Number(s.price || 0).toLocaleString("th-TH")}</span>
+              </span>
+            ))}
+          </div>
+        );
+      }
       return (
         <span className="whitespace-nowrap tabular-nums">
-          {sale != null ? (
-            <>
-              <span className="text-brand">฿{sale.toLocaleString("th-TH")}</span>{" "}
-              <span className="text-xs text-muted line-through">฿{Number(v).toLocaleString("th-TH")}</span>
-            </>
-          ) : (
-            `฿${Number(v).toLocaleString("th-TH")}`
-          )}
+          ฿{Number(v || 0).toLocaleString("th-TH")}
         </span>
       );
     }

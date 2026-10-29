@@ -182,24 +182,31 @@ export const productSizeInput = z.object({
 });
 export type ProductSize = z.infer<typeof productSizeInput>;
 
-export const productInput = z.object({
-  slug,
-  name: localized,
-  description: localizedOptional,
-  brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
-  mainCategoryId: z.string().nullable().optional().default(null),
-  /** The product's collection (optional — some brands/categories do not use collections) */
-  categoryId: z.string().nullable().optional().default(null),
-  price: z.coerce.number().nonnegative(),
-  salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),
-  sizes: z.array(productSizeInput).optional().default([]),
-  badges: z.array(z.string().trim().min(1)).default([]),
-  tags: z.array(z.string().trim().min(1)).default([]),
-  imageUrl: url,
-  images: z.array(url).default([]),
-  sortOrder,
-  isActive,
-});
+export const productInput = z
+  .object({
+    slug,
+    name: localized,
+    description: localizedOptional,
+    brandId: z.string().min(1, "กรุณาเลือกแบรนด์"),
+    mainCategoryId: z.string().nullable().optional().default(null),
+    /** The product's collection (optional — some brands/categories do not use collections) */
+    categoryId: z.string().nullable().optional().default(null),
+    price: z.coerce.number().nonnegative().optional().default(0),
+    salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),
+    sizes: z.array(productSizeInput).optional().default([]),
+    badges: z.array(z.string().trim().min(1)).default([]),
+    tags: z.array(z.string().trim().min(1)).default([]),
+    imageUrl: url,
+    images: z.array(url).default([]),
+    sortOrder,
+    isActive,
+  })
+  .transform((data) => {
+    if (Array.isArray(data.sizes) && data.sizes.length > 0 && (!data.price || data.price === 0)) {
+      return { ...data, price: data.sizes[0].price };
+    }
+    return data;
+  });
 
 export const heroSlideInput = z.object({
   brandId: z.string().nullable().optional().default(null),

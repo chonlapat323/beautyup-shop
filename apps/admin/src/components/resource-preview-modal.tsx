@@ -675,6 +675,7 @@ export function ResourcePreviewModal({
     const sizes = Array.isArray(values.sizes)
       ? (values.sizes as any[]).filter((s) => s && s.size !== "" && s.size != null)
       : [];
+    const displayPrice = sizes.length > 0 ? Number(sizes[0].price || 0) : Number(values.price ?? 0);
     const brandName = lookupRelation("brands", values.brandId, "Fanola");
     const mainCategoryName = lookupRelation("main-categories", values.mainCategoryId, "");
     const collectionName = lookupRelation("categories", values.categoryId, "");
@@ -775,11 +776,16 @@ export function ResourcePreviewModal({
                   {name}
                 </h1>
 
-                <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
+                <div className="mt-6 flex flex-wrap items-center gap-3">
                   <span className="font-serif text-3xl sm:text-4xl text-[#1c1917]">
-                    ฿{price.toLocaleString("th-TH")}
+                    ฿{displayPrice.toLocaleString("th-TH")}
                   </span>
-                </p>
+                  {sizes.length > 0 && (
+                    <span className="rounded-lg bg-[#f0efec] px-2.5 py-1 text-xs sm:text-sm font-semibold text-[#d6297f]">
+                      ขนาด {sizes[0].size} {sizes[0].unit || "ML"}
+                    </span>
+                  )}
+                </div>
 
                 {sizes.length > 0 && (
                   <div className="mt-4 border-t border-[#e8e6e1] pt-3">
@@ -874,9 +880,18 @@ export function ResourcePreviewModal({
                 </div>
                 <p className="mt-3 text-xs tracking-wide text-[#6b6762] uppercase">{brandName}</p>
                 <p className="mt-1 line-clamp-2 text-sm leading-snug text-[#1c1917] sm:text-base wrap-break-word">{name}</p>
-                <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-medium text-[#1c1917]">฿{price.toLocaleString("th-TH")}</span>
-                </p>
+                <div className="mt-2">
+                  <span className="font-medium text-[#1c1917]">฿{displayPrice.toLocaleString("th-TH")}</span>
+                  {sizes.length > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-1 text-[11px] text-[#6b6762]">
+                      {sizes.map((s, idx) => (
+                        <span key={idx} className="rounded bg-[#f0efec] px-1.5 py-0.5">
+                          {s.size} {s.unit || "ML"}: ฿{Number(s.price || 0).toLocaleString("th-TH")}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

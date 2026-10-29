@@ -172,16 +172,13 @@ function Price({ product, className }: { product: Product; className?: string })
             {minPrice !== maxPrice ? `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}` : formatPrice(minPrice)}
           </span>
         </p>
-        <p className="mt-1 flex flex-wrap gap-1 text-[11px] text-muted">
-          {sizes.slice(0, 3).map((s, idx) => (
-            <span key={idx} className="rounded bg-sand/80 px-1.5 py-0.5 font-medium">
-              {s.size} {s.unit || "ML"}
+        <div className="mt-1 flex flex-wrap gap-1 text-[11px]">
+          {sizes.map((s, idx) => (
+            <span key={idx} className="rounded bg-sand/80 px-1.5 py-0.5 font-medium text-muted">
+              {s.size} {s.unit || "ML"}: <span className="text-ink">{formatPrice(s.price)}</span>
             </span>
           ))}
-          {sizes.length > 3 && (
-            <span className="self-center text-[10px] text-muted">+{sizes.length - 3}</span>
-          )}
-        </p>
+        </div>
       </div>
     );
   }

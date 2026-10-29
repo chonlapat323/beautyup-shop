@@ -262,12 +262,31 @@ export function CategoryProductsView({
 
                       {/* Price & Action */}
                       <div className="mt-3 sm:mt-4 pt-3 border-t border-line/60 flex items-center justify-between">
-                        <span className="font-display font-semibold text-sm sm:text-base md:text-lg text-ink">
-                          {formatPrice(p.price)}
-                        </span>
+                        <div>
+                          {p.sizes && p.sizes.length > 0 ? (
+                            <>
+                              <div className="font-display font-semibold text-sm sm:text-base md:text-lg text-ink">
+                                {p.sizes.length > 1
+                                  ? `${formatPrice(Math.min(...p.sizes.map((s) => s.price)))} - ${formatPrice(Math.max(...p.sizes.map((s) => s.price)))}`
+                                  : formatPrice(p.sizes[0].price)}
+                              </div>
+                              <div className="flex flex-wrap gap-1 text-[10px] text-muted mt-0.5">
+                                {p.sizes.map((s, idx) => (
+                                  <span key={idx} className="rounded bg-sand/80 px-1 py-0.5">
+                                    {s.size} {s.unit || "ML"}: {formatPrice(s.price)}
+                                  </span>
+                                ))}
+                              </div>
+                            </>
+                          ) : (
+                            <span className="font-display font-semibold text-sm sm:text-base md:text-lg text-ink">
+                              {formatPrice(p.price)}
+                            </span>
+                          )}
+                        </div>
 
                         <span
-                          className="rounded-lg p-1.5 text-muted group-hover:bg-sand/40 group-hover:text-brand-pink transition-colors"
+                          className="rounded-lg p-1.5 text-muted group-hover:bg-sand/40 group-hover:text-brand-pink transition-colors shrink-0"
                           title={dict.product.viewDetails}
                         >
                           <ExternalLink className="size-4" />

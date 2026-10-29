@@ -39,12 +39,17 @@ export function ProductSizePicker({
   return (
     <div>
       {/* Price Display */}
-      <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         <span className="sr-only">{priceLabel}</span>
         <span className="font-display text-3xl sm:text-4xl font-semibold text-ink">
           {formatPrice(currentPrice)}
         </span>
-      </p>
+        {selectedSize && (
+          <span className="rounded-lg bg-sand/80 px-2.5 py-1 text-xs sm:text-sm font-semibold text-brand-pink">
+            ขนาด {selectedSize.size} {selectedSize.unit || "ML"}
+          </span>
+        )}
+      </div>
 
       {/* Dynamic Sizes Selector (ML) */}
       {sizes.length > 0 && (
