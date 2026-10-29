@@ -773,10 +773,9 @@ export function ResourcePreviewModal({
                 </h1>
 
                 <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
-                  <span className={clsx("font-serif text-3xl sm:text-4xl", salePrice ? "text-[#9a5b3f]" : "text-[#1c1917]")}>
-                    ฿{effectivePrice.toLocaleString("th-TH")}
+                  <span className="font-serif text-3xl sm:text-4xl text-[#1c1917]">
+                    ฿{price.toLocaleString("th-TH")}
                   </span>
-                  {salePrice && <span className="text-lg text-[#6b6762] line-through">฿{price.toLocaleString("th-TH")}</span>}
                 </p>
 
                 {description && (
@@ -855,14 +854,7 @@ export function ResourcePreviewModal({
                 <p className="mt-3 text-xs tracking-wide text-[#6b6762] uppercase">{brandName}</p>
                 <p className="mt-1 line-clamp-2 text-sm leading-snug text-[#1c1917] sm:text-base wrap-break-word">{name}</p>
                 <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
-                  {salePrice ? (
-                    <>
-                      <span className="font-medium text-[#9a5b3f]">฿{salePrice.toLocaleString("th-TH")}</span>
-                      <span className="text-sm text-[#6b6762] line-through">฿{price.toLocaleString("th-TH")}</span>
-                    </>
-                  ) : (
-                    <span className="font-medium text-[#1c1917]">฿{price.toLocaleString("th-TH")}</span>
-                  )}
+                  <span className="font-medium text-[#1c1917]">฿{price.toLocaleString("th-TH")}</span>
                 </p>
               </div>
             </div>

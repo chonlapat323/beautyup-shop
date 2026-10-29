@@ -9,6 +9,8 @@
   --color-brand: #d6297f;
   --color-brand-soft: #fcebf3;
   --font-sans: var(--font-plex-thai), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-plex-thai), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plex-thai), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

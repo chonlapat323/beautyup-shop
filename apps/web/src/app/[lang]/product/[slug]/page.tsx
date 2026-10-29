@@ -93,7 +93,6 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
     QRCode.toDataURL(pageUrl, { width: 480, margin: 1 }),
   ]);
   const related = sameBrand.filter((p) => p.slug !== product.slug).slice(0, 4);
-  const price = product.salePrice ?? product.price;
 
   return (
     <>
@@ -133,8 +132,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
 
             <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
               <span className="sr-only">{d.price}</span>
-              <span className={`font-display text-3xl sm:text-4xl ${product.salePrice ? "text-accent" : ""}`}>{formatPrice(price)}</span>
-              {product.salePrice && <span className="text-lg text-muted line-through">{formatPrice(product.price)}</span>}
+              <span className="font-display text-3xl sm:text-4xl">{formatPrice(product.price)}</span>
             </p>
 
             {product.description && <RichText text={product.description} className="mt-6 space-y-3 text-muted" />}

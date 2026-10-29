@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
+import { IBM_Plex_Sans_Thai } from "next/font/google";
 import { BackToTop } from "@/components/back-to-top";
 import { CookieConsent } from "@/components/cookie-consent";
 import { RevealObserver } from "@/components/reveal-observer";
@@ -13,12 +13,7 @@ import "../globals.css";
 const plexThai = IBM_Plex_Sans_Thai({
   variable: "--font-plex-thai",
   subsets: ["thai", "latin"],
-  weight: ["300", "400", "500", "600"],
-});
-
-const serifThai = Noto_Serif_Thai({
-  variable: "--font-serif-thai",
-  subsets: ["thai", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export function generateStaticParams() {
@@ -44,7 +39,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const [menu, company] = await Promise.all([getMenu(lang), getCompany(lang)]);
 
   return (
-    <html lang={lang} className={`${plexThai.variable} ${serifThai.variable} antialiased`}>
+    <html lang={lang} className={`${plexThai.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col overflow-x-clip font-sans">
         <LangProvider lang={lang}>
         <a

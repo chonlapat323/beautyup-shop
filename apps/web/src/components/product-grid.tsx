@@ -157,14 +157,7 @@ export function ProductGrid({
 function Price({ product, className }: { product: Product; className?: string }) {
   return (
     <p className={clsx("flex flex-wrap items-baseline gap-x-2", className)}>
-      {product.salePrice ? (
-        <>
-          <span className="font-medium text-accent">{formatPrice(product.salePrice)}</span>
-          <span className="text-sm text-muted line-through">{formatPrice(product.price)}</span>
-        </>
-      ) : (
-        <span className="font-medium">{formatPrice(product.price)}</span>
-      )}
+      <span className="font-medium">{formatPrice(product.price)}</span>
     </p>
   );
 }
