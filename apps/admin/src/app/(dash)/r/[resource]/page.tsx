@@ -288,7 +288,7 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
       const addHref = `/r/products/new?type=${brandType}&brandId=${brandId}&mainCategoryId=${row.id}`;
 
       return (
-        <div className="inline-flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <div className="inline-flex items-center gap-1.5">
           <Link
             href={viewHref}
             title={`ดูสินค้าในหมวดหมู่นี้ (${productCount} รายการ)`}
@@ -325,7 +325,7 @@ export default async function ResourceListPage({ params, searchParams }: PagePro
       const addHref = `/r/products/new?type=${brandType}&brandId=${brandId}${mainCategoryId ? `&mainCategoryId=${mainCategoryId}` : ""}&categoryId=${row.id}`;
 
       return (
-        <div className="inline-flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <div className="inline-flex items-center gap-1.5">
           <Link
             href={viewHref}
             title={`ดูสินค้าในคอลเลกชันนี้ (${productCount} รายการ)`}
