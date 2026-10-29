@@ -74,7 +74,7 @@ const FLOWS: MenuFlow[] = [
     sidebarSection: { label: "เคาน์เตอร์แบรนด์ (/shop)", href: "/r/products?type=COUNTER" },
     steps: [
       { key: "shopPage", label: "1. เนื้อหาหน้า & รูป CEO (/shop)", href: "/content/shopPage" },
-      { key: "brands:COUNTER", label: "2. แบรนด์เคาน์เตอร์", href: "/r/brands?type=COUNTER" },
+      { key: "brands:COUNTER", label: "2. รายชื่อเคาน์เตอร์แบรนด์", href: "/r/brands?type=COUNTER" },
       { key: "main-categories:COUNTER", label: "3. หมวดหมู่หลัก", href: "/r/main-categories?type=COUNTER" },
       { key: "products:COUNTER", label: "4. สินค้าเคาน์เตอร์แบรนด์", href: "/r/products?type=COUNTER" },
     ],
