@@ -1,10 +1,10 @@
-import { MessageCircle, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import Link from "@/components/link";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductImageGallery } from "@/components/product-image-gallery";
+import { ProductSizePicker } from "@/components/product-size-picker";
 import { RichText } from "@/components/rich-text";
 import { SharePanel } from "@/components/share-panel";
 import { SectionHeading, formatPrice } from "@/components/ui";
@@ -130,29 +130,17 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
             )}
             <h1 className="mt-3 font-display text-3xl leading-tight text-balance sm:text-5xl">{product.name}</h1>
 
-            <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
-              <span className="sr-only">{d.price}</span>
-              <span className="font-display text-3xl sm:text-4xl">{formatPrice(product.price)}</span>
-            </p>
-
             {product.description && <RichText text={product.description} className="mt-6 space-y-3 text-muted" />}
 
-            <div className="mt-8 rounded-3xl border border-line bg-mist p-6">
-              <p className="font-medium">{d.orderTitle}</p>
-              <p className="mt-1 text-sm text-muted">{d.orderText}</p>
-              <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-                <Link href={`/contact/salon-partner?product=${encodeURIComponent(product.name)}`} className="btn btn-primary">
-                  <MessageCircle className="size-4" />
-                  {dict.common.contactToOrder}
-                </Link>
-                {company.phones[0] && (
-                  <a href={`tel:${company.phones[0].replaceAll("-", "")}`} className="btn btn-outline">
-                    <Phone className="size-4" />
-                    {d.call} {company.phones[0]}
-                  </a>
-                )}
-              </div>
-            </div>
+            <ProductSizePicker
+              product={product}
+              phone={company.phones[0]}
+              callLabel={d.call}
+              contactToOrderLabel={dict.common.contactToOrder}
+              orderTitle={d.orderTitle}
+              orderText={d.orderText}
+              priceLabel={d.price}
+            />
 
             {product.tags && product.tags.length > 0 && (
               <div className="mt-8 border-t border-line pt-6">

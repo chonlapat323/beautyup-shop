@@ -175,6 +175,13 @@ export const categoryInput = z.object({
   isActive,
 });
 
+export const productSizeInput = z.object({
+  size: z.union([z.coerce.number(), z.string().trim()]),
+  unit: z.string().trim().default("ML"),
+  price: z.coerce.number().nonnegative(),
+});
+export type ProductSize = z.infer<typeof productSizeInput>;
+
 export const productInput = z.object({
   slug,
   name: localized,
@@ -185,6 +192,7 @@ export const productInput = z.object({
   categoryId: z.string().nullable().optional().default(null),
   price: z.coerce.number().nonnegative(),
   salePrice: z.coerce.number().nonnegative().nullable().optional().default(null),
+  sizes: z.array(productSizeInput).optional().default([]),
   badges: z.array(z.string().trim().min(1)).default([]),
   tags: z.array(z.string().trim().min(1)).default([]),
   imageUrl: url,

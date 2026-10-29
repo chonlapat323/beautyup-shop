@@ -66,6 +66,12 @@ export interface Brand {
   socials?: Socials;
 }
 
+export interface ProductSize {
+  size: number | string;
+  unit?: string;
+  price: number;
+}
+
 export interface Product {
   slug: string;
   name: string;
@@ -78,6 +84,8 @@ export interface Product {
   collection?: { slug: string; name: string };
   price: number;
   salePrice?: number;
+  /** Available sizes / volumes (e.g. 100 ML, 350 ML, 1000 ML with dynamic price) */
+  sizes?: ProductSize[];
   badges?: string[];
   tags?: string[];
   imageUrl?: string;

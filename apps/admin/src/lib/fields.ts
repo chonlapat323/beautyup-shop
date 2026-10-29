@@ -26,6 +26,7 @@ export type Field = FieldExtras &
   | { type: "images"; name: string; label: string; help?: string; max?: number }
   | { type: "tags"; name: string; label: string; help?: string; suggestions?: string[] }
   | { type: "socials"; name: string; label: string; help?: string }
+  | { type: "productSizes"; name: string; label: string; help?: string }
   | { type: "list"; name: string; label: string; item: Field[]; help?: string }
   );
 
@@ -141,9 +142,15 @@ export const resourceUi: Record<ResourceName, ResourceUi> = {
       { type: "relation", name: "brandId", label: "แบรนด์", resource: "brands", required: true },
       { type: "relation", name: "mainCategoryId", label: "หมวดหมู่หลัก (ไม่บังคับ)", resource: "main-categories", nullable: true, filterBy: "brandId", help: "เลือกหมวดหมู่หลักของสินค้า (ไม่บังคับ สามารถเว้นว่างได้)" },
       { type: "relation", name: "categoryId", label: "คอลเลกชัน (ไม่บังคับ)", resource: "categories", nullable: true, filterBy: "mainCategoryId", help: "ถ้าไม่มีคอลเลกชันย่อย ให้เว้นว่างไว้เป็น — ไม่ระบุ — ได้เลย" },
-      { type: "number", name: "price", label: "ราคา (บาท)", step: "0.01", required: true },
+      { type: "number", name: "price", label: "ราคา (บาท)", step: "0.01", required: true, help: "ราคาเริ่มต้น หรือราคาขนาดหลัก" },
       { type: "number", name: "salePrice", label: "ราคาลด (บาท)", step: "0.01", help: "เว้นว่างถ้าไม่มีส่วนลด" },
-      { type: "tags", name: "badges", label: "ป้าย", suggestions: ["New", "Hot", "Best Seller", "Soft hair"] },
+      {
+        type: "productSizes",
+        name: "sizes",
+        label: "ขนาด / ปริมาณ (ML) และราคา",
+        help: "สำหรับสินค้าที่มีหลายขนาด ปริมาณ (ML) สามารถเพิ่มขนาดและระบุราคาของแต่ละขนาดได้",
+      },
+      { type: "tags", name: "badges", label: "ป้าย", suggestions: ["New Product", "Home Care", "Hot", "Best Seller", "Soft hair"] },
       { type: "tags", name: "tags", label: "คำค้นหา (แท็ก SEO / AI)", help: "พิมพ์แล้วกด Enter เช่น shampoo, แชมพูม่วง, ลดประกายเหลือง, ทำสีผม เพื่อให้ Google และ AI ค้นหาเจอ" },
       {
         type: "images",

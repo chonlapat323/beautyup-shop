@@ -173,6 +173,7 @@ model Product {
   brand          Brand         @relation(fields: [brandId], references: [id], onDelete: Restrict)
   price       Decimal   @db.Decimal(12, 2)
   salePrice   Decimal?  @db.Decimal(12, 2)
+  sizes       Json?     @default("[]")
   badges      String[]
   tags        String[]  @default([])
   /// Cover image URL (synced with images[0]); fresh uploads are renamed to brand-slug-tag-yyyymmdd-n.ext on save

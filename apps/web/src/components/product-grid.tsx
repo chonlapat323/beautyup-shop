@@ -155,6 +155,37 @@ export function ProductGrid({
 }
 
 function Price({ product, className }: { product: Product; className?: string }) {
+  const sizes = (product.sizes ?? []).filter(
+    (s): s is { size: number | string; unit?: string; price: number } =>
+      Boolean(s && s.size !== "" && s.size != null && typeof s.price === "number"),
+  );
+
+  if (sizes.length > 0) {
+    const prices = sizes.map((s) => s.price).filter((p) => p > 0);
+    const minPrice = prices.length ? Math.min(...prices) : product.price;
+    const maxPrice = prices.length ? Math.max(...prices) : product.price;
+
+    return (
+      <div className={className}>
+        <p className="flex flex-wrap items-baseline gap-x-1.5">
+          <span className="font-medium">
+            {minPrice !== maxPrice ? `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}` : formatPrice(minPrice)}
+          </span>
+        </p>
+        <p className="mt-1 flex flex-wrap gap-1 text-[11px] text-muted">
+          {sizes.slice(0, 3).map((s, idx) => (
+            <span key={idx} className="rounded bg-sand/80 px-1.5 py-0.5 font-medium">
+              {s.size} {s.unit || "ML"}
+            </span>
+          ))}
+          {sizes.length > 3 && (
+            <span className="self-center text-[10px] text-muted">+{sizes.length - 3}</span>
+          )}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <p className={clsx("flex flex-wrap items-baseline gap-x-2", className)}>
       <span className="font-medium">{formatPrice(product.price)}</span>

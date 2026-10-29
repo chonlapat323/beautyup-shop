@@ -672,6 +672,9 @@ export function ResourcePreviewModal({
     const currentImg = images[safeIdx] || "";
     const badges = Array.isArray(values.badges) ? values.badges.map(String).filter(Boolean) : [];
     const tags = Array.isArray(values.tags) ? values.tags.map(String).filter(Boolean) : [];
+    const sizes = Array.isArray(values.sizes)
+      ? (values.sizes as any[]).filter((s) => s && s.size !== "" && s.size != null)
+      : [];
     const brandName = lookupRelation("brands", values.brandId, "Fanola");
     const mainCategoryName = lookupRelation("main-categories", values.mainCategoryId, "");
     const collectionName = lookupRelation("categories", values.categoryId, "");
@@ -777,6 +780,24 @@ export function ResourcePreviewModal({
                     ฿{price.toLocaleString("th-TH")}
                   </span>
                 </p>
+
+                {sizes.length > 0 && (
+                  <div className="mt-4 border-t border-[#e8e6e1] pt-3">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#6b6762]">
+                      {th ? "ขนาด / ปริมาณ (ML):" : "Sizes (ML):"}
+                    </span>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {sizes.map((s, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-[#d6297f] bg-[#fcebf3] px-3 py-1.5 text-xs font-semibold text-[#d6297f]"
+                        >
+                          {s.size} {s.unit || "ML"} · ฿{Number(s.price || 0).toLocaleString("th-TH")}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {description && (
                   <div className="mt-6 space-y-3 text-base leading-relaxed text-[#6b6762] whitespace-pre-line wrap-break-word">

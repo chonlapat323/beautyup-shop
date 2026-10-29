@@ -23,6 +23,7 @@ export function defaultValue(field: Field): Value {
       return true;
     case "tags":
     case "list":
+    case "productSizes":
     case "relations":
     case "images":
       return [];
@@ -49,6 +50,16 @@ export function toPayload(fields: readonly Field[], values: Obj): Obj {
     if (f.type === "number") out[f.name] = v === "" || v == null ? (f.required ? undefined : null) : Number(v);
     if (f.type === "date") out[f.name] = v ? v : null;
     if (f.type === "relation" && f.nullable && !v) out[f.name] = null;
+    if (f.type === "productSizes") {
+      const arr = Array.isArray(v) ? v : [];
+      out[f.name] = arr
+        .filter((item: any) => item && item.size !== "" && item.size != null)
+        .map((item: any) => ({
+          size: Number(item.size) || item.size,
+          unit: "ML",
+          price: Number(item.price) || 0,
+        }));
+    }
   }
   return out;
 }
@@ -300,9 +311,144 @@ export function FieldInput({
         </fieldset>
       );
 
+    case "productSizes":
+      return (
+        <fieldset>
+          <legend className="mb-2 text-sm font-medium">{field.label}</legend>
+          {field.help && <p className="-mt-1 mb-2 text-xs text-muted">{field.help}</p>}
+          <ProductSizesInput id={id} value={(value as any) ?? []} onChange={onChange} />
+        </fieldset>
+      );
+
     case "list":
       return <ListInput field={field} value={(value as Value[]) ?? []} onChange={onChange} locale={locale} errors={errors} path={path} relations={relations} />;
   }
+}
+
+/* ----------------------------------------------------------- product sizes */
+
+interface ProductSizeItem {
+  size: number | string;
+  unit?: string;
+  price: number | string;
+}
+
+const COMMON_SIZES = [100, 250, 350, 500, 1000];
+
+function ProductSizesInput({
+  id: _id,
+  value = [],
+  onChange,
+}: {
+  id: string;
+  value: ProductSizeItem[];
+  onChange: (v: ProductSizeItem[]) => void;
+}) {
+  const list = Array.isArray(value) ? value : [];
+
+  const add = (size: number | string = 100, price: number | string = "") => {
+    onChange([...list, { size, unit: "ML", price }]);
+  };
+
+  const update = (idx: number, patch: Partial<ProductSizeItem>) => {
+    onChange(list.map((item, i) => (i === idx ? { ...item, ...patch } : item)));
+  };
+
+  const remove = (idx: number) => {
+    onChange(list.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Quick Add Presets */}
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="text-muted text-[11px]">เพิ่มขนาดด่วน:</span>
+        {COMMON_SIZES.map((ml) => (
+          <button
+            key={ml}
+            type="button"
+            onClick={() => add(ml)}
+            className="rounded-md border border-line bg-mist px-2 py-0.5 font-medium text-muted hover:border-brand hover:text-brand transition-colors"
+          >
+            + {ml} ML
+          </button>
+        ))}
+      </div>
+
+      {list.length > 0 ? (
+        <div className="space-y-2">
+          {list.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex flex-wrap sm:flex-nowrap items-center gap-2 rounded-xl border border-line bg-white p-2.5 shadow-2xs"
+            >
+              <span className="text-xs font-semibold text-muted w-6 text-center shrink-0">
+                #{idx + 1}
+              </span>
+
+              {/* Size / Volume input */}
+              <div className="flex items-center rounded-lg border border-line bg-mist/50 focus-within:border-brand focus-within:bg-white transition-colors flex-1 min-w-[130px]">
+                <input
+                  type="number"
+                  min="1"
+                  step="any"
+                  value={item.size ?? ""}
+                  placeholder="เช่น 100, 350"
+                  onChange={(e) => update(idx, { size: e.target.value ? Number(e.target.value) : "" })}
+                  className="w-full bg-transparent px-3 py-1.5 text-sm focus:outline-none"
+                />
+                <span className="border-l border-line px-2.5 py-1 text-xs font-semibold text-brand shrink-0">
+                  ML
+                </span>
+              </div>
+
+              {/* Price input */}
+              <div className="flex items-center rounded-lg border border-line bg-mist/50 focus-within:border-brand focus-within:bg-white transition-colors flex-1 min-w-[140px]">
+                <span className="border-r border-line px-2 text-xs text-muted shrink-0">
+                  ฿
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={item.price ?? ""}
+                  placeholder="ราคา (บาท)"
+                  onChange={(e) => update(idx, { price: e.target.value ? Number(e.target.value) : "" })}
+                  className="w-full bg-transparent px-3 py-1.5 text-sm focus:outline-none"
+                />
+                <span className="border-l border-line px-2.5 py-1 text-xs text-muted shrink-0">
+                  บาท
+                </span>
+              </div>
+
+              {/* Remove button */}
+              <button
+                type="button"
+                onClick={() => remove(idx)}
+                className="grid size-8 place-items-center rounded-lg text-muted hover:bg-red-50 hover:text-red-600 transition-colors shrink-0"
+                title="ลบขนาดนี้"
+              >
+                <Trash2 className="size-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-line bg-mist/40 p-4 text-center text-xs text-muted">
+          ยังไม่ได้เพิ่มขนาด (หากมีหลายขนาด เช่น 100 ML, 350 ML, 1000 ML สามารถกดปุ่มลัดด้านบนหรือกดเพิ่มขนาดด้านล่างได้เลยครับ)
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => add("", "")}
+        className="btn btn-secondary !py-1.5 text-xs font-medium inline-flex items-center gap-1.5"
+      >
+        <Plus className="size-3.5" />
+        เพิ่มขนาด / ปริมาณ (ML)
+      </button>
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------- tags */
