@@ -66,7 +66,7 @@ export function SalonFinder({
         <div
           role="tablist"
           aria-label={d.regions}
-          className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:flex-col"
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 py-1.5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:flex-col"
         >
           {[
             {

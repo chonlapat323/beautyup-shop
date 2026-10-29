@@ -51,7 +51,7 @@ export function ProductGrid({
             <div
               role="tablist"
               aria-label={dict.common.filterByBrand}
-              className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
+              className="-mx-4 flex gap-2 overflow-x-auto px-4 py-1.5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
             >
               {["all", ...brandsInList].map((slug) => (
                 <button
@@ -74,7 +74,7 @@ export function ProductGrid({
             <div
               role="tablist"
               aria-label="Filter by category"
-              className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
+              className="-mx-4 flex gap-2 overflow-x-auto px-4 py-1.5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
             >
               <button
                 type="button"

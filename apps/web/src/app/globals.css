@@ -245,18 +245,19 @@
     font-weight: 500;
     white-space: nowrap;
     color: var(--color-ink);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.02);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
     &:hover {
       border-color: var(--color-brand-pink);
       background: white;
       color: var(--color-brand-pink);
-      box-shadow: 0 10px 24px -4px rgb(214 41 127 / 0.20);
-      transform: translateY(-2px);
+      box-shadow: 0 2px 8px -1px rgb(214 41 127 / 0.16);
+      transform: none;
     }
 
     &:active {
-      transform: scale(0.96);
+      transform: scale(0.97);
     }
 
     &.active,
