@@ -7,6 +7,7 @@ import { api, getMe } from "@/lib/api";
 import { DEFAULT_ROLE_PERMISSIONS, type RolePermissions } from "@beautyup/types";
 import { PermissionsMatrix } from "./permissions-matrix";
 import { UsersManager, type AdminUser } from "./users-manager";
+import { AuditLogsTable, type AuditLogItem } from "./audit-logs-table";
 
 export const metadata: Metadata = { title: "ผู้ใช้หลังบ้านและการกำหนดสิทธิ์" };
 
@@ -19,9 +20,12 @@ export default async function UsersPage({
   if (me.role !== "ADMIN") redirect("/");
 
   const { tab = "users" } = await searchParams;
-  const [users, allSettings] = await Promise.all([
+  const [users, allSettings, auditLogs] = await Promise.all([
     api<AdminUser[]>("/admin/users"),
     api<Record<string, unknown>>("/admin/settings").catch(() => ({} as Record<string, unknown>)),
+    tab === "audit"
+      ? api<AuditLogItem[]>("/admin/users/audit-logs?limit=100").catch(() => [])
+      : Promise.resolve([] as AuditLogItem[]),
   ]);
 
   const rawPermissions = allSettings.rolePermissions as RolePermissions | undefined;
@@ -57,9 +61,20 @@ export default async function UsersPage({
         >
           กำหนดสิทธิ์ตามบทบาท (Matrix)
         </Link>
+        <Link
+          href="/users?tab=audit"
+          className={clsx(
+            "inline-flex min-h-9 items-center rounded-lg px-4 text-sm font-medium transition-colors",
+            tab === "audit" ? "bg-ink text-white shadow-sm" : "text-muted hover:bg-sand hover:text-ink",
+          )}
+        >
+          ประวัติการแก้ไข (Audit Logs)
+        </Link>
       </nav>
 
-      {tab === "permissions" ? (
+      {tab === "audit" ? (
+        <AuditLogsTable logs={auditLogs} />
+      ) : tab === "permissions" ? (
         <PermissionsMatrix initialPermissions={permissions} />
       ) : (
         <UsersManager users={users} meId={me.id} />

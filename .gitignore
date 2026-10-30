@@ -16,3 +16,5 @@ logs
 /fanola/
 /babd/
 /counter brand/
+sound/
+*.wav

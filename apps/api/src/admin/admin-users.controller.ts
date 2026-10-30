@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { userCreateInput, userUpdateInput } from '@beautyup/types';
 import type { z } from 'zod';
 import { AdminGuard, CurrentUser, Roles } from '../auth/auth.guard.js';
@@ -13,6 +13,15 @@ const publicFields = { id: true, email: true, name: true, role: true, isActive: 
 @Roles('ADMIN')
 export class AdminUsersController {
   constructor(private readonly prisma: PrismaService) {}
+
+  @Get('audit-logs')
+  async listAuditLogs(@Query('limit') limit = 100) {
+    const take = Math.min(Math.max(Number(limit) || 50, 1), 200);
+    return this.prisma.auditLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take,
+    });
+  }
 
   @Get()
   list() {
