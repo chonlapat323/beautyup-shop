@@ -3,11 +3,16 @@ import { Suspense } from "react";
 import { PageHero } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getRegions, getSalons } from "@/lib/data";
+import { langAlternates } from "@/lib/site";
 import { SalonFinder } from "./salon-finder";
 import { SalonFinderSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/customers/salons">): Promise<Metadata> {
-  return { title: (await resolveLang(params)).dict.salons.title };
+  const { lang, dict } = await resolveLang(params);
+  return {
+    title: dict.salons.title,
+    alternates: langAlternates("/customers/salons", lang),
+  };
 }
 
 export default async function SalonsPage({ params }: PageProps<"/[lang]/customers/salons">) {

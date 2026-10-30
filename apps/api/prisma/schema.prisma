@@ -402,3 +402,20 @@ model ForumReply {
 
   @@index([topicId, createdAt])
 }
+
+/// Audit log for tracking admin actions (who changed what, and when)
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  userEmail  String?
+  userName   String?
+  action     String
+  resource   String
+  resourceId String?
+  details    Json?    @default("{}")
+  createdAt  DateTime @default(now())
+
+  @@index([resource, resourceId])
+  @@index([userId])
+  @@index([createdAt])
+}

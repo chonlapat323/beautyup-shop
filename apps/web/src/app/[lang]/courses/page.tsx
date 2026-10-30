@@ -5,9 +5,14 @@ import { GrowYourVision } from "@/components/grow-your-vision";
 import { Media, PageHero, SectionHeading, stagger } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getCourses, getGrowVision } from "@/lib/data";
+import { langAlternates } from "@/lib/site";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/courses">): Promise<Metadata> {
-  return { title: (await resolveLang(params)).dict.courses.title };
+  const { lang, dict } = await resolveLang(params);
+  return {
+    title: dict.courses.title,
+    alternates: langAlternates("/courses", lang),
+  };
 }
 
 export default async function CoursesPage({ params }: PageProps<"/[lang]/courses">) {

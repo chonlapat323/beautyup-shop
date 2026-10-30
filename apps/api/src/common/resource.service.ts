@@ -59,22 +59,81 @@ export class ResourceService {
     return serialize(row, cfg);
   }
 
-  async create(name: ResourceName, body: unknown) {
+  async create(name: ResourceName, body: unknown, user?: { id?: string; email?: string; name?: string }) {
     const cfg = resourceConfig[name];
     const input = parseOrThrow(resources[name].schema, body) as Row;
     await this.assertFreeUrl(name, input);
     const data = toPrismaData(input, cfg, 'create');
-    return this.write(name, async () => this.afterSave(name, await this.delegate(name).create({ data, include: cfg.include })));
+    const result = await this.write(name, async () => this.afterSave(name, await this.delegate(name).create({ data, include: cfg.include })));
+    this.logAudit({
+      userId: user?.id,
+      userEmail: user?.email,
+      userName: user?.name,
+      action: 'CREATE',
+      resource: name,
+      resourceId: String((result as Row)?.id ?? ''),
+      details: { slug: (result as Row)?.slug, name: (result as Row)?.name },
+    }).catch(() => {});
+    return result;
   }
 
-  async update(name: ResourceName, id: string, body: unknown) {
+  async update(name: ResourceName, id: string, body: unknown, user?: { id?: string; email?: string; name?: string }) {
     const cfg = resourceConfig[name];
     const input = parseOrThrow(resources[name].schema, body) as Row;
     await this.assertFreeUrl(name, input);
     const data = toPrismaData(input, cfg, 'update');
-    return this.write(name, async () =>
+    const result = await this.write(name, async () =>
       this.afterSave(name, await this.delegate(name).update({ where: { id }, data, include: cfg.include })),
     );
+    this.logAudit({
+      userId: user?.id,
+      userEmail: user?.email,
+      userName: user?.name,
+      action: 'UPDATE',
+      resource: name,
+      resourceId: id,
+      details: { slug: (result as Row)?.slug, name: (result as Row)?.name },
+    }).catch(() => {});
+    return result;
+  }
+
+  async remove(name: ResourceName, id: string, user?: { id?: string; email?: string; name?: string }) {
+    await this.write(name, () => this.delegate(name).delete({ where: { id } }));
+    this.logAudit({
+      userId: user?.id,
+      userEmail: user?.email,
+      userName: user?.name,
+      action: 'DELETE',
+      resource: name,
+      resourceId: id,
+    }).catch(() => {});
+    return { ok: true };
+  }
+
+  private async logAudit(data: {
+    userId?: string;
+    userEmail?: string;
+    userName?: string;
+    action: string;
+    resource: string;
+    resourceId?: string;
+    details?: object;
+  }) {
+    try {
+      await this.prisma.auditLog.create({
+        data: {
+          userId: data.userId,
+          userEmail: data.userEmail,
+          userName: data.userName,
+          action: data.action,
+          resource: data.resource,
+          resourceId: data.resourceId,
+          details: (data.details as any) ?? {},
+        },
+      });
+    } catch {
+      // Non-blocking: audit log failure should never disrupt resource operations
+    }
   }
 
   /**
@@ -109,11 +168,6 @@ export class ResourceService {
     const cfg = resourceConfig[name];
     const patch = await cfg.afterSave?.(row);
     return patch ? this.delegate(name).update({ where: { id: row.id }, data: patch, include: cfg.include }) : row;
-  }
-
-  async remove(name: ResourceName, id: string) {
-    await this.write(name, () => this.delegate(name).delete({ where: { id } }));
-    return { ok: true };
   }
 
   /** Turns common Prisma errors into 4xx responses the admin UI can show. */

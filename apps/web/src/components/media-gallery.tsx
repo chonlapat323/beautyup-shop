@@ -65,7 +65,7 @@ export function MediaGallery({ images, title, slug, cover = true }: { images: st
             <li key={src + i}>
               <button type="button" onClick={(e) => openFrom(e.currentTarget, i + offset)} aria-label={d.open(i + offset + 1, count)} className="group block w-full overflow-hidden rounded-2xl">
                 {/* eslint-disable-next-line @next/next/no-img-element -- uploads served by the API */}
-                <img src={src} alt="" loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img src={src} alt={`${title} - ภาพที่ ${i + offset + 1}`} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-105" />
               </button>
             </li>
           ))}
@@ -137,7 +137,7 @@ export function MediaGallery({ images, title, slug, cover = true }: { images: st
                     className={clsx("block size-14 overflow-hidden rounded-lg border-2 transition-opacity", i === open ? "border-white" : "border-transparent opacity-50 hover:opacity-100")}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- uploads served by the API */}
-                    <img src={src} alt="" className="size-full object-cover" />
+                    <img src={src} alt={`${title} - ภาพย่อที่ ${i + 1}`} className="size-full object-cover" />
                   </button>
                 </li>
               ))}

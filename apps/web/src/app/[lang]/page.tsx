@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "@/components/link";
 import { BrandMarquee } from "@/components/brand-marquee";
 import { GrowYourVision } from "@/components/grow-your-vision";
@@ -6,6 +7,16 @@ import { ProductGrid } from "@/components/product-grid";
 import { ArrowLink, Media, SectionHeading, VideoPlayer, stagger } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getBrands, getGrowVision, getHeroSlides, getProducts, getRegions, getVideos } from "@/lib/data";
+import { langAlternates } from "@/lib/site";
+
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang, dict } = await resolveLang(params);
+  return {
+    title: dict.meta.title,
+    description: dict.meta.description,
+    alternates: langAlternates("/", lang),
+  };
+}
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang, dict } = await resolveLang(params);

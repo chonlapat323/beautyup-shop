@@ -9,12 +9,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getDictionary, type Locale } from "@/i18n";
 import type { BrandCategory, BrandMainCategory } from "./brand-categories";
 import { provinces } from "./provinces";
-import {
-  PROVINCE_EN,
-  REGION_SALON_COUNTS,
-  THAILAND_SALON_DIRECTORY,
-  getThailandSalons,
-} from "./thailand-salons";
+import { PROVINCE_EN } from "./thailand-salons";
 import type {
   Ambassador,
   Brand,
@@ -465,29 +460,9 @@ interface ProductRow extends Row {
   brand: { slug: string; name: string; type: "SALON" | "COUNTER" };
 }
 
-const productFallbacks: Record<string, string> = {
-  "shield-protective-mist-100ml": "/products/fanola/shield-protective-mist-100ml.jpg",
-  "2-phase-potion-leave-in-150ml": "/products/fanola/2-phase-potion-leave-in-150ml.jpg",
-  "thermo-protective-cream-150ml": "/products/fanola/thermo-protective-cream-150ml.jpg",
-  "incredible-foam-250ml": "/categories/fanola/no-yellow-care.jpg",
-  "no-yellow-mask-1000ml": "/categories/fanola/no-yellow-care.jpg",
-  "no-yellow-shampoo-1000ml": "/categories/fanola/no-yellow-care.jpg",
-  "no-orange-mask-1000ml": "/categories/fanola/no-orange.jpg",
-  "no-orange-shampoo-1000ml": "/categories/fanola/no-orange.jpg",
-  "blue-foam-no-orange-250ml": "/categories/fanola/no-orange.jpg",
-  "no-orange-mask-350ml": "/categories/fanola/no-orange.jpg",
-  "no-orange-shampoo-350ml": "/categories/fanola/no-orange.jpg",
-  "no-red-mask-1000ml": "/categories/fanola/no-red.jpg",
-  "no-red-shampoo-1000ml": "/categories/fanola/no-red.jpg",
-  "no-red-set-100ml": "/categories/fanola/no-red.jpg",
-  "no-red-mask-350ml": "/categories/fanola/no-red.jpg",
-  "no-red-shampoo-350ml": "/categories/fanola/no-red.jpg",
-  "nutri-care-shampoo-1000ml": "/categories/fanola/nutri-care.jpg",
-};
-
 const toProduct = (p: ProductRow, lang: Locale): Product => {
   const rawImages = (p.images ?? []).map((u) => s(u)).filter(Boolean) as string[];
-  const cover = rawImages[0] || s(p.imageUrl) || productFallbacks[p.slug] || "";
+  const cover = rawImages[0] || s(p.imageUrl) || "";
   const images = rawImages.length > 0 ? rawImages : cover ? [cover] : [];
   return {
     slug: p.slug,
@@ -571,28 +546,10 @@ export async function getBrandMainCategories(lang: Locale, brandSlug: string): P
 
 interface SlideRow extends Row { product: L; caption: L; href: string; imageUrl: string; tint: string; brand: { slug: string; name: string } | null }
 
-const defaultSlides: HeroSlide[] = [
-  { brandSlug: "slide-1", brand: "BeautyUp", product: "BeautyUp Official Salon Partner", caption: "ศูนย์รวมผลิตภัณฑ์ซาลอนมืออาชีพ", href: "/products", imageUrl: "/slides/1.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-2", brand: "BeautyUp", product: "Beauty Promotion 2", caption: "โปรโมชันสุดคุ้มเพื่อช่างผมมืออาชีพ", href: "/products", imageUrl: "/slides/2.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-3", brand: "BeautyUp", product: "Nook Eco-Conscious Beauty", caption: "ผลิตภัณฑ์ดูแลเส้นผมธรรมชาติจากอิตาลี", href: "/products/nook", imageUrl: "/slides/3.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-4", brand: "BeautyUp", product: "Sweet Professional Hair Treatment", caption: "นวัตกรรมยืดผมระดับสากลจากบราซิล", href: "/products/sweet-professional", imageUrl: "/slides/4.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-5", brand: "BeautyUp", product: "BeautyUp Hair Product 5", caption: "ผลิตภัณฑ์บำรุงและฟื้นฟูเส้นผมล้ำลึก", href: "/products", imageUrl: "/slides/5.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-6", brand: "BeautyUp", product: "BeautyUp Professional Care 6", caption: "มาตรฐานการดูแลเส้นผมระดับซาลอนชั้นนำ", href: "/products", imageUrl: "/slides/6.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-7", brand: "BeautyUp", product: "Salon Inspiration 7", caption: "สร้างสรรค์ผลงานช่างผมมืออาชีพ", href: "/products", imageUrl: "/slides/7.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-8", brand: "BeautyUp", product: "BeautyUp Essential 8", caption: "ผลิตภัณฑ์จำเป็นสำหรับร้านซาลอน", href: "/products", imageUrl: "/slides/8.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-9", brand: "La Prairie", product: "La Prairie Caviar Collection", caption: "ศาสตร์แห่งการชะลอวัยชั้นเลิศจากสวิตเซอร์แลนด์", href: "/shop", imageUrl: "/slides/10 La Prairie.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-10", brand: "BeautyUp", product: "BeautyUp Showcase 10", caption: "คอลเลกชันสินค้าคุณภาพยอดนิยม", href: "/shop", imageUrl: "/slides/10.png", tint: "#1c1917" },
-  { brandSlug: "slide-11", brand: "BeautyUp", product: "BeautyUp Premium 11", caption: "ผลิตภัณฑ์ระดับพรีเมียม", href: "/products", imageUrl: "/slides/11.png", tint: "#1c1917" },
-  { brandSlug: "slide-12", brand: "BeautyUp", product: "BeautyUp Trend 12", caption: "อัปเดตเทรนด์ความงามใหม่ล่าสุด", href: "/products", imageUrl: "/slides/12.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-13", brand: "BeautyUp", product: "BeautyUp Special 13", caption: "สิทธิประโยชน์สำหรับสมาชิกและซาลอน", href: "/contact/salon-partner", imageUrl: "/slides/13.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-14", brand: "BeautyUp", product: "Salon Partner Community 14", caption: "ร่วมเป็นพันธมิตรซาลอนกับบิวตี้อัพทั่วประเทศ", href: "/contact/salon-partner", imageUrl: "/slides/14.jpg", tint: "#1c1917" },
-  { brandSlug: "slide-15", brand: "BeautyUp", product: "BeautyUp Academy 15", caption: "คอร์สเรียนและพัฒนาทักษะช่างผม", href: "/courses", imageUrl: "/slides/15.jpg", tint: "#1c1917" },
-];
-
 export async function getHeroSlides(lang: Locale): Promise<HeroSlide[]> {
   try {
     const rows = await get<SlideRow[]>("/resources/hero-slides");
-    if (!rows || rows.length === 0) return defaultSlides;
+    if (!rows || rows.length === 0) return [];
     return rows.map((r, i) => {
       const img = s(r.imageUrl);
       return {
@@ -601,74 +558,56 @@ export async function getHeroSlides(lang: Locale): Promise<HeroSlide[]> {
         product: t(r.product, lang),
         caption: t(r.caption, lang),
         href: r.href || "/products",
-        imageUrl: img || defaultSlides[i % defaultSlides.length].imageUrl,
+        imageUrl: img || "",
         tint: r.tint || "#1c1917",
       };
-    });
+    }).filter((s) => s.imageUrl);
   } catch {
-    return defaultSlides;
+    return [];
   }
 }
 
 export async function getVideos(lang: Locale): Promise<Video[]> {
   const rows = await get<{ title: L; youtubeUrl: string }[]>("/resources/videos");
-  return rows.map((v) => ({ title: t(v.title, lang), url: v.youtubeUrl }));
+  return (rows ?? []).map((v) => ({ title: t(v.title, lang), url: v.youtubeUrl }));
 }
 
 /* ------------------------------------------------------------ customers */
 
 export async function getAmbassadors(lang: Locale): Promise<Ambassador[]> {
-  const rows = await get<{ name: string; title: L; photoUrl: string; socials: Ambassador["socials"] }[]>("/resources/ambassadors");
-  const fallbackPhotos: Record<string, string> = {
-    CHERRY: "/ambassadors/1.jpg",
-    TEMEE: "/ambassadors/2.jpg",
-    NOK: "/ambassadors/3.jpg",
-    AUM: "/ambassadors/4.jpg",
-  };
-  return rows.map((a, i) => ({
-    name: a.name,
-    title: t(a.title, lang),
-    photoUrl: s(a.photoUrl) || fallbackPhotos[a.name.toUpperCase()] || `/ambassadors/${(i % 4) + 1}.jpg`,
-    socials: Object.fromEntries(Object.entries(a.socials ?? {}).filter(([, v]) => v)),
-  }));
+  try {
+    const rows = await get<{ name: string; title: L; photoUrl: string; socials: Ambassador["socials"] }[]>("/resources/ambassadors");
+    return (rows ?? []).map((a) => ({
+      name: a.name,
+      title: t(a.title, lang),
+      photoUrl: s(a.photoUrl) || "",
+      socials: Object.fromEntries(Object.entries(a.socials ?? {}).filter(([, v]) => v)),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export async function getSalons(lang: Locale = "th"): Promise<Salon[]> {
   try {
-    const rows = await get<(Salon & { address: string; phone: string; mapUrl: string })[]>("/resources/salons");
-    const realSalons = (rows ?? []).filter(
-      (r) =>
-        !r.name.includes("ตัวอย่าง") &&
-        !r.name.includes("sample") &&
-        !r.name.includes("Sample") &&
-        !r.name.includes("Mock") &&
-        !r.name.includes("เดอะแฮร์") &&
-        !r.name.includes("The Hair"),
-    );
-
-    if (realSalons.length >= 70) {
-      return realSalons.map((r) => {
-        const rawProv = r.province.replace(/^จังหวัด\s*/, "").trim();
+    const rows = await get<(Salon & { address: string; phone: string; mapUrl: string; isActive?: boolean })[]>("/resources/salons");
+    return (rows ?? [])
+      .filter((r) => r.isActive !== false)
+      .map((r) => {
+        const rawProv = (r.province ?? "").replace(/^จังหวัด\s*/, "").trim();
         const enProv = PROVINCE_EN[rawProv] || rawProv;
         return {
-          name:
-            lang === "en"
-              ? `Hair Salon in ${enProv}`
-              : r.name.startsWith("ร้านทำผม")
-                ? r.name
-                : `ร้านทำผม ${r.name}`,
+          name: r.name,
           region: r.region,
           province: lang === "en" ? enProv : r.province,
-          address: lang === "en" ? `${enProv}, Thailand` : s(r.address) || `ร้านทำผม จังหวัด${rawProv}`,
+          address: s(r.address) || (lang === "en" ? `${enProv}, Thailand` : `จังหวัด${rawProv}`),
           phone: s(r.phone),
           mapUrl: s(r.mapUrl),
         };
       });
-    }
   } catch {
-    // fallback to static directory
+    return [];
   }
-  return getThailandSalons(lang);
 }
 
 export async function getRegions(lang: Locale) {
@@ -678,18 +617,13 @@ export async function getRegions(lang: Locale) {
     if (rows && rows.length > 0) {
       return rows.map((r) => ({
         ...r,
-        count: r.count > 0 ? r.count : (REGION_SALON_COUNTS[r.key] ?? 0),
         label: labels[r.key],
       }));
     }
   } catch {
     // fallback
   }
-  return (Object.keys(REGION_SALON_COUNTS) as Region[]).map((key) => ({
-    key,
-    count: REGION_SALON_COUNTS[key],
-    label: labels[key],
-  }));
+  return [];
 }
 
 /* -------------------------------------------------------------- courses */

@@ -1,0 +1,33 @@
+# BeautyUp Enterprise
+
+> ศูนย์รวมและผู้จัดจำหน่ายผลิตภัณฑ์ดูแลเส้นผมระดับพรีเมียมสำหรับซาลอนมืออาชีพและเคาน์เตอร์แบรนด์ชั้นนำในประเทศไทย (BeautyUp Enterprise Co., Ltd.)
+
+## ข้อมูลบริษัท (About BeautyUp Enterprise)
+- ชื่อบริษัท: บริษัท บิวตี้อัพ เอ็นเตอร์ไพร์ส จำกัด (ประเทศไทย) / BeautyUp Enterprise Co., Ltd.
+- เว็บไซต์หลัก: https://beautyup-enterprise.com
+- ประเภทธุรกิจ: ผู้แทนจำหน่ายอย่างเป็นทางการสำหรับผลิตภัณฑ์ซาลอนมืออาชีพ (Professional Salon Haircare) และผลิตภัณฑ์เคาน์เตอร์แบรนด์ระดับพรีเมียม
+- แบรนด์ซาลอนหลัก: Fanola (อิตาลี), Nook (อิตาลี), Sweet Professional (บราซิล)
+- การบริการ: จัดจำหน่ายผลิตภัณฑ์ดูแลเส้นผม, สีย้อมผม, แชมพูม่วงลดประกายเหลือง (No Yellow), เคราตินทรีทเม้นท์, แคตตาล็อกสินค้า, จัดอบรมหลักสูตรคอร์สเรียนช่างผมมืออาชีพ (Academy), และเครือข่ายร้านซาลอนพันธมิตรทั่วประเทศไทย
+
+## หน้าสำคัญของเว็บไซต์ (Key Sections)
+- หน้าแรก (Home): /th
+- สินค้าซาลอนมืออาชีพ (Salon Products): /th/products
+- เคาน์เตอร์แบรนด์ (Shop): /th/shop
+- ค้นหาร้านซาลอนพันธมิตร (Find a Salon): /th/customers/salons
+- คอร์สเรียนและเวิร์กช็อป (Academy Courses): /th/courses
+- พื้นที่สมาชิกและบทความ (Articles & Activities): /th/members
+- ศูนย์มีเดียและรูปภาพ (Media & Assets): /th/members/media
+- ติดต่อเราและสมัครตัวแทนซาลอน (Contact & Salon Partner): /th/contact/salon-partner
+
+## ผลิตภัณฑ์เด่น (Featured Products)
+- Fanola No Yellow Shampoo & Mask: ผลิตภัณฑ์แชมพูและมาส์กสีม่วงอันดับ 1 สำหรับลดประกายเหลือง ล็อกผมโทนหม่น บลอนด์ เทา
+- Fanola No Orange: ลดประกายส้ม/ทองแดง สำหรับผมทำสีโทนน้ำตาลและบลอนด์เข้ม
+- Fanola No Red: ลดประกายแดง สำหรับผมโทนน้ำตาลธรรมชาติ
+- Fanola Nutri Care: บำรุงและฟื้นฟูผมแห้งเสีย ขาดการบำรุง
+- Sweet Professional: นวัตกรรมการยืดผมและเคราตินทรีทเม้นท์ระดับโลกจากบราซิล
+- Nook Eco-Conscious Beauty: ผลิตภัณฑ์ออร์แกนิกและสารสกัดธรรมชาติจากอิตาลี
+
+## ติดต่อเรา (Contact)
+- ที่อยู่: กรุงเทพมหานคร ประเทศไทย
+- อีเมล: contact@beautyup-enterprise.com
+- หน้าติดต่อ: /th/contact

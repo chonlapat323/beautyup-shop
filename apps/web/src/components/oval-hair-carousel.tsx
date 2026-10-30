@@ -23,65 +23,13 @@ export interface OvalHairCarouselProps {
   className?: string;
 }
 
-const DEFAULT_CARDS: OvalCardItem[] = [
-  {
-    imageUrl: "/cards/fanola-1.jpg",
-    title: "Balayage Ash Blonde",
-    formula: "BLEACH & 3% (ORO 20G/20G)",
-    description: "No Yellow Care Protection",
-    href: "/products/fanola?category=no-yellow-care",
-  },
-  {
-    imageUrl: "/slides/1.jpg",
-    title: "Pure Ice Blonde",
-    formula: "VIOLET BLEACH 9 TONES",
-    description: "Anti-Yellow Neutralizing",
-    href: "/products/fanola?category=no-yellow-care",
-  },
-  {
-    imageUrl: "/cards/fanola-2.jpg",
-    title: "Cool Smokey Brunette",
-    formula: "BLACK 3% + NO RED MASK",
-    description: "Cool Neutralizing Tone",
-    href: "/products/fanola?category=no-red",
-  },
-  {
-    imageUrl: "/slides/3.jpg",
-    title: "Platinum Silver Balayage",
-    formula: "BLEACH & 6% + SHAMPOO",
-    description: "Extra Violet Pigments",
-    href: "/products/fanola?category=no-yellow-care",
-  },
-  {
-    imageUrl: "/cards/fanola-3.jpg",
-    title: "Warm Honey Caramel",
-    formula: "CHESTNUT BLEACH + 3%",
-    description: "Deep Conditioning Care",
-    href: "/products/fanola?category=nutri-care",
-  },
-  {
-    imageUrl: "/cards/fanola-4.jpg",
-    title: "Warm Brown Copper",
-    formula: "WARM BROWN + 3%",
-    description: "Color Keratin Protection",
-    href: "/products/fanola?category=no-orange",
-  },
-  {
-    imageUrl: "/slides/4.jpg",
-    title: "Luxury Gloss Waves",
-    formula: "ORO THERAPY 24K",
-    description: "Argan Oil & Keratin Infusion",
-    href: "/products/fanola?category=oro-therapy",
-  },
-];
-
 export function OvalHairCarousel({
   title = "ผลิตภัณฑ์ซาลอนมืออาชีพ",
   eyebrow,
-  cards = DEFAULT_CARDS,
+  cards = [],
   className,
 }: OvalHairCarouselProps) {
-  const displayCards = cards && cards.length > 0 ? cards : DEFAULT_CARDS;
+  const displayCards = cards && cards.length > 0 ? cards : [];
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -104,6 +52,8 @@ export function OvalHairCarousel({
       window.removeEventListener("resize", checkScroll);
     };
   }, [checkScroll]);
+
+  if (!displayCards.length) return null;
 
   const scroll = (direction: "left" | "right") => {
     const el = scrollRef.current;

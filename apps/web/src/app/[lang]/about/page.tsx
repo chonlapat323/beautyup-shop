@@ -4,6 +4,7 @@ import { GrowYourVision } from "@/components/grow-your-vision";
 import { PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getAboutData, getGrowVision, getTimeline } from "@/lib/data";
+import { langAlternates } from "@/lib/site";
 import { LoadingImage } from "@/components/loading-image";
 import { AboutSlider } from "@/components/about-slider";
 
@@ -13,6 +14,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/about">): 
   return {
     title: about.headline || dict.about.title,
     description: about.lead || dict.about.lead,
+    alternates: langAlternates("/about", lang),
   };
 }
 

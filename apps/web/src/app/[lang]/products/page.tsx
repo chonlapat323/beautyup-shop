@@ -5,9 +5,14 @@ import { MenuContentRenderer } from "@/components/menu-content-renderer";
 import { Media, PageHero, SocialLinks } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getBrands, getGrowVision, getMenuItemByHref } from "@/lib/data";
+import { langAlternates } from "@/lib/site";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/products">): Promise<Metadata> {
-  return { title: (await resolveLang(params)).dict.products.title };
+  const { lang, dict } = await resolveLang(params);
+  return {
+    title: dict.products.title,
+    alternates: langAlternates("/products", lang),
+  };
 }
 
 export default async function ProductsPage({ params }: PageProps<"/[lang]/products">) {

@@ -5,9 +5,14 @@ import { ProductGrid } from "@/components/product-grid";
 import { Media, PageHero, SectionHeading } from "@/components/ui";
 import { resolveLang } from "@/i18n";
 import { getBrands, getGrowVision, getMenuItemByHref, getProducts, getShopPageData } from "@/lib/data";
+import { langAlternates } from "@/lib/site";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/shop">): Promise<Metadata> {
-  return { title: (await resolveLang(params)).dict.shop.title };
+  const { lang, dict } = await resolveLang(params);
+  return {
+    title: dict.shop.title,
+    alternates: langAlternates("/shop", lang),
+  };
 }
 
 export default async function ShopPage({ params }: PageProps<"/[lang]/shop">) {

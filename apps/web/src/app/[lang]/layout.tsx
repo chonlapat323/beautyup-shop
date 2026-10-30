@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { LOCALES, resolveLang } from "@/i18n";
 import { LangProvider } from "@/i18n/client";
 import { getCompany, getMenu } from "@/lib/data";
+import { SITE_URL } from "@/lib/site";
 import "../globals.css";
 
 const plexThai = IBM_Plex_Sans_Thai({
@@ -23,9 +24,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang, dict } = await resolveLang(params);
   return {
+    metadataBase: new URL(SITE_URL),
     title: { default: dict.meta.title, template: "%s | BeautyUp Enterprise" },
     description: dict.meta.description,
-    alternates: { languages: { th: "/th", en: "/en" } },
     openGraph: { locale: lang === "th" ? "th_TH" : "en_US", siteName: "BeautyUp Enterprise" },
   };
 }

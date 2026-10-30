@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import type { ResourceName } from '@beautyup/types';
-import { AdminGuard } from '../auth/auth.guard.js';
+import { AdminGuard, CurrentUser } from '../auth/auth.guard.js';
+import type { AuthUser } from '../auth/auth.service.js';
 import { ResourceService } from '../common/resource.service.js';
 import { isResource } from '../common/resources.js';
 
@@ -21,18 +22,18 @@ export class AdminResourcesController {
   }
 
   @Post()
-  create(@Param('resource') resource: string, @Body() body: unknown) {
-    return this.resources.create(check(resource), body);
+  create(@Param('resource') resource: string, @Body() body: unknown, @CurrentUser() user?: AuthUser) {
+    return this.resources.create(check(resource), body, user);
   }
 
   @Put(':id')
-  update(@Param('resource') resource: string, @Param('id') id: string, @Body() body: unknown) {
-    return this.resources.update(check(resource), id, body);
+  update(@Param('resource') resource: string, @Param('id') id: string, @Body() body: unknown, @CurrentUser() user?: AuthUser) {
+    return this.resources.update(check(resource), id, body, user);
   }
 
   @Delete(':id')
-  remove(@Param('resource') resource: string, @Param('id') id: string) {
-    return this.resources.remove(check(resource), id);
+  remove(@Param('resource') resource: string, @Param('id') id: string, @CurrentUser() user?: AuthUser) {
+    return this.resources.remove(check(resource), id, user);
   }
 }
 
